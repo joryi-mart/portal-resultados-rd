@@ -1,0 +1,15 @@
+<svg viewBox="0 0 360 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo La Banquera">
+  <!-- ====== ICONO: circulo azul con bolas de loteria ====== -->
+  <g>
+    <circle cx="32" cy="32" r="31" fill="#1D3E8C" stroke="#0E2258" stroke-width="2"/>
+    <circle cx="23" cy="25" r="9.5" fill="#FBF7EE"/>
+    <text x="23" y="29" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" font-weight="700" fill="#10203A">5</text>
+    <circle cx="43" cy="23" r="7.5" fill="#FBF7EE"/>
+    <text x="43" y="26.5" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" font-weight="700" fill="#10203A">27</text>
+    <circle cx="34" cy="43" r="8.5" fill="#FBF7EE"/>
+    <text x="34" y="46.5" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" font-weight="700" fill="#10203A">9</text>
+  </g>
+
+  <!-- ====== NOMBRE: va despues del icono, al lado ====== -->
+  <text x="76" y="41" font-family="'Anton', 'Arial Narrow', sans-serif" font-size="30" font-weight="400" letter-spacing="0.5" fill="#10203A">La Banquera</text>
+</svg>
