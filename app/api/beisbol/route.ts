@@ -181,6 +181,7 @@ function parsearPosiciones(data: any) {
     division: registro.division?.name || "",
     equipos: (registro.teamRecords || []).map((tr: any) => ({
       nombre: tr.team?.name || "",
+      equipoId: tr.team?.id,
       juegosJugados: tr.gamesPlayed,
       victorias: tr.wins,
       derrotas: tr.losses,

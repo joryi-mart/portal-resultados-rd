@@ -26,13 +26,6 @@ type Noticia = {
   published: string;
 };
 
-type Equipo = {
-  id: number;
-  nombre: string;
-  liga: string;
-  division: string;
-};
-
 type JugadorDominicano = {
   id: number;
   nombre: string;
@@ -55,6 +48,7 @@ type EquipoLIDOM = {
 
 type EquipoPosicion = {
   nombre: string;
+  equipoId?: number;
   juegosJugados: number;
   victorias: number;
   derrotas: number;
@@ -90,7 +84,6 @@ type DesempenoJugador = {
 export default function BeisbolPage() {
   const [juegos, setJuegos] = useState<Juego[]>([]);
   const [noticias, setNoticias] = useState<Noticia[]>([]);
-  const [equipos, setEquipos] = useState<Equipo[]>([]);
   const [equiposLIDOM, setEquiposLIDOM] = useState<EquipoLIDOM[]>([]);
   const [posicionesMLB, setPosicionesMLB] = useState<Division[]>([]);
   const [posicionesLIDOM, setPosicionesLIDOM] = useState<Division[]>([]);
@@ -122,7 +115,6 @@ export default function BeisbolPage() {
         });
         setJuegos(conPicheo.concat(sinPicheo));
         setNoticias(data.noticiasMLB?.news || []);
-        setEquipos(data.equipos || []);
         setEquiposLIDOM(data.equiposLIDOM || []);
         setPosicionesMLB(data.posicionesMLB || []);
         setPosicionesLIDOM(data.posicionesLIDOM || []);
@@ -359,7 +351,18 @@ export default function BeisbolPage() {
                     {div.equipos.map(function (e) {
                       return (
                         <tr key={e.nombre} className="border-b border-[#10203A]/6 last:border-0">
-                          <td className="px-3 py-2 font-semibold text-[#10203A]">{e.nombre}</td>
+                          <td className="px-3 py-2 font-semibold text-[#10203A]">
+                            <div className="flex items-center gap-2">
+                              {e.equipoId ? (
+                                <img
+                                  src={`https://www.mlbstatic.com/team-logos/${e.equipoId}.svg`}
+                                  alt=""
+                                  className="h-5 w-5 shrink-0"
+                                />
+                              ) : null}
+                              <span className="truncate">{e.nombre}</span>
+                            </div>
+                          </td>
                           <td className="px-3 py-2 text-center text-[#5C6B78]">{e.juegosJugados}</td>
                           <td className="px-3 py-2 text-center font-semibold text-[#1E4D8C]">{e.victorias}</td>
                           <td className="px-3 py-2 text-center text-[#5C6B78]">{e.derrotas}</td>
@@ -377,25 +380,6 @@ export default function BeisbolPage() {
         {divisiones.length === 0 && (
           <p className="text-sm text-[#5C6B78]">No hay tabla de posiciones disponible.</p>
         )}
-      </div>
-    );
-  }
-
-  function renderEquipo(equipo: Equipo) {
-    return (
-      <div
-        key={equipo.id}
-        className="flex items-center gap-3 rounded-xl border border-[#10203A]/15 bg-white p-3 shadow-sm"
-      >
-        <img
-          src={`https://www.mlbstatic.com/team-logos/${equipo.id}.svg`}
-          alt={equipo.nombre}
-          className="h-9 w-9 shrink-0"
-        />
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-[#10203A]">{equipo.nombre}</p>
-          <p className="truncate text-xs text-[#5C6B78]">{equipo.division}</p>
-        </div>
       </div>
     );
   }
@@ -564,18 +548,6 @@ export default function BeisbolPage() {
               )}
             </div>
             {renderTablaPosiciones(posicionesLIDOM)}
-          </section>
-
-          <section id="equipos-mlb">
-            <h2 className="mb-4 text-lg font-semibold text-[#10203A]">
-              Equipos de la MLB
-            </h2>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {equipos.map(renderEquipo)}
-              {equipos.length === 0 && (
-                <p className="text-sm text-[#5C6B78]">No se pudieron cargar los equipos.</p>
-              )}
-            </div>
           </section>
         </>
       )}
