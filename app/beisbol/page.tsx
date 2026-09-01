@@ -230,38 +230,38 @@ export default function BeisbolPage() {
     const hayPicheo = !terminado && (pitcherVisitante || pitcherLocal);
 
     return (
-      <tr key={juego.gamePk} className="border-b border-[#10203A]/10 last:border-0">
-        <td className="py-3 pl-4 pr-3 align-top">
-          <p className="mb-1.5 font-mono text-xs font-semibold uppercase tracking-wide text-[#5C6B78]">
-            {juego.status.detailedState}
-          </p>
-          <div className="flex items-center gap-2">
+      <div key={juego.gamePk} className="border-b border-[#10203A]/10 px-4 py-3 last:border-0">
+        <p className="mb-1.5 font-mono text-xs font-semibold uppercase tracking-wide text-[#5C6B78]">
+          {juego.status.detailedState}
+        </p>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-2">
             <img
               src={`https://www.mlbstatic.com/team-logos/${juego.teams.away.team.id}.svg`}
               alt=""
               className="h-7 w-7 shrink-0"
             />
-            <span className="text-base font-semibold text-[#10203A]">{juego.teams.away.team.name}</span>
+            <span className="truncate text-base font-semibold text-[#10203A]">{juego.teams.away.team.name}</span>
           </div>
-          <div className="mt-1.5 flex items-center gap-2">
+          <span className="shrink-0 font-mono text-2xl font-bold text-[#1E4D8C]">{juego.teams.away.score ?? "-"}</span>
+        </div>
+        <div className="mt-1.5 flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-2">
             <img
               src={`https://www.mlbstatic.com/team-logos/${juego.teams.home.team.id}.svg`}
               alt=""
               className="h-7 w-7 shrink-0"
             />
-            <span className="text-base font-semibold text-[#10203A]">{juego.teams.home.team.name}</span>
+            <span className="truncate text-base font-semibold text-[#10203A]">{juego.teams.home.team.name}</span>
           </div>
-          {hayPicheo && (
-            <p className="mt-2 text-sm text-[#1E4D8C]">
-              🥎 {pitcherVisitante || "Por confirmar"} vs {pitcherLocal || "Por confirmar"}
-            </p>
-          )}
-        </td>
-        <td className="w-24 py-3 pr-4 text-right align-top">
-          <p className="font-mono text-2xl font-bold text-[#1E4D8C]">{juego.teams.away.score ?? "-"}</p>
-          <p className="mt-6 font-mono text-2xl font-bold text-[#1E4D8C]">{juego.teams.home.score ?? "-"}</p>
-        </td>
-      </tr>
+          <span className="shrink-0 font-mono text-2xl font-bold text-[#1E4D8C]">{juego.teams.home.score ?? "-"}</span>
+        </div>
+        {hayPicheo && (
+          <p className="mt-2 text-sm text-[#1E4D8C]">
+            🥎 {pitcherVisitante || "Por confirmar"} vs {pitcherLocal || "Por confirmar"}
+          </p>
+        )}
+      </div>
     );
   }
 
@@ -438,10 +438,8 @@ export default function BeisbolPage() {
               Juegos de hoy
             </h2>
             {juegos.length > 0 ? (
-              <div className="overflow-x-auto rounded-xl border border-[#10203A]/15 bg-white">
-                <table className="w-full">
-                  <tbody>{juegos.map(renderJuego)}</tbody>
-                </table>
+              <div className="rounded-xl border border-[#10203A]/15 bg-white">
+                {juegos.map(renderJuego)}
               </div>
             ) : (
               <p className="text-sm text-[#5C6B78]">

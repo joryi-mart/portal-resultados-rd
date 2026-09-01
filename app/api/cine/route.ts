@@ -14,13 +14,14 @@ function mapearPelicula(p: any) {
   };
 }
 
-async function obtenerListado(categoria: string, apiKey: string, region: string) {
-  const claveCache = "cine-" + categoria + "-" + region;
+async function obtenerListado(categoria: string, apiKey: string, region: string | null) {
+  const claveCache = "cine-" + categoria + "-" + (region || "global");
   const cacheado = getCache(claveCache);
   if (cacheado) return cacheado;
 
+  const parametroRegion = region ? `&region=${region}` : "";
   const res = await fetch(
-    `https://api.themoviedb.org/3/movie/${categoria}?api_key=${apiKey}&language=es-ES&region=${region}&page=1`
+    `https://api.themoviedb.org/3/movie/${categoria}?api_key=${apiKey}&language=es-ES${parametroRegion}&page=1`
   );
   if (!res.ok) throw new Error(`Error TMDB API (${categoria}): ${res.status}`);
   const data = await res.json();
@@ -42,9 +43,9 @@ export async function GET() {
     }
 
     const [enCartelera, proximosEstrenos, populares] = await Promise.all([
-      obtenerListado("now_playing", apiKey, "DO"),
-      obtenerListado("upcoming", apiKey, "US"),
-      obtenerListado("popular", apiKey, "DO"),
+      obtenerListado("now_playing", apiKey, null),
+      obtenerListado("upcoming", apiKey, null),
+      obtenerListado("popular", apiKey, null),
     ]);
 
     return NextResponse.json({

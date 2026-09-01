@@ -62,6 +62,7 @@ type UltimoResultado = {
 const COLOR_AZUL = "#1E4D8C";
 const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 const COLOR_VERDE_RD = "#007A33";
+const COLOR_PRIMERA_POSICION = "#E7A63C";
 
 // Sorteos que llevan un color de bolita distinto al azul estándar.
 // El "Loto" de Leidsa (id 69) sale solo miércoles y sábados, así que se
@@ -137,13 +138,14 @@ function numerosVistaPrevia(sorteoId: number) {
   return [pad(a), pad(b), pad(c)];
 }
 
-function Bolita(props: { children: React.ReactNode; tamano: string; opaca?: boolean; colorEspecial?: { fondo: string; texto: string } }) {
+function Bolita(props: { children: React.ReactNode; tamano: string; opaca?: boolean; colorEspecial?: { fondo: string; texto: string }; primera?: boolean }) {
   const opaca = props.opaca === true;
   const especial = props.colorEspecial;
+  const primera = props.primera === true && !especial;
   return (
     <div
-      className={"relative flex shrink-0 items-center justify-center rounded-full font-mono font-bold " + props.tamano + (opaca ? " border-2 border-dashed border-[#9AA5AF] text-[#7B858F]" : especial ? "" : " text-white")}
-      style={opaca ? { backgroundColor: "#E4E8EB" } : especial ? { backgroundColor: especial.fondo, color: especial.texto } : { backgroundColor: COLOR_AZUL }}
+      className={"relative flex shrink-0 items-center justify-center rounded-full font-mono font-bold " + props.tamano + (opaca ? " border-2 border-dashed border-[#9AA5AF] text-[#7B858F]" : especial || primera ? "" : " text-white")}
+      style={opaca ? { backgroundColor: "#E4E8EB" } : especial ? { backgroundColor: especial.fondo, color: especial.texto } : primera ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" } : { backgroundColor: COLOR_AZUL }}
     >
       {props.children}
     </div>
@@ -182,7 +184,7 @@ function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string }) {
         <p className="font-mono text-base" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{sorteo.hora_sorteo}</p>
       </div>
       <div className="flex flex-nowrap items-center gap-1.5 overflow-x-auto">
-        {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano} opaca={!hayResultadoReal} colorEspecial={colorEspecial}>{n}</Bolita>; })}
+        {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano} opaca={!hayResultadoReal} colorEspecial={colorEspecial} primera={i === 0}>{n}</Bolita>; })}
         {!hayResultadoReal ? (
           <span className="ml-1 whitespace-nowrap font-mono text-[11px] italic" style={{ color: COLOR_TEXTO_SECUNDARIO }}>(vista previa)</span>
         ) : null}
@@ -190,6 +192,22 @@ function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string }) {
       {resultado && resultado.creado_en ? (
         <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Publicado: {formatearPublicacion(resultado.creado_en)}</p>
       ) : null}
+    </div>
+  );
+}
+
+function ChipCambio(props: { nombre: string; compra: number; venta: number }) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg bg-white/8 px-3 py-1.5">
+      <span className="font-mono text-sm font-bold text-[#FBF7EE]">{props.nombre}</span>
+      <div className="flex items-baseline gap-1 font-mono text-sm">
+        <span className="text-[10px] uppercase text-white/50">Compra</span>
+        <span className="font-bold text-[#8FD19E]">{props.compra.toFixed(2)}</span>
+      </div>
+      <div className="flex items-baseline gap-1 font-mono text-sm">
+        <span className="text-[10px] uppercase text-white/50">Venta</span>
+        <span className="font-bold text-[#E7A63C]">{props.venta.toFixed(2)}</span>
+      </div>
     </div>
   );
 }
@@ -217,22 +235,10 @@ function PanelSuperior(props: { cambios: Cambio[]; fechaActual: string }) {
                 Cambio hoy
               </span>
               {dolar ? (
-                <div className="flex items-center gap-2 font-mono text-sm text-[#FBF7EE]">
-                  <span className="font-semibold">USD</span>
-                  <span className="text-white/50">C</span>
-                  <span className="font-bold">{Number(dolar.tasa_compra).toFixed(2)}</span>
-                  <span className="text-white/50">V</span>
-                  <span className="font-bold">{Number(dolar.tasa_venta).toFixed(2)}</span>
-                </div>
+                <ChipCambio nombre="USD" compra={Number(dolar.tasa_compra)} venta={Number(dolar.tasa_venta)} />
               ) : null}
               {euro ? (
-                <div className="flex items-center gap-2 font-mono text-sm text-[#FBF7EE]">
-                  <span className="font-semibold">EUR</span>
-                  <span className="text-white/50">C</span>
-                  <span className="font-bold">{Number(euro.tasa_compra).toFixed(2)}</span>
-                  <span className="text-white/50">V</span>
-                  <span className="font-bold">{Number(euro.tasa_venta).toFixed(2)}</span>
-                </div>
+                <ChipCambio nombre="EUR" compra={Number(euro.tasa_compra)} venta={Number(euro.tasa_venta)} />
               ) : null}
             </>
           ) : null}
@@ -274,7 +280,7 @@ function PanelUltimosResultados(props: { items: UltimoResultado[] }) {
                 <p className="font-mono text-xs font-bold" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{item.loteriaNombre} · {formatearPublicacion(item.creadoEn)}</p>
               </div>
               <div className="flex flex-nowrap items-center gap-1 overflow-x-auto">
-                {numeros.map(function (n, j) { return <Bolita key={j} tamano={tamano}>{n}</Bolita>; })}
+                {numeros.map(function (n, j) { return <Bolita key={j} tamano={tamano} primera={j === 0}>{n}</Bolita>; })}
               </div>
             </div>
           );
@@ -395,8 +401,11 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {fila.numeros.map(function (n, j) {
+                      const esPrimera = j === 0 && !colorEspecial;
                       const estiloEspecial = !fila.esVistaPrevia && colorEspecial
                         ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
+                        : !fila.esVistaPrevia && esPrimera
+                        ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
                         : undefined;
                       return (
                         <span

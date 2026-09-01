@@ -15,14 +15,13 @@ type Pelicula = {
 
 type Categoria = "enCartelera" | "proximosEstrenos" | "populares";
 
-const CATEGORIAS: { id: Categoria; nombre: string }[] = [
+const SECCIONES: { id: Categoria; nombre: string }[] = [
   { id: "enCartelera", nombre: "En cartelera" },
   { id: "proximosEstrenos", nombre: "Próximos estrenos" },
   { id: "populares", nombre: "Populares" },
 ];
 
 export default function CinePage() {
-  const [categoria, setCategoria] = useState<Categoria>("enCartelera");
   const [datos, setDatos] = useState<Record<Categoria, Pelicula[]>>({
     enCartelera: [],
     proximosEstrenos: [],
@@ -95,34 +94,14 @@ export default function CinePage() {
     );
   }
 
-  const peliculas = datos[categoria];
-
   return (
     <div className="min-h-screen bg-[#FBF7EE]">
       <NavPildoras />
       <div className="px-4 py-8 sm:px-8">
-        <h1 className="mb-6 text-2xl font-bold text-[#10203A]">🎬 Cine</h1>
-
-        <div className="mb-6 flex flex-wrap gap-2">
-          {CATEGORIAS.map(function (c) {
-            const activa = categoria === c.id;
-            return (
-              <button
-                key={c.id}
-                onClick={function () { setCategoria(c.id); }}
-                className={
-                  "rounded-lg px-4 py-2 text-sm font-bold text-white " +
-                  (activa ? "bg-[#00994A]" : "bg-[#007A33] hover:bg-[#00994A]")
-                }
-              >
-                {c.nombre}
-              </button>
-            );
-          })}
-        </div>
+        <h1 className="mb-2 text-2xl font-bold text-[#10203A]">🎬 Cine</h1>
 
         <p className="mb-6 rounded-lg bg-[#1E4D8C]/5 p-3 text-xs text-[#5C6B78]">
-          Estas son las películas en cartelera a nivel general (afiches, sinopsis y calificación). Todavía no tenemos horarios ni salas específicas de cines dominicanos — esa información no tiene una fuente gratis disponible por ahora.
+          Afiches, sinopsis y calificación de películas en cartelera, próximos estrenos y populares. Todavía no tenemos horarios ni salas específicas de cines dominicanos — esa información no tiene una fuente gratis disponible por ahora.
         </p>
 
         {cargando && (
@@ -133,15 +112,21 @@ export default function CinePage() {
           <p className="rounded-lg bg-red-50 p-4 text-sm text-red-600">{error}</p>
         )}
 
-        {!cargando && !error && (
-          peliculas.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {peliculas.map(renderPelicula)}
-            </div>
-          ) : (
-            <p className="text-sm text-[#5C6B78]">No hay películas disponibles en esta categoría.</p>
-          )
-        )}
+        {!cargando && !error && SECCIONES.map(function (seccion) {
+          const peliculas = datos[seccion.id];
+          return (
+            <section key={seccion.id} className="mb-10">
+              <h2 className="mb-4 text-lg font-semibold text-[#10203A]">{seccion.nombre}</h2>
+              {peliculas.length > 0 ? (
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                  {peliculas.map(renderPelicula)}
+                </div>
+              ) : (
+                <p className="text-sm text-[#5C6B78]">No hay películas disponibles en esta sección.</p>
+              )}
+            </section>
+          );
+        })}
       </div>
     </div>
   );
