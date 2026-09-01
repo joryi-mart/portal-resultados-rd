@@ -87,6 +87,7 @@ function parsearPosicionesNBA(data: any) {
         const derrotas = extraerValorStat(e.stats, "losses");
         return {
           nombre: e.team?.displayName || "",
+          equipoId: e.team?.id,
           juegosJugados: victorias + derrotas,
           victorias,
           derrotas,

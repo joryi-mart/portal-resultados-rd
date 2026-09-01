@@ -12,13 +12,6 @@ const LIGAS: { id: LigaId; nombre: string }[] = [
   { id: "uefa.champions", nombre: "Champions League" },
 ];
 
-type Equipo = {
-  id: string;
-  nombre: string;
-  abreviatura: string;
-  logo: string;
-};
-
 type Competidor = {
   homeAway: string;
   score?: string;
@@ -63,7 +56,6 @@ export default function FutbolPage() {
   const [liga, setLiga] = useState<LigaId>("esp.1");
   const [juegos, setJuegos] = useState<Juego[]>([]);
   const [noticias, setNoticias] = useState<Noticia[]>([]);
-  const [equipos, setEquipos] = useState<Equipo[]>([]);
   const [posiciones, setPosiciones] = useState<EquipoPosicion[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -82,7 +74,6 @@ export default function FutbolPage() {
         setError("");
         setJuegos(data.calendario?.events || []);
         setNoticias(data.noticias || []);
-        setEquipos(data.equipos || []);
         setPosiciones(data.posiciones || []);
       })
       .catch(() => setError("No se pudo cargar la información"))
@@ -171,23 +162,6 @@ export default function FutbolPage() {
           <p className="mt-6 font-mono text-2xl font-bold text-[#1E4D8C]">{visitante.score ?? "-"}</p>
         </td>
       </tr>
-    );
-  }
-
-  function renderEquipo(equipo: Equipo) {
-    return (
-      <div
-        key={equipo.id}
-        className="flex items-center gap-3 rounded-xl border border-[#10203A]/15 bg-white p-3 shadow-sm"
-      >
-        {equipo.logo ? (
-          <Image src={equipo.logo} alt={equipo.nombre} width={36} height={36} className="h-9 w-9 shrink-0" />
-        ) : null}
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-[#10203A]">{equipo.nombre}</p>
-          <p className="truncate text-xs text-[#5C6B78]">{equipo.abreviatura}</p>
-        </div>
-      </div>
     );
   }
 
@@ -326,18 +300,6 @@ export default function FutbolPage() {
                     )}
                   </tbody>
                 </table>
-              </div>
-            </section>
-
-            <section id="equipos">
-              <h2 className="mb-4 text-lg font-semibold text-[#10203A]">
-                Equipos
-              </h2>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {equipos.map(renderEquipo)}
-                {equipos.length === 0 && (
-                  <p className="text-sm text-[#5C6B78]">No se pudieron cargar los equipos.</p>
-                )}
               </div>
             </section>
           </>

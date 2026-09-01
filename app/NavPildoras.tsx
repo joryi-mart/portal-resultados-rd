@@ -167,14 +167,12 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
     { etiqueta: "Ver todo (resumen)", href: "/nba" },
     { etiqueta: "Juegos de hoy", href: "/nba#juegos" },
     { etiqueta: "Tabla de posiciones", href: "/nba#posiciones" },
-    { etiqueta: "Equipos NBA", href: "/nba#equipos-nba" },
   ];
 
   const itemsFutbol: ItemMenu[] = [
     { etiqueta: "Ver todo (resumen)", href: "/futbol" },
     { etiqueta: "Juegos de hoy", href: "/futbol#juegos" },
     { etiqueta: "Tabla de posiciones", href: "/futbol#posiciones" },
-    { etiqueta: "Equipos", href: "/futbol#equipos" },
   ];
 
   const itemsCine: ItemMenu[] = [

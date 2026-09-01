@@ -56,6 +56,7 @@ type Lider = {
 
 type EquipoPosicion = {
   nombre: string;
+  equipoId?: string;
   juegosJugados: number;
   victorias: number;
   derrotas: number;
@@ -285,9 +286,15 @@ export default function NBAPage() {
                   </thead>
                   <tbody>
                     {div.equipos.map(function (e) {
+                      const logo = equipos.find(function (eq) { return eq.id === e.equipoId; })?.logo;
                       return (
                         <tr key={e.nombre} className="border-b border-[#10203A]/6 last:border-0">
-                          <td className="px-3 py-2 font-semibold text-[#10203A]">{e.nombre}</td>
+                          <td className="px-3 py-2 font-semibold text-[#10203A]">
+                            <div className="flex items-center gap-2">
+                              {logo ? <Image src={logo} alt="" width={20} height={20} className="h-5 w-5 shrink-0" /> : null}
+                              <span className="truncate">{e.nombre}</span>
+                            </div>
+                          </td>
                           <td className="px-3 py-2 text-center text-[#5C6B78]">{e.juegosJugados}</td>
                           <td className="px-3 py-2 text-center font-semibold text-[#1E4D8C]">{e.victorias}</td>
                           <td className="px-3 py-2 text-center text-[#5C6B78]">{e.derrotas}</td>
@@ -309,22 +316,6 @@ export default function NBAPage() {
     );
   }
 
-  function renderEquipo(equipo: Equipo) {
-    return (
-      <div
-        key={equipo.id}
-        className="flex items-center gap-3 rounded-xl border border-[#10203A]/15 bg-white p-3 shadow-sm"
-      >
-        {equipo.logo ? (
-          <Image src={equipo.logo} alt={equipo.nombre} width={36} height={36} className="h-9 w-9 shrink-0" />
-        ) : null}
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-[#10203A]">{equipo.nombre}</p>
-          <p className="truncate text-xs text-[#5C6B78]">{equipo.abreviatura}</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#FBF7EE]">
@@ -460,18 +451,6 @@ export default function NBAPage() {
               📋 Tabla de posiciones — NBA
             </h2>
             {renderTablaPosiciones(posiciones)}
-          </section>
-
-          <section id="equipos-nba">
-            <h2 className="mb-4 text-lg font-semibold text-[#10203A]">
-              Equipos de la NBA
-            </h2>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {equipos.map(renderEquipo)}
-              {equipos.length === 0 && (
-                <p className="text-sm text-[#5C6B78]">No se pudieron cargar los equipos.</p>
-              )}
-            </div>
           </section>
         </>
       )}
