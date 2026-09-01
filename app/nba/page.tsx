@@ -19,9 +19,18 @@ type Competidor = {
 
 type Juego = {
   id: string;
+  date: string;
   status: { type: { description: string; state: string } };
   competitions: { competitors: Competidor[] }[];
 };
+
+function horaJuego(fechaISO: string) {
+  try {
+    return new Date(fechaISO).toLocaleTimeString("es-DO", { hour: "numeric", minute: "2-digit", hour12: true });
+  } catch {
+    return "";
+  }
+}
 
 type Noticia = {
   id: string;
@@ -190,6 +199,7 @@ export default function NBAPage() {
         <td className="py-3 pl-4 pr-3 align-top">
           <p className="mb-1.5 font-mono text-xs font-semibold uppercase tracking-wide text-[#5C6B78]">
             {juego.status.type.description}
+            {juego.status.type.state === "pre" ? " · " + horaJuego(juego.date) : ""}
           </p>
           <div className="flex items-center gap-2">
             {visitante.team.logo ? (

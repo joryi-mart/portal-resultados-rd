@@ -29,6 +29,7 @@ export default function CinePage() {
   });
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+  const [peliculaSeleccionada, setPeliculaSeleccionada] = useState<Pelicula | null>(null);
 
   useEffect(function () {
     fetch("/api/cine")
@@ -65,7 +66,8 @@ export default function CinePage() {
     return (
       <div
         key={pelicula.id}
-        className="overflow-hidden rounded-xl border border-[#10203A]/15 bg-white shadow-sm"
+        onClick={function () { setPeliculaSeleccionada(pelicula); }}
+        className="cursor-pointer overflow-hidden rounded-xl border border-[#10203A]/15 bg-white shadow-sm hover:shadow-md"
       >
         {pelicula.poster ? (
           <div className="relative aspect-[2/3] w-full">
@@ -128,6 +130,46 @@ export default function CinePage() {
           );
         })}
       </div>
+
+      {peliculaSeleccionada ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          onClick={function () { setPeliculaSeleccionada(null); }}
+        >
+          <div
+            className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-xl bg-white"
+            onClick={function (e) { e.stopPropagation(); }}
+          >
+            {peliculaSeleccionada.poster ? (
+              <div className="relative aspect-[2/3] w-full">
+                <Image
+                  src={peliculaSeleccionada.poster}
+                  alt={peliculaSeleccionada.titulo}
+                  fill
+                  sizes="400px"
+                  className="object-cover"
+                />
+              </div>
+            ) : null}
+            <div className="p-4">
+              <p className="mb-1 text-lg font-bold text-[#10203A]">{peliculaSeleccionada.titulo}</p>
+              <div className="mb-3 flex items-center gap-2 text-xs text-[#5C6B78]">
+                <span>⭐ {peliculaSeleccionada.calificacion}</span>
+                {peliculaSeleccionada.fechaEstreno ? <span>· {formatearFecha(peliculaSeleccionada.fechaEstreno)}</span> : null}
+              </div>
+              <p className="text-sm leading-relaxed text-[#10203A]">
+                {peliculaSeleccionada.sinopsis || "Sin sinopsis disponible."}
+              </p>
+              <button
+                onClick={function () { setPeliculaSeleccionada(null); }}
+                className="mt-4 w-full rounded-lg bg-[#007A33] px-4 py-2 text-sm font-bold text-white hover:bg-[#00994A]"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

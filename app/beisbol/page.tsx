@@ -223,6 +223,14 @@ export default function BeisbolPage() {
     );
   }
 
+  function horaJuego(fechaISO: string) {
+    try {
+      return new Date(fechaISO).toLocaleTimeString("es-DO", { hour: "numeric", minute: "2-digit", hour12: true });
+    } catch {
+      return "";
+    }
+  }
+
   function renderJuego(juego: Juego) {
     const terminado = juego.status.abstractGameState === "Final";
     const pitcherVisitante = juego.teams.away.probablePitcher?.fullName;
@@ -233,6 +241,7 @@ export default function BeisbolPage() {
       <div key={juego.gamePk} className="border-b border-[#10203A]/10 px-4 py-3 last:border-0">
         <p className="mb-1.5 font-mono text-xs font-semibold uppercase tracking-wide text-[#5C6B78]">
           {juego.status.detailedState}
+          {!terminado ? " · " + horaJuego(juego.gameDate) : ""}
         </p>
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
@@ -273,10 +282,14 @@ export default function BeisbolPage() {
   }
 
   function renderJugadorDominicano(jugador: JugadorDominicano) {
+    const urlWikipedia = "https://es.wikipedia.org/wiki/" + encodeURIComponent(jugador.nombre.replace(/ /g, "_"));
     return (
-      <div
+      <a
         key={jugador.id}
-        className="flex items-center gap-3 rounded-xl border border-[#10203A]/15 bg-white p-3 shadow-sm"
+        href={urlWikipedia}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-3 rounded-xl border border-[#10203A]/15 bg-white p-3 shadow-sm hover:shadow-md"
       >
         <div className="relative h-12 w-12 shrink-0">
           <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#1E4D8C]/10 font-mono text-xs font-bold text-[#1E4D8C]">
@@ -297,7 +310,7 @@ export default function BeisbolPage() {
             {jugador.posicion} · {jugador.equipo}
           </p>
         </div>
-      </div>
+      </a>
     );
   }
 
