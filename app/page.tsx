@@ -54,8 +54,10 @@ type Cambio = {
 };
 type UltimoResultado = {
   loteriaNombre: string;
+  loteriaSlug: string;
   sorteoNombre: string;
   numeros: string;
+  fecha: string;
   creadoEn: string;
 };
 
@@ -163,7 +165,7 @@ function EtiquetaFecha(props: { fechaISO: string }) {
   );
 }
 
-function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string }) {
+function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string; loteriaSlug: string }) {
   const sorteo = props.sorteo;
   const fechaSeleccionada = props.fechaSeleccionada;
   const resultado = sorteo.resultados.find(function (r) { return r.fecha === fechaSeleccionada; });
@@ -171,9 +173,10 @@ function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string }) {
   const numeros = resultado ? resultado.numeros.split("-") : numerosVistaPrevia(sorteo.id);
   const tamano = tamanoBolita(numeros.length, false);
   const colorEspecial = COLOR_ESPECIAL_SORTEOS[sorteo.id];
+  const href = hayResultadoReal ? "/" + props.loteriaSlug + "/" + fechaSeleccionada : "/" + props.loteriaSlug;
 
   return (
-    <div className="flex flex-col gap-2 border-t border-[#10203A]/6 py-4 first:border-t-0">
+    <a href={href} className="flex flex-col gap-2 border-t border-[#10203A]/6 py-4 first:border-t-0 hover:bg-[#FBF7EE]">
       {hayResultadoReal ? (
         <div>
           <EtiquetaFecha fechaISO={fechaSeleccionada} />
@@ -192,7 +195,7 @@ function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string }) {
       {resultado && resultado.creado_en ? (
         <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Publicado: {formatearPublicacion(resultado.creado_en)}</p>
       ) : null}
-    </div>
+    </a>
   );
 }
 
@@ -274,7 +277,11 @@ function PanelUltimosResultados(props: { items: UltimoResultado[] }) {
           const numeros = item.numeros.split("-");
           const tamano = tamanoBolita(numeros.length, false);
           return (
-            <div key={i} className="flex flex-col gap-2 border-t border-[#10203A]/6 py-3 first:border-t-0 sm:flex-row sm:items-center sm:gap-3">
+            <a
+              key={i}
+              href={"/" + item.loteriaSlug + "/" + item.fecha}
+              className="flex flex-col gap-2 border-t border-[#10203A]/6 py-3 first:border-t-0 hover:bg-[#FBF7EE] sm:flex-row sm:items-center sm:gap-3"
+            >
               <div className="w-full shrink-0 sm:w-36">
                 <p className="truncate text-lg font-extrabold text-[#10203A]">{item.sorteoNombre}</p>
                 <p className="font-mono text-xs font-bold" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{item.loteriaNombre} · {formatearPublicacion(item.creadoEn)}</p>
@@ -282,7 +289,7 @@ function PanelUltimosResultados(props: { items: UltimoResultado[] }) {
               <div className="flex flex-nowrap items-center gap-1 overflow-x-auto">
                 {numeros.map(function (n, j) { return <Bolita key={j} tamano={tamano} primera={j === 0}>{n}</Bolita>; })}
               </div>
-            </div>
+            </a>
           );
         })}
       </div>
@@ -328,7 +335,7 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
   const fechaSeleccionada = props.fechaSeleccionada;
   const fechaTitulo = props.fechaTitulo;
 
-  const filas: { loteria: string; sorteo: string; sorteoId: number; numeros: string[]; esVistaPrevia: boolean }[] = [];
+  const filas: { loteria: string; loteriaSlug: string; sorteo: string; sorteoId: number; numeros: string[]; esVistaPrevia: boolean }[] = [];
   for (let i = 0; i < loterias.length; i++) {
     const sorteos = loterias[i].sorteos || [];
     for (let j = 0; j < sorteos.length; j++) {
@@ -336,6 +343,7 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
       if (resultado) {
         filas.push({
           loteria: loterias[i].nombre,
+          loteriaSlug: loterias[i].slug,
           sorteo: sorteos[j].nombre,
           sorteoId: sorteos[j].id,
           numeros: resultado.numeros.split("-"),
@@ -352,6 +360,7 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
       if (sorteos.length > 0) {
         filas.push({
           loteria: loterias[i].nombre,
+          loteriaSlug: loterias[i].slug,
           sorteo: sorteos[0].nombre,
           sorteoId: sorteos[0].id,
           numeros: numerosVistaPrevia(sorteos[0].id),
@@ -379,8 +388,9 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {filas.map(function (fila, i) {
               const colorEspecial = COLOR_ESPECIAL_SORTEOS[fila.sorteoId];
+              const href = fila.esVistaPrevia ? "/" + fila.loteriaSlug : "/" + fila.loteriaSlug + "/" + fechaSeleccionada;
               return (
-                <div key={i} className="flex flex-col gap-3 rounded-xl bg-white px-5 py-4">
+                <a key={i} href={href} className="flex flex-col gap-3 rounded-xl bg-white px-5 py-4 hover:bg-[#FBF7EE]">
                   <div className="flex items-center justify-between">
                     {fila.esVistaPrevia ? (
                       <span
@@ -418,7 +428,7 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
                       );
                     })}
                   </div>
-                </div>
+                </a>
               );
             })}
           </div>
@@ -463,8 +473,10 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
         if (r.creado_en) {
           ultimosResultados.push({
             loteriaNombre: loteria.nombre,
+            loteriaSlug: loteria.slug,
             sorteoNombre: sorteo.nombre,
             numeros: r.numeros,
+            fecha: r.fecha,
             creadoEn: r.creado_en,
           });
         }
@@ -552,7 +564,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
                   {sorteos.length > 0 ? (
                     <div className="mt-2">
                       {sorteos.map(function (sorteo) {
-                        return <FilaSorteo key={sorteo.id} sorteo={sorteo} fechaSeleccionada={fechaSeleccionada} />;
+                        return <FilaSorteo key={sorteo.id} sorteo={sorteo} fechaSeleccionada={fechaSeleccionada} loteriaSlug={loteria.slug} />;
                       })}
                     </div>
                   ) : (
