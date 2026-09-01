@@ -63,6 +63,17 @@ MAPEO_SORTEOS = {
     ("loteria-americana", "New York Noche"): 115,
     ("loteria-americana", "Florida Noche"): 114,
     ("loteria-americana", "Florida Tarde"): 118,
+    ("anguila", "Anguila Mediodia"): 126,
+    ("anguila", "Anguila Tarde"): 127,
+    ("anguila", "Anguila Noche"): 128,
+    ("haiti", "Haiti Bolet 9:30 AM"): 129,
+    ("haiti", "Haiti Bolet 10:30 AM"): 130,
+    ("haiti", "Haiti Bolet 11:30 AM"): 131,
+    ("haiti", "Haiti Bolet 5:30 PM"): 132,
+    ("haiti", "Haiti Bolet 6:30 PM"): 133,
+    ("haiti", "Haiti Bolet 7:30 PM"): 134,
+    ("sxm", "SXM Quiniela Dia"): 135,
+    ("sxm", "SXM Quiniela Noche"): 136,
 }
 
 MESES = {
