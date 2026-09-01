@@ -103,7 +103,7 @@ function PillCategoria(props: {
   const { href, icono, etiqueta, activo, onAlternar, children, alinearDerecha } = props;
 
   return (
-    <div className="relative">
+    <div className="relative shrink-0">
       <div
         className={
           "flex items-stretch overflow-hidden whitespace-nowrap rounded-lg text-base font-bold text-white " +
@@ -185,8 +185,8 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
   ];
 
   return (
-    <div className={display.className + " relative z-40 mb-8 flex flex-wrap justify-center px-4"}>
-      <div className="flex w-max flex-wrap justify-center gap-3">
+    <div className={display.className + " relative z-40 mb-8"}>
+      <div className="flex gap-3 overflow-x-auto px-4 pb-1 sm:flex-wrap sm:justify-center sm:overflow-visible sm:pb-0">
         <PillCategoria
           href="/"
           icono={<IconoTicket />}
