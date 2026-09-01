@@ -95,6 +95,14 @@ def extraer_resultados():
         partes = [p for p in href.strip("/").split("/") if p]
         loteria_slug = partes[0] if len(partes) >= 1 else ""
 
+        # Algunas tarjetas (Anguila, Haiti, SXM) no traen enlace <a> en absoluto.
+        # En esos casos usamos la clase CSS de la tarjeta (ej. "anguila-mediodia"),
+        # tomando la primera palabra antes del guion como identificador de la lotería.
+        if not loteria_slug:
+            clases = [c for c in tarjeta.get("class", []) if c not in ("card", "today")]
+            if clases:
+                loteria_slug = clases[0].split("-")[0]
+
         bolitas = tarjeta.select("ul.balls li")
         numeros = [li.get_text(strip=True) for li in bolitas if li.get_text(strip=True).isdigit()]
 
