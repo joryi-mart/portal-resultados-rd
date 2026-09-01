@@ -250,7 +250,7 @@ export async function GET(request: Request) {
     ]);
 
     const jugadoresDominicanos = await obtenerJugadoresDominicanos(equipos);
-    const idsDominicanos = new Set(jugadoresDominicanos.map((j: any) => j.id));
+    const idsDominicanos = new Set<string>(jugadoresDominicanos.map((j: any) => String(j.id)));
 
     const juegosHoy = nba?.events || [];
     const desempenoDominicanos = await obtenerDesempenoDominicanos(

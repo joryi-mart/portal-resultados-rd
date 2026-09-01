@@ -309,7 +309,7 @@ export async function GET(request: Request) {
         obtenerPosicionesMLB(),
       ]);
 
-    const idsDominicanos = new Set(jugadoresDominicanos.map((j: any) => j.id));
+    const idsDominicanos = new Set<number>(jugadoresDominicanos.map((j: any) => Number(j.id)));
     const juegosHoy = mlb?.dates?.[0]?.games || [];
 
     const [noticiasMLB, posicionesLIDOM, desempenoDominicanos] = await Promise.all([
