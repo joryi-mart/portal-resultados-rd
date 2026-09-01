@@ -1,0 +1,31 @@
+name: Actualizar tipo de cambio
+
+on:
+  schedule:
+    # Corre 4 veces al dia (cada 6 horas). El tipo de cambio no cambia
+    # tan seguido como los resultados de loteria, asi que no hace falta
+    # correrlo cada 30 minutos.
+    - cron: "0 */6 * * *"
+  workflow_dispatch: # permite correrlo manualmente desde la pestaña "Actions" en GitHub
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install -r scraper/requirements.txt
+
+      - name: Actualizar el tipo de cambio
+        env:
+          EXCHANGE_RATE_API_KEY: ${{ secrets.EXCHANGE_RATE_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python scraper/actualizar_cambio.py
