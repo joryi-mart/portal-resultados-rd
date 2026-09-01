@@ -14,7 +14,6 @@ export const metadata = {
 import { supabase } from "@/lib/supabase";
 import NavPildoras from "./NavPildoras";
 import RelojDigital from "./RelojDigital";
-import EstrellaMeGusta from "./EstrellaMeGusta";
 
 const display = Space_Grotesk({
   subsets: ["latin"],
@@ -680,7 +679,6 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
         <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-[#10203A]">
           Aviso: Labankerard.com es un portal estrictamente informativo y no representa de manera oficial a la Lotería Nacional Dominicana ni a ninguna otra institución de juegos de azar. Para consultar reglamentos, premios vigentes, resultados definitivos y demás información institucional, le sugerimos visitar los canales oficiales autorizados de las respectivas loterías.
         </p>
-        <EstrellaMeGusta />
       </footer>
 
       <a

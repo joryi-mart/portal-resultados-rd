@@ -36,15 +36,15 @@ export default function EstrellaMeGusta() {
       onClick={darLike}
       disabled={yaDioLike}
       className={
-        "mx-auto mt-4 flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-sm font-semibold transition " +
+        "fixed bottom-5 left-5 z-50 flex items-center gap-1.5 rounded-full border px-3 py-2.5 font-mono text-sm font-semibold shadow-lg transition " +
         (yaDioLike
-          ? "border-[#E7A63C] bg-[#E7A63C]/10 text-[#E7A63C]"
-          : "border-[#10203A]/20 text-[#10203A] hover:bg-[#10203A]/5")
+          ? "border-[#E7A63C] bg-[#E7A63C] text-white"
+          : "border-[#10203A]/15 bg-white text-[#10203A] hover:bg-[#FBF7EE]")
       }
     >
       <span>{yaDioLike ? "⭐" : "☆"}</span>
-      <span>{yaDioLike ? "¡Gracias por tu apoyo!" : "¿Te gusta el sitio?"}</span>
-      {total !== null ? <span className="text-xs text-[#5C6B78]">({total})</span> : null}
+      <span className="hidden sm:inline">{yaDioLike ? "¡Gracias!" : "¿Te gusta?"}</span>
+      {total !== null ? <span className="text-xs opacity-80">({total})</span> : null}
     </button>
   );
 }

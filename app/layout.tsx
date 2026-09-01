@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import EstrellaMeGusta from "./EstrellaMeGusta";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://labankerard.com"),
@@ -59,7 +60,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }}
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <EstrellaMeGusta />
+      </body>
     </html>
   );
 }
