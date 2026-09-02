@@ -54,11 +54,8 @@ function tamanoBolita(cantidad: number) {
 }
 
 function numerosVistaPrevia(sorteoId: number) {
-  const a = Math.abs((sorteoId * 7 + 3) % 100);
-  const b = Math.abs((sorteoId * 13 + 11) % 100);
-  const c = Math.abs((sorteoId * 19 + 17) % 100);
-  function pad(n: number) { return String(n).padStart(2, "0"); }
-  return [pad(a), pad(b), pad(c)];
+  void sorteoId;
+  return ["--", "--", "--"];
 }
 
 function calcularCalientesFrios(resultados: Resultado[]) {
