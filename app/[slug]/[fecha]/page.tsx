@@ -16,10 +16,10 @@ type Loteria = { id: number; nombre: string; slug: string; activa: boolean; sort
 export const revalidate = 3600;
 
 function hoyISO() {
-  const d = new Date();
-  const offset = d.getTimezoneOffset();
-  const local = new Date(d.getTime() - offset * 60 * 1000);
-  return local.toISOString().slice(0, 10);
+  // Republica Dominicana esta fijo en UTC-4 (no usa horario de verano),
+  // asi que restamos 4 horas sin importar en que zona horaria corra el servidor.
+  const ahoraRD = new Date(Date.now() - 4 * 60 * 60 * 1000);
+  return ahoraRD.toISOString().slice(0, 10);
 }
 
 function fechaValida(fecha: string) {
