@@ -18,6 +18,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
+  const paginasHistorial: MetadataRoute.Sitemap = (loterias || []).map(function (l) {
+    return {
+      url: `${SITIO}/${l.slug}/historial`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.6,
+    };
+  });
+
   const paginasFijas: MetadataRoute.Sitemap = [
     {
       url: SITIO,
@@ -39,5 +48,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  return [...paginasFijas, ...paginasLoterias];
+  return [...paginasFijas, ...paginasLoterias, ...paginasHistorial];
 }
