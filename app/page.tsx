@@ -571,8 +571,13 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
 
   return (
     <div id="top" className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
-      <header className="relative bg-[#10203A] px-6 py-5 sm:px-10 sm:py-6">
+      <header className="relative overflow-hidden bg-[#10203A] px-6 py-5 sm:px-10 sm:py-6">
         <div className="pointer-events-none absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "radial-gradient(#FBF7EE 1px, transparent 1px)", backgroundSize: "18px 18px" }} />
+        <img
+          src="/tambora.jpg"
+          alt=""
+          className="pointer-events-none absolute -right-2 -top-4 hidden h-28 w-28 rounded-full border-4 border-white/10 object-cover shadow-lg sm:block sm:h-36 sm:w-36 lg:right-6 lg:h-40 lg:w-40"
+        />
         <div className="relative mx-auto max-w-7xl">
           <div className="mb-3 flex flex-col gap-3 border-b border-white/10 pb-3 sm:flex-row sm:items-center sm:justify-between">
             <a href="/" className="flex shrink-0 items-center gap-2.5">
