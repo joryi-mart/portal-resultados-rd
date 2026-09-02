@@ -185,13 +185,28 @@ function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string; loteriaS
   const colorEspecial = COLOR_ESPECIAL_SORTEOS[sorteo.id];
   const href = hayResultadoReal ? "/" + props.loteriaSlug + "/" + fechaSeleccionada : "/" + props.loteriaSlug;
 
+  if (!hayResultadoReal) {
+    return (
+      <a href={href} className="flex items-center justify-between gap-3 border-t border-[#10203A]/6 py-2.5 first:border-t-0 hover:bg-[#FBF7EE]">
+        <div className="min-w-0">
+          <p className="truncate text-base font-semibold text-[#10203A]">{sorteo.nombre}</p>
+          <p className="truncate font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+            {formatearHora12(sorteo.hora_sorteo)}
+            {sorteo.dias_semana && sorteo.dias_semana.split(",").length < 7 ? " · " + formatearDias(sorteo.dias_semana) : ""}
+          </p>
+        </div>
+        <span className="shrink-0 rounded-full px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wide" style={{ backgroundColor: "#E4E8EB", color: "#7B858F" }}>
+          Pendiente
+        </span>
+      </a>
+    );
+  }
+
   return (
     <a href={href} className="flex flex-col gap-2 border-t border-[#10203A]/6 py-4 first:border-t-0 hover:bg-[#FBF7EE]">
-      {hayResultadoReal ? (
-        <div>
-          <EtiquetaFecha fechaISO={fechaSeleccionada} />
-        </div>
-      ) : null}
+      <div>
+        <EtiquetaFecha fechaISO={fechaSeleccionada} />
+      </div>
       <div className="min-w-0">
         <p className="truncate text-xl font-extrabold text-[#10203A]">{sorteo.nombre}</p>
         <p className="font-mono text-base" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
@@ -200,10 +215,7 @@ function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string; loteriaS
         </p>
       </div>
       <div className="flex flex-nowrap items-center gap-1.5 overflow-x-auto">
-        {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano} opaca={!hayResultadoReal} colorEspecial={colorEspecial} primera={i === 0}>{n}</Bolita>; })}
-        {!hayResultadoReal ? (
-          <span className="ml-1 whitespace-nowrap font-mono text-[11px] italic" style={{ color: COLOR_TEXTO_SECUNDARIO }}>(vista previa)</span>
-        ) : null}
+        {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano} colorEspecial={colorEspecial} primera={i === 0}>{n}</Bolita>; })}
       </div>
       {resultado && resultado.creado_en ? (
         <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Publicado: {formatearPublicacion(resultado.creado_en)}</p>

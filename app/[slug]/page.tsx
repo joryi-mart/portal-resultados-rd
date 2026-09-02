@@ -168,12 +168,15 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
                     </a>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2">
-                    {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano} opaca={!hayResultadoReal}>{n}</Bolita>; })}
-                    {!hayResultadoReal ? (
-                      <span className="ml-1 font-mono text-[11px] italic" style={{ color: COLOR_TEXTO_SECUNDARIO }}>(vista previa, todavía no sale hoy)</span>
-                    ) : null}
-                  </div>
+                  {hayResultadoReal ? (
+                    <div className="flex flex-wrap items-center gap-2">
+                      {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano}>{n}</Bolita>; })}
+                    </div>
+                  ) : (
+                    <span className="inline-block rounded-full px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wide" style={{ backgroundColor: "#E4E8EB", color: "#7B858F" }}>
+                      Pendiente
+                    </span>
+                  )}
 
                   {hayDatosSuficientes ? (
                     <div className="mt-4 grid grid-cols-2 gap-4 border-t border-[#10203A]/8 pt-4">
