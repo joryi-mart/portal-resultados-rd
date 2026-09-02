@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { supabase } from "@/lib/supabase";
+import { CIUDADES } from "./turismo/datos";
 
 const SITIO = "https://labankerard.com";
 
@@ -64,7 +65,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.6,
     },
+    {
+      url: `${SITIO}/turismo`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
   ];
 
-  return [...paginasFijas, ...paginasLoterias, ...paginasHistorial];
+  const paginasTurismo: MetadataRoute.Sitemap = CIUDADES.map(function (c) {
+    return {
+      url: `${SITIO}/turismo/${c.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    };
+  });
+
+  return [...paginasFijas, ...paginasLoterias, ...paginasHistorial, ...paginasTurismo];
 }

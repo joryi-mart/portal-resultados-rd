@@ -208,6 +208,9 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
           <a href="/precios-combustibles" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">
             ⛽ Precio del combustible
           </a>
+          <a href="/turismo" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">
+            🏝️ Turismo
+          </a>
         </PillCategoria>
 
         <PillCategoria
