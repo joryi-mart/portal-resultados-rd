@@ -61,6 +61,22 @@ function numerosVistaPrevia(sorteoId: number) {
   return [pad(a), pad(b), pad(c)];
 }
 
+function calcularCalientesFrios(resultados: Resultado[]) {
+  const conteo: Record<string, number> = {};
+  resultados.forEach(function (r) {
+    r.numeros.split("-").forEach(function (n) {
+      const num = n.trim().padStart(2, "0");
+      if (num) conteo[num] = (conteo[num] || 0) + 1;
+    });
+  });
+  const entradas = Object.entries(conteo).sort(function (a, b) { return b[1] - a[1]; });
+  return {
+    calientes: entradas.slice(0, 5),
+    frios: entradas.slice(-5).reverse(),
+    sorteosContados: resultados.length,
+  };
+}
+
 function Bolita(props: { children: React.ReactNode; tamano: string; opaca?: boolean }) {
   const opaca = props.opaca === true;
   return (
@@ -133,6 +149,8 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
               const hayResultadoReal = !!resultado;
               const numeros = resultado ? resultado.numeros.split("-") : numerosVistaPrevia(sorteo.id);
               const tamano = tamanoBolita(numeros.length);
+              const { calientes, frios, sorteosContados } = calcularCalientesFrios(sorteo.resultados);
+              const hayDatosSuficientes = sorteosContados >= 5;
 
               return (
                 <div key={sorteo.id} className="rounded-xl border border-[#10203A]/15 bg-white p-5">
@@ -159,6 +177,38 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
                       <span className="ml-1 font-mono text-[11px] italic" style={{ color: COLOR_TEXTO_SECUNDARIO }}>(vista previa, todavía no sale hoy)</span>
                     ) : null}
                   </div>
+
+                  {hayDatosSuficientes ? (
+                    <div className="mt-4 grid grid-cols-2 gap-4 border-t border-[#10203A]/8 pt-4">
+                      <div>
+                        <p className="mb-1.5 font-mono text-[10px] font-bold uppercase tracking-wide" style={{ color: COLOR_TEXTO_SECUNDARIO }}>🔥 Más calientes</p>
+                        <div className="flex flex-wrap gap-1">
+                          {calientes.map(function ([num, veces]) {
+                            return (
+                              <span key={num} className="rounded-full bg-[#E4573D]/10 px-2 py-1 font-mono text-xs font-bold text-[#B23B26]">
+                                {num} <span className="font-normal opacity-70">({veces})</span>
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="mb-1.5 font-mono text-[10px] font-bold uppercase tracking-wide" style={{ color: COLOR_TEXTO_SECUNDARIO }}>❄️ Más fríos</p>
+                        <div className="flex flex-wrap gap-1">
+                          {frios.map(function ([num, veces]) {
+                            return (
+                              <span key={num} className="rounded-full bg-[#1E4D8C]/8 px-2 py-1 font-mono text-xs font-bold text-[#1E4D8C]">
+                                {num} <span className="font-normal opacity-70">({veces})</span>
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      <p className="col-span-2 font-mono text-[10px]" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                        Basado en {sorteosContados} sorteos guardados. Entre más historial acumulemos, más útil se pone esto.
+                      </p>
+                    </div>
+                  ) : null}
                 </div>
               );
             })}
