@@ -700,6 +700,9 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
 
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">
         <p className="font-mono text-base text-[#10203A]">La Bankera RD — labankerard.com</p>
+        <a href="/dias-feriados" className="mt-2 inline-block font-mono text-sm text-[#1E4D8C] hover:underline">
+          Días feriados en República Dominicana 2026
+        </a>
         <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-[#10203A]">
           Aviso: Labankerard.com es un portal estrictamente informativo y no representa de manera oficial a la Lotería Nacional Dominicana ni a ninguna otra institución de juegos de azar. Para consultar reglamentos, premios vigentes, resultados definitivos y demás información institucional, le sugerimos visitar los canales oficiales autorizados de las respectivas loterías.
         </p>
