@@ -56,6 +56,7 @@ type UltimoResultado = {
   loteriaNombre: string;
   loteriaSlug: string;
   sorteoNombre: string;
+  horaSorteo: string;
   numeros: string;
   fecha: string;
   creadoEn: string;
@@ -277,39 +278,70 @@ function PanelSuperior(props: { cambios: Cambio[]; fechaActual: string }) {
   );
 }
 
+function periodoDelDia(hora: string) {
+  if (!hora) return "Otros horarios";
+  const h = parseInt(hora.split(":")[0], 10);
+  if (h < 12) return "Mañana";
+  if (h < 19) return "Tarde";
+  return "Noche";
+}
+
+const ICONO_PERIODO: Record<string, string> = { "Mañana": "🌅", "Tarde": "☀️", "Noche": "🌙", "Otros horarios": "🕓" };
+const ORDEN_PERIODO = ["Mañana", "Tarde", "Noche", "Otros horarios"];
+
 function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
   const items = props.items;
   if (items.length === 0) return null;
 
+  const grupos: Record<string, UltimoResultado[]> = {};
+  items.forEach(function (item) {
+    const periodo = periodoDelDia(item.horaSorteo);
+    if (!grupos[periodo]) grupos[periodo] = [];
+    grupos[periodo].push(item);
+  });
+  const periodosPresentes = ORDEN_PERIODO.filter(function (p) { return grupos[p] && grupos[p].length > 0; });
+
   return (
-    <div className="mb-8 rounded-xl border border-[#10203A]/12 bg-white">
-      <h2 className="px-5 pb-3 pt-5 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
+    <div className="mb-8 overflow-hidden rounded-xl border border-[#10203A]/12 bg-white">
+      <h2 className="px-5 pb-1 pt-5 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
         Resumen de resultados <span className="font-mono text-sm font-normal" style={{ color: COLOR_TEXTO_SECUNDARIO }}>· {formatearFechaCorta(props.fecha)}</span>
       </h2>
-      <div>
-        {items.map(function (item, i) {
-          const numeros = item.numeros.split("-");
-          return (
-            <a
-              key={i}
-              href={"/" + item.loteriaSlug + "/" + item.fecha}
-              className="flex items-center justify-between gap-3 border-t border-[#10203A]/6 px-5 py-3 hover:bg-[#FBF7EE]"
-            >
-              <span className="min-w-0 truncate text-base font-semibold text-[#10203A]">{item.sorteoNombre}</span>
-              <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
-                {numeros.map(function (n, j) {
-                  return (
-                    <span key={j} className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E4E8EB] font-mono text-sm font-bold text-[#10203A]">
-                      {n}
-                    </span>
-                  );
-                })}
-              </div>
-              <span className="shrink-0 font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearFechaCorta(item.fecha)}</span>
-            </a>
-          );
-        })}
-      </div>
+      {periodosPresentes.map(function (periodo) {
+        return (
+          <div key={periodo} className="pt-4">
+            <p className="px-5 pb-1.5 font-mono text-xs font-bold uppercase tracking-wide" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+              {ICONO_PERIODO[periodo]} {periodo}
+            </p>
+            {grupos[periodo].map(function (item, i) {
+              const numeros = item.numeros.split("-");
+              return (
+                <a
+                  key={i}
+                  href={"/" + item.loteriaSlug + "/" + item.fecha}
+                  className="flex items-center gap-3 border-t border-[#10203A]/6 px-5 py-3 transition hover:bg-[#FBF7EE]"
+                >
+                  <span className="h-8 w-1 shrink-0 rounded-full" style={{ backgroundColor: COLOR_VERDE_RD }} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-base font-semibold text-[#10203A]">{item.sorteoNombre}</p>
+                    <p className="truncate font-mono text-[11px]" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                      {item.loteriaNombre} · {formatearHora12(item.horaSorteo)}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+                    {numeros.map(function (n, j) {
+                      return (
+                        <span key={j} className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E4E8EB] font-mono text-sm font-bold text-[#10203A]">
+                          {n}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -492,6 +524,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
             loteriaNombre: loteria.nombre,
             loteriaSlug: loteria.slug,
             sorteoNombre: sorteo.nombre,
+            horaSorteo: sorteo.hora_sorteo,
             numeros: r.numeros,
             fecha: r.fecha,
             creadoEn: r.creado_en,
