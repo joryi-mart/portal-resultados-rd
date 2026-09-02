@@ -277,30 +277,35 @@ function PanelSuperior(props: { cambios: Cambio[]; fechaActual: string }) {
   );
 }
 
-function PanelUltimosResultados(props: { items: UltimoResultado[] }) {
+function ResumenResultados(props: { items: UltimoResultado[] }) {
   const items = props.items;
   if (items.length === 0) return null;
 
   return (
-    <div className="mb-8 rounded-xl border border-[#10203A]/12 bg-white p-5">
-      <h2 className="mb-4 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Últimos resultados</h2>
-      <div className="grid grid-cols-1 gap-x-8 sm:grid-cols-2">
+    <div className="mb-8 rounded-xl border border-[#10203A]/12 bg-white">
+      <h2 className="px-5 pb-3 pt-5 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
+        Resumen de resultados
+      </h2>
+      <div>
         {items.map(function (item, i) {
           const numeros = item.numeros.split("-");
-          const tamano = tamanoBolita(numeros.length, false);
           return (
             <a
               key={i}
               href={"/" + item.loteriaSlug + "/" + item.fecha}
-              className="flex flex-col gap-2 border-t border-[#10203A]/6 py-3 first:border-t-0 hover:bg-[#FBF7EE] sm:flex-row sm:items-center sm:gap-3"
+              className="flex items-center justify-between gap-3 border-t border-[#10203A]/6 px-5 py-3 hover:bg-[#FBF7EE]"
             >
-              <div className="w-full shrink-0 sm:w-36">
-                <p className="truncate text-lg font-extrabold text-[#10203A]">{item.sorteoNombre}</p>
-                <p className="font-mono text-xs font-bold" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{item.loteriaNombre} · {formatearPublicacion(item.creadoEn)}</p>
+              <span className="min-w-0 truncate text-base font-semibold text-[#10203A]">{item.sorteoNombre}</span>
+              <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+                {numeros.map(function (n, j) {
+                  return (
+                    <span key={j} className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E4E8EB] font-mono text-sm font-bold text-[#10203A]">
+                      {n}
+                    </span>
+                  );
+                })}
               </div>
-              <div className="flex flex-nowrap items-center gap-1 overflow-x-auto">
-                {numeros.map(function (n, j) { return <Bolita key={j} tamano={tamano} primera={j === 0}>{n}</Bolita>; })}
-              </div>
+              <span className="shrink-0 font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearFechaCorta(item.fecha)}</span>
             </a>
           );
         })}
@@ -496,7 +501,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
     }
   }
   ultimosResultados.sort(function (a, b) { return new Date(b.creadoEn).getTime() - new Date(a.creadoEn).getTime(); });
-  const ultimos8 = ultimosResultados.slice(0, 8);
+  const resumenHoy = ultimosResultados.filter(function (r) { return r.fecha === fechaSeleccionada; });
 
   const fechaTitulo = new Date(fechaSeleccionada + "T00:00:00").toLocaleDateString("es-DO", {
     weekday: "long",
@@ -543,7 +548,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
           <PizarronDelDia loterias={listaLoterias} fechaSeleccionada={fechaSeleccionada} fechaTitulo={fechaTitulo} />
         </div>
 
-        <PanelUltimosResultados items={ultimos8} />
+        <ResumenResultados items={resumenHoy} />
 
         <div className="mb-6 flex items-baseline justify-between">
           <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Loterías</h2>
