@@ -38,6 +38,7 @@ MAPEO_SORTEOS = {
     ("nacional", "Juega mas Pega mas"): 64,
     ("nacional", "Quiniela Nacional"): 63,
     ("leidsa", "Loto Mas"): 69,
+    ("leidsa", "Quiniela Pale"): 65,
     ("leidsa", "Pega 3 Mas"): 66,
     ("leidsa", "Super Kino TV"): 68,
     ("leidsa", "Loto Pool Leidsa"): 67,
