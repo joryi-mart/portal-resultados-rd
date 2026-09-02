@@ -10,60 +10,74 @@ const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "600"], variabl
 const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 const COLOR_VERDE_RD = "#007A33";
 
-type LugarCercano = { xid: string; nombre: string; categoria: string; distanciaKm: number };
+type LugarCercano = { id: number; nombre: string; categoria: string; distanciaKm: number; lat: number; lon: number };
 
-const CATEGORIAS_LEGIBLES: Record<string, string> = {
-  beaches: "Playa",
-  natural: "Naturaleza",
-  water: "Cuerpo de agua",
-  islands: "Isla",
-  historic: "Sitio histórico",
-  architecture: "Arquitectura",
-  museums: "Museo",
-  religion: "Sitio religioso",
-  cultural: "Cultural",
-  urban_environment: "Zona urbana",
-  interesting_places: "Punto de interés",
-  tourist_facilities: "Instalación turística",
-  amusements: "Entretenimiento",
-  sport: "Deporte",
-  foods: "Gastronomía",
-  fortifications: "Fortaleza",
-  parks: "Parque",
+const CATEGORIAS_TOURISM: Record<string, string> = {
+  attraction: "Atracción turística",
+  museum: "Museo",
+  viewpoint: "Mirador",
+  zoo: "Zoológico",
+  theme_park: "Parque temático",
+  gallery: "Galería",
+  artwork: "Obra de arte",
+  aquarium: "Acuario",
 };
 
-function categoriaLegible(kinds: string): string {
-  const lista = kinds.split(",");
-  for (const k of lista) {
-    if (CATEGORIAS_LEGIBLES[k]) return CATEGORIAS_LEGIBLES[k];
-  }
+function categoriaLegible(tags: Record<string, string>): string {
+  if (tags.tourism && CATEGORIAS_TOURISM[tags.tourism]) return CATEGORIAS_TOURISM[tags.tourism];
+  if (tags.natural === "beach") return "Playa";
+  if (tags.historic) return "Sitio histórico";
   return "Punto de interés";
 }
 
+function distanciaKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.round(R * c * 10) / 10;
+}
+
 async function buscarLugaresCercanos(lat: number, lon: number): Promise<LugarCercano[]> {
-  const apiKey = process.env.OPENTRIPMAP_API_KEY;
-  if (!apiKey) return [];
+  const consulta = `
+    [out:json][timeout:20];
+    (
+      node["tourism"~"attraction|museum|viewpoint|zoo|theme_park|gallery|artwork|aquarium"](around:20000,${lat},${lon});
+      node["natural"="beach"](around:20000,${lat},${lon});
+      node["historic"](around:20000,${lat},${lon});
+    );
+    out body 40;
+  `;
 
   try {
-    const url =
-      `https://api.opentripmap.com/0.1/es/places/radius?radius=25000&lon=${lon}&lat=${lat}` +
-      `&rate=3&format=json&limit=12&apikey=${apiKey}`;
-    const res = await fetch(url, { next: { revalidate: 60 * 60 * 24 } });
+    const res = await fetch("https://overpass-api.de/api/interpreter", {
+      method: "POST",
+      body: "data=" + encodeURIComponent(consulta),
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      next: { revalidate: 60 * 60 * 24 },
+    });
     if (!res.ok) return [];
 
     const data = await res.json();
-    if (!Array.isArray(data)) return [];
+    const elementos = data?.elements;
+    if (!Array.isArray(elementos)) return [];
 
-    return data
-      .filter(function (p: any) { return p.name && p.name.trim().length > 0; })
-      .map(function (p: any) {
+    return elementos
+      .filter(function (e: any) { return e.tags && (e.tags["name:es"] || e.tags.name); })
+      .map(function (e: any) {
         return {
-          xid: p.xid,
-          nombre: p.name,
-          categoria: categoriaLegible(p.kinds || ""),
-          distanciaKm: Math.round((p.dist || 0) / 100) / 10,
+          id: e.id,
+          nombre: e.tags["name:es"] || e.tags.name,
+          categoria: categoriaLegible(e.tags),
+          distanciaKm: distanciaKm(lat, lon, e.lat, e.lon),
+          lat: e.lat,
+          lon: e.lon,
         };
       })
+      .sort(function (a: LugarCercano, b: LugarCercano) { return a.distanciaKm - b.distanciaKm; })
       .slice(0, 10);
   } catch {
     return [];
@@ -135,7 +149,13 @@ export default async function CiudadTurismoPage(props: { params: Promise<{ ciuda
             <div className="rounded-xl border border-[#10203A]/15 bg-white">
               {lugaresCercanos.map(function (l) {
                 return (
-                  <div key={l.xid} className="flex items-center justify-between gap-3 border-t border-[#10203A]/8 px-5 py-3 first:border-t-0">
+                  <a
+                    key={l.id}
+                    href={`https://www.google.com/maps?q=${l.lat},${l.lon}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between gap-3 border-t border-[#10203A]/8 px-5 py-3 first:border-t-0 hover:bg-[#FBF7EE]"
+                  >
                     <div>
                       <p className="text-sm font-semibold text-[#10203A]">{l.nombre}</p>
                       <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{l.categoria}</p>
@@ -143,12 +163,12 @@ export default async function CiudadTurismoPage(props: { params: Promise<{ ciuda
                     <span className="shrink-0 font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
                       {l.distanciaKm} km
                     </span>
-                  </div>
+                  </a>
                 );
               })}
             </div>
             <p className="mt-3 text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-              Datos de ubicación de <a href="https://opentripmap.com" target="_blank" rel="noopener noreferrer" className="underline">OpenTripMap</a> (OpenStreetMap / Wikidata).
+              Datos de ubicación de <a href="https://www.openstreetmap.org" target="_blank" rel="noopener noreferrer" className="underline">OpenStreetMap</a>, un mapa colaborativo y abierto. Haz clic en un lugar para verlo en el mapa.
             </p>
           </>
         ) : null}
