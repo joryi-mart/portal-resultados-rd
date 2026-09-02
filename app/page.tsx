@@ -576,7 +576,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
         <img
           src="/tambora.png"
           alt=""
-          className="pointer-events-none absolute -right-1 -top-2 hidden h-32 w-32 object-contain sm:block sm:h-40 sm:w-40 lg:right-6 lg:h-44 lg:w-44"
+          className="pointer-events-none absolute -right-1 -top-1 h-16 w-16 object-contain sm:-top-2 sm:h-32 sm:w-32 lg:right-6 lg:h-44 lg:w-44"
           style={{ filter: "drop-shadow(0 0 1.5px #FBF7EE) drop-shadow(0 0 1.5px #FBF7EE) drop-shadow(0 4px 8px rgba(0,0,0,0.35))" }}
         />
         <div className="relative mx-auto max-w-7xl">
