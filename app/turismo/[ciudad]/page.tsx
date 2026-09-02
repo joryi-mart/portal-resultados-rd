@@ -56,7 +56,11 @@ async function buscarLugaresCercanos(lat: number, lon: number): Promise<LugarCer
     const res = await fetch("https://overpass-api.de/api/interpreter", {
       method: "POST",
       body: "data=" + encodeURIComponent(consulta),
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "*/*",
+        "User-Agent": "la-bankera-rd/1.0",
+      },
       next: { revalidate: 60 * 60 * 24 },
     });
     if (!res.ok) return [];
