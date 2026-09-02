@@ -4,12 +4,16 @@ export type Ciudad = {
   resumen: string;
   descripcion: string;
   atracciones: string[];
+  lat: number;
+  lon: number;
 };
 
 export const CIUDADES: Ciudad[] = [
   {
     slug: "punta-cana",
     nombre: "Punta Cana",
+    lat: 18.5601,
+    lon: -68.3725,
     resumen: "El destino de playa más famoso de República Dominicana, conocido por sus resorts todo incluido y arena blanca.",
     descripcion:
       "Punta Cana, en el extremo este del país (provincia La Altagracia), es el destino turístico más visitado de República Dominicana. " +
@@ -27,6 +31,8 @@ export const CIUDADES: Ciudad[] = [
   {
     slug: "santo-domingo",
     nombre: "Santo Domingo",
+    lat: 18.4732,
+    lon: -69.893,
     resumen: "La capital del país y la ciudad más antigua fundada por europeos en América, con su Zona Colonial declarada Patrimonio de la Humanidad.",
     descripcion:
       "Santo Domingo es la capital de República Dominicana y la primera ciudad europea permanente del continente americano, " +
@@ -44,6 +50,8 @@ export const CIUDADES: Ciudad[] = [
   {
     slug: "puerto-plata",
     nombre: "Puerto Plata",
+    lat: 19.7808,
+    lon: -70.6871,
     resumen: "En la Costa Ámbar, al norte del país, conocida por su teleférico, cascadas y playas menos concurridas.",
     descripcion:
       "Puerto Plata, en la costa norte de República Dominicana, es el corazón de la llamada Costa Ámbar, nombrada así por los " +

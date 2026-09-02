@@ -10,6 +10,66 @@ const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "600"], variabl
 const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 const COLOR_VERDE_RD = "#007A33";
 
+type LugarCercano = { xid: string; nombre: string; categoria: string; distanciaKm: number };
+
+const CATEGORIAS_LEGIBLES: Record<string, string> = {
+  beaches: "Playa",
+  natural: "Naturaleza",
+  water: "Cuerpo de agua",
+  islands: "Isla",
+  historic: "Sitio histórico",
+  architecture: "Arquitectura",
+  museums: "Museo",
+  religion: "Sitio religioso",
+  cultural: "Cultural",
+  urban_environment: "Zona urbana",
+  interesting_places: "Punto de interés",
+  tourist_facilities: "Instalación turística",
+  amusements: "Entretenimiento",
+  sport: "Deporte",
+  foods: "Gastronomía",
+  fortifications: "Fortaleza",
+  parks: "Parque",
+};
+
+function categoriaLegible(kinds: string): string {
+  const lista = kinds.split(",");
+  for (const k of lista) {
+    if (CATEGORIAS_LEGIBLES[k]) return CATEGORIAS_LEGIBLES[k];
+  }
+  return "Punto de interés";
+}
+
+async function buscarLugaresCercanos(lat: number, lon: number): Promise<LugarCercano[]> {
+  const apiKey = process.env.OPENTRIPMAP_API_KEY;
+  if (!apiKey) return [];
+
+  try {
+    const url =
+      `https://api.opentripmap.com/0.1/es/places/radius?radius=25000&lon=${lon}&lat=${lat}` +
+      `&rate=3&format=json&limit=12&apikey=${apiKey}`;
+    const res = await fetch(url, { next: { revalidate: 60 * 60 * 24 } });
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+
+    return data
+      .filter(function (p: any) { return p.name && p.name.trim().length > 0; })
+      .map(function (p: any) {
+        return {
+          xid: p.xid,
+          nombre: p.name,
+          categoria: categoriaLegible(p.kinds || ""),
+          distanciaKm: Math.round((p.dist || 0) / 100) / 10,
+        };
+      })
+      .slice(0, 10);
+  } catch {
+    return [];
+  }
+}
+
 export function generateStaticParams() {
   return CIUDADES.map(function (c) { return { ciudad: c.slug }; });
 }
@@ -32,6 +92,8 @@ export default async function CiudadTurismoPage(props: { params: Promise<{ ciuda
   const params = await props.params;
   const ciudad = CIUDADES.find(function (c) { return c.slug === params.ciudad; });
   if (!ciudad) notFound();
+
+  const lugaresCercanos = await buscarLugaresCercanos(ciudad.lat, ciudad.lon);
 
   return (
     <div className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
@@ -64,6 +126,32 @@ export default async function CiudadTurismoPage(props: { params: Promise<{ ciuda
             );
           })}
         </div>
+
+        {lugaresCercanos.length > 0 ? (
+          <>
+            <h2 className="mb-4 mt-10 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
+              Más lugares cerca de {ciudad.nombre}
+            </h2>
+            <div className="rounded-xl border border-[#10203A]/15 bg-white">
+              {lugaresCercanos.map(function (l) {
+                return (
+                  <div key={l.xid} className="flex items-center justify-between gap-3 border-t border-[#10203A]/8 px-5 py-3 first:border-t-0">
+                    <div>
+                      <p className="text-sm font-semibold text-[#10203A]">{l.nombre}</p>
+                      <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{l.categoria}</p>
+                    </div>
+                    <span className="shrink-0 font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                      {l.distanciaKm} km
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="mt-3 text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+              Datos de ubicación de <a href="https://opentripmap.com" target="_blank" rel="noopener noreferrer" className="underline">OpenTripMap</a> (OpenStreetMap / Wikidata).
+            </p>
+          </>
+        ) : null}
       </main>
 
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">
