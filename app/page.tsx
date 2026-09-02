@@ -292,6 +292,7 @@ const ORDEN_PERIODO = ["Mañana", "Tarde", "Noche", "Otros horarios"];
 function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
   const items = props.items;
   if (items.length === 0) return null;
+  const fechaAnterior = sumarDias(props.fecha, -1);
 
   const grupos: Record<string, UltimoResultado[]> = {};
   items.forEach(function (item) {
@@ -303,9 +304,14 @@ function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
 
   return (
     <div className="mb-8 overflow-hidden rounded-xl border border-[#10203A]/12 bg-white">
-      <h2 className="px-5 pb-1 pt-5 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
-        Resumen de resultados <span className="font-mono text-sm font-normal" style={{ color: COLOR_TEXTO_SECUNDARIO }}>· {formatearFechaCorta(props.fecha)}</span>
-      </h2>
+      <div className="flex flex-wrap items-baseline justify-between gap-2 px-5 pb-1 pt-5">
+        <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
+          Resumen de resultados <span className="font-mono text-sm font-normal" style={{ color: COLOR_TEXTO_SECUNDARIO }}>· {formatearFechaCorta(props.fecha)}</span>
+        </h2>
+        <a href={"/?fecha=" + fechaAnterior} className="font-mono text-xs font-bold text-[#1E4D8C] hover:underline">
+          Ver resumen de ayer →
+        </a>
+      </div>
       {periodosPresentes.map(function (periodo) {
         return (
           <div key={periodo} className="pt-4">
