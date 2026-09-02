@@ -15,7 +15,11 @@ export async function GET() {
     const res = await fetch("https://overpass-api.de/api/interpreter", {
       method: "POST",
       body: "data=" + encodeURIComponent(consulta),
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "*/*",
+        "User-Agent": "la-bankera-rd/1.0",
+      },
     });
     const ms = Date.now() - inicio;
     const texto = await res.text();
