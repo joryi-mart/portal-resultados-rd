@@ -61,7 +61,7 @@ async function buscarLugaresCercanos(lat: number, lon: number): Promise<LugarCer
         "Accept": "*/*",
         "User-Agent": "la-bankera-rd/1.0",
       },
-      next: { revalidate: 60 * 60 * 24 },
+      cache: "no-store",
     });
     if (!res.ok) return [];
 
