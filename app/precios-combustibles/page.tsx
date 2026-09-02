@@ -9,7 +9,7 @@ const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 const COLOR_VERDE_RD = "#007A33";
 
 export const metadata = {
-  title: "Precio del Combustible Hoy en República Dominicana | La Bankera RD",
+  title: "Precio del Combustible Hoy en República Dominicana",
   description: "Precios semanales de gasolina, gasoil y GLP en República Dominicana, según el Ministerio de Industria, Comercio y Mipymes (MICM).",
   openGraph: {
     title: "Precio del Combustible Hoy en República Dominicana",

@@ -10,7 +10,7 @@ const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 const COLOR_VERDE_RD = "#007A33";
 
 export const metadata = {
-  title: "Días Feriados en República Dominicana 2026 | La Bankera RD",
+  title: "Días Feriados en República Dominicana 2026",
   description: "Calendario completo de los 12 días feriados oficiales de República Dominicana en 2026, con las fechas trasladadas al lunes según la Ley 139-97.",
   openGraph: {
     title: "Días Feriados en República Dominicana 2026",

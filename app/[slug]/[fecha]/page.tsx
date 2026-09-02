@@ -70,20 +70,20 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
   const params = await props.params;
 
   if (!fechaValida(params.fecha)) {
-    return { title: "Fecha no válida | La Bankera RD" };
+    return { title: "Fecha no válida" };
   }
 
   const { data: loteria } = await supabase.from("loterias").select("nombre").eq("slug", params.slug).maybeSingle();
-  if (!loteria) return { title: "Lotería no encontrada | La Bankera RD" };
+  if (!loteria) return { title: "Lotería no encontrada" };
 
   const fechaLarga = formatearFechaLarga(params.fecha);
-  const titulo = `Resultados de ${loteria.nombre} hoy ${fechaLarga} | La Bankera RD`;
+  const titulo = `Resultados de ${loteria.nombre} hoy ${fechaLarga}`;
   const descripcion = `Consulta los números ganadores de ${loteria.nombre} del ${fechaLarga} en República Dominicana. Resultado oficial actualizado en La Bankera RD.`;
 
   return {
     title: titulo,
     description: descripcion,
-    openGraph: { title: titulo, description: descripcion, locale: "es_DO", type: "website" },
+    openGraph: { title: `${titulo} | La Bankera RD`, description: descripcion, locale: "es_DO", type: "website" },
     alternates: { canonical: `https://labankerard.com/${params.slug}/${params.fecha}` },
   };
 }

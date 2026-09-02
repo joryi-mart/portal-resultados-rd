@@ -17,13 +17,13 @@ export function generateStaticParams() {
 export async function generateMetadata(props: { params: Promise<{ ciudad: string }> }) {
   const params = await props.params;
   const ciudad = CIUDADES.find(function (c) { return c.slug === params.ciudad; });
-  if (!ciudad) return { title: "Destino no encontrado | La Bankera RD" };
+  if (!ciudad) return { title: "Destino no encontrado" };
 
-  const titulo = `Qué hacer en ${ciudad.nombre}, República Dominicana | La Bankera RD`;
+  const titulo = `Qué hacer en ${ciudad.nombre}, República Dominicana`;
   return {
     title: titulo,
     description: ciudad.resumen,
-    openGraph: { title: titulo, description: ciudad.resumen, locale: "es_DO", type: "website" },
+    openGraph: { title: `${titulo} | La Bankera RD`, description: ciudad.resumen, locale: "es_DO", type: "website" },
     alternates: { canonical: `https://labankerard.com/turismo/${params.ciudad}` },
   };
 }

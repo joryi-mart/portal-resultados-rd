@@ -89,15 +89,15 @@ function Bolita(props: { children: React.ReactNode; tamano: string; opaca?: bool
 export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
   const { data: loteria } = await supabase.from("loterias").select("nombre").eq("slug", params.slug).maybeSingle();
-  if (!loteria) return { title: "Lotería no encontrada | La Bankera RD" };
+  if (!loteria) return { title: "Lotería no encontrada" };
 
-  const titulo = `Resultados de ${loteria.nombre} en Vivo | La Bankera RD`;
+  const titulo = `Resultados de ${loteria.nombre} en Vivo`;
   const descripcion = `Consulta los números ganadores de todos los sorteos de ${loteria.nombre} en República Dominicana, actualizados en vivo.`;
 
   return {
     title: titulo,
     description: descripcion,
-    openGraph: { title: titulo, description: descripcion, locale: "es_DO", type: "website" },
+    openGraph: { title: `${titulo} | La Bankera RD`, description: descripcion, locale: "es_DO", type: "website" },
     alternates: { canonical: `https://labankerard.com/${params.slug}` },
   };
 }

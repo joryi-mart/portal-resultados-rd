@@ -1,7 +1,7 @@
 import Buscador from "./Buscador";
 
 export const metadata = {
-  title: "Códigos Postales de República Dominicana | La Bankera RD",
+  title: "Códigos Postales de República Dominicana",
   description: "Busca el código postal de tu sector, barrio o provincia en República Dominicana. Más de 2,300 localidades con su código de 5 dígitos.",
   openGraph: {
     title: "Códigos Postales de República Dominicana",

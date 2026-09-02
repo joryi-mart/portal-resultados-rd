@@ -30,15 +30,15 @@ function formatearFechaCorta(fechaISO: string) {
 export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
   const { data: loteria } = await supabase.from("loterias").select("nombre").eq("slug", params.slug).maybeSingle();
-  if (!loteria) return { title: "Lotería no encontrada | La Bankera RD" };
+  if (!loteria) return { title: "Lotería no encontrada" };
 
-  const titulo = `Historial de resultados de ${loteria.nombre} | La Bankera RD`;
+  const titulo = `Historial de resultados de ${loteria.nombre}`;
   const descripcion = `Consulta el historial completo de números ganadores de ${loteria.nombre} en República Dominicana, organizado por mes.`;
 
   return {
     title: titulo,
     description: descripcion,
-    openGraph: { title: titulo, description: descripcion, locale: "es_DO", type: "website" },
+    openGraph: { title: `${titulo} | La Bankera RD`, description: descripcion, locale: "es_DO", type: "website" },
     alternates: { canonical: `https://labankerard.com/${params.slug}/historial` },
   };
 }

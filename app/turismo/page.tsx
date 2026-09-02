@@ -9,7 +9,7 @@ const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "600"], variabl
 const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 
 export const metadata = {
-  title: "Turismo en República Dominicana: Guías por Ciudad | La Bankera RD",
+  title: "Turismo en República Dominicana: Guías por Ciudad",
   description: "Guías de qué ver y hacer en los destinos turísticos más visitados de República Dominicana: Punta Cana, Santo Domingo y Puerto Plata.",
   openGraph: {
     title: "Turismo en República Dominicana: Guías por Ciudad",
