@@ -53,7 +53,7 @@ async function obtenerNoticias(liga: string) {
   if (cacheado) return cacheado;
 
   const res = await fetch(
-    `https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/news`
+    `https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/news?lang=es`
   );
   if (!res.ok) throw new Error(`Error Fútbol API (noticias): ${res.status}`);
   const data = await res.json();

@@ -49,7 +49,7 @@ async function obtenerNoticiasNBA() {
   if (cacheado) return cacheado;
 
   const res = await fetch(
-    "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/news"
+    "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/news?lang=es"
   );
   if (!res.ok) throw new Error(`Error NBA API (noticias): ${res.status}`);
   const data = await res.json();
