@@ -202,6 +202,9 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
           <a href="/dias-feriados" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">
             📅 Días feriados 2026
           </a>
+          <a href="/codigos-postales" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">
+            📍 Códigos postales
+          </a>
         </PillCategoria>
 
         <PillCategoria
