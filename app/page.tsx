@@ -402,7 +402,7 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
   const fechaSeleccionada = props.fechaSeleccionada;
   const fechaTitulo = props.fechaTitulo;
 
-  const filas: { loteria: string; loteriaSlug: string; sorteo: string; sorteoId: number; numeros: string[]; esVistaPrevia: boolean }[] = [];
+  const filas: { loteria: string; loteriaSlug: string; sorteo: string; sorteoId: number; numeros: string[]; esVistaPrevia: boolean; creadoEn: string }[] = [];
   for (let i = 0; i < loterias.length; i++) {
     const sorteos = loterias[i].sorteos || [];
     for (let j = 0; j < sorteos.length; j++) {
@@ -415,11 +415,15 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
           sorteoId: sorteos[j].id,
           numeros: resultado.numeros.split("-"),
           esVistaPrevia: false,
+          creadoEn: resultado.creado_en,
         });
       }
     }
-    if (filas.length >= 6) break;
   }
+  // Mostramos los 6 resultados publicados mas recientemente (sin importar de que
+  // loteria son), para no dejar afuera loterias que aparecen mas tarde en la lista.
+  filas.sort(function (a, b) { return new Date(b.creadoEn).getTime() - new Date(a.creadoEn).getTime(); });
+  filas.splice(6);
 
   if (filas.length === 0) {
     for (let i = 0; i < loterias.length && filas.length < 4; i++) {
@@ -432,6 +436,7 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
           sorteoId: sorteos[0].id,
           numeros: numerosVistaPrevia(sorteos[0].id),
           esVistaPrevia: true,
+          creadoEn: "",
         });
       }
     }
