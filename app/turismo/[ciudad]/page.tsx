@@ -126,7 +126,18 @@ export default async function CiudadTurismoPage(props: { params: Promise<{ ciuda
         </div>
       </header>
 
-      <main className="mx-auto max-w-2xl px-6 py-10 sm:px-10">
+      <div className="mx-auto max-w-2xl px-6 pt-6 sm:px-10">
+        <img
+          src={ciudad.foto.url}
+          alt={ciudad.nombre}
+          className="h-56 w-full rounded-xl object-cover sm:h-80"
+        />
+        <p className="mt-1.5 text-right text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          Foto: {ciudad.foto.autor} / Wikimedia Commons ({ciudad.foto.licencia})
+        </p>
+      </div>
+
+      <main className="mx-auto max-w-2xl px-6 pb-10 pt-6 sm:px-10">
         <p className="mb-8 text-base leading-relaxed">{ciudad.descripcion}</p>
 
         <h2 className="mb-4 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">

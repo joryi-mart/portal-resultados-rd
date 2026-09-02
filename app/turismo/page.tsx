@@ -42,15 +42,18 @@ export default function TurismoPage() {
               <a
                 key={c.slug}
                 href={"/turismo/" + c.slug}
-                className="block rounded-xl border border-[#10203A]/15 bg-white p-5 transition hover:border-[#007A33]/40 hover:shadow-md"
+                className="block overflow-hidden rounded-xl border border-[#10203A]/15 bg-white transition hover:border-[#007A33]/40 hover:shadow-md"
               >
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
-                  {c.nombre}
-                </h2>
-                <p className="mt-1 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-                  {c.resumen}
-                </p>
-                <span className="mt-2 inline-block font-mono text-sm text-[#1E4D8C]">Ver guía →</span>
+                <img src={c.foto.url} alt={c.nombre} className="h-40 w-full object-cover" />
+                <div className="p-5">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
+                    {c.nombre}
+                  </h2>
+                  <p className="mt-1 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                    {c.resumen}
+                  </p>
+                  <span className="mt-2 inline-block font-mono text-sm text-[#1E4D8C]">Ver guía →</span>
+                </div>
               </a>
             );
           })}

@@ -6,6 +6,7 @@ export type Ciudad = {
   atracciones: string[];
   lat: number;
   lon: number;
+  foto: { url: string; autor: string; licencia: string };
 };
 
 export const CIUDADES: Ciudad[] = [
@@ -14,6 +15,11 @@ export const CIUDADES: Ciudad[] = [
     nombre: "Punta Cana",
     lat: 18.5601,
     lon: -68.3725,
+    foto: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/2023_-_Playa_Bavaro_Punta_Cana_-_01.jpg/1280px-2023_-_Playa_Bavaro_Punta_Cana_-_01.jpg",
+      autor: "Oleg Yunakov",
+      licencia: "CC BY-SA 4.0",
+    },
     resumen: "El destino de playa más famoso de República Dominicana, conocido por sus resorts todo incluido y arena blanca.",
     descripcion:
       "Punta Cana, en el extremo este del país (provincia La Altagracia), es el destino turístico más visitado de República Dominicana. " +
@@ -33,6 +39,11 @@ export const CIUDADES: Ciudad[] = [
     nombre: "Santo Domingo",
     lat: 18.4732,
     lon: -69.893,
+    foto: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Calle_las_Damas%2C_Santo_Domingo%2C_Zona_Colonial.jpg/1280px-Calle_las_Damas%2C_Santo_Domingo%2C_Zona_Colonial.jpg",
+      autor: "Desox7x",
+      licencia: "CC0",
+    },
     resumen: "La capital del país y la ciudad más antigua fundada por europeos en América, con su Zona Colonial declarada Patrimonio de la Humanidad.",
     descripcion:
       "Santo Domingo es la capital de República Dominicana y la primera ciudad europea permanente del continente americano, " +
@@ -52,6 +63,11 @@ export const CIUDADES: Ciudad[] = [
     nombre: "Puerto Plata",
     lat: 19.7808,
     lon: -70.6871,
+    foto: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Playa_Dorada_-_Puerto_Plata.jpg/1280px-Playa_Dorada_-_Puerto_Plata.jpg",
+      autor: "Max Bosio",
+      licencia: "CC BY 2.0",
+    },
     resumen: "En la Costa Ámbar, al norte del país, conocida por su teleférico, cascadas y playas menos concurridas.",
     descripcion:
       "Puerto Plata, en la costa norte de República Dominicana, es el corazón de la llamada Costa Ámbar, nombrada así por los " +
