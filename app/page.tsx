@@ -576,8 +576,8 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
         <img
           src="/tambora.png"
           alt=""
-          className="pointer-events-none absolute -right-2 -top-3 h-24 w-24 object-contain sm:-top-4 sm:h-44 sm:w-44 lg:right-6 lg:h-56 lg:w-56"
-          style={{ transform: "rotate(30deg)", filter: "drop-shadow(0 0 1.5px #9AA5AF) drop-shadow(0 0 1.5px #9AA5AF) drop-shadow(0 4px 8px rgba(0,0,0,0.35))" }}
+          className="pointer-events-none absolute right-3 -top-1 h-16 w-16 object-contain sm:-top-1 sm:h-28 sm:w-28 lg:right-11 lg:h-36 lg:w-36"
+          style={{ transform: "rotate(-30deg)", filter: "drop-shadow(0 0 1.5px #9AA5AF) drop-shadow(0 0 1.5px #9AA5AF) drop-shadow(0 4px 8px rgba(0,0,0,0.35))" }}
         />
         <div className="relative mx-auto max-w-7xl">
           <div className="mb-3 flex flex-col gap-3 border-b border-white/10 pb-3 sm:flex-row sm:items-center sm:justify-between">
