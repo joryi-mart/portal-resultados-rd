@@ -592,7 +592,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
           <PizarronDelDia loterias={listaLoterias} fechaSeleccionada={fechaSeleccionada} fechaTitulo={fechaTitulo} />
         </div>
 
-        <ResumenResultados items={resumenHoy} fecha={fechaResumen} />
+        <TablaHorarios loterias={listaLoterias} />
 
         <div className="mb-6 flex items-baseline justify-between">
           <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Loterías</h2>
@@ -637,7 +637,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
           })}
         </div>
 
-        <TablaHorarios loterias={listaLoterias} />
+        <ResumenResultados items={resumenHoy} fecha={fechaResumen} />
 
         <section className="mt-8 rounded-xl border border-[#10203A]/12 bg-white p-5 sm:p-8">
           <h2 className="mb-4 font-[family-name:var(--font-display)] text-2xl font-bold text-[#10203A]">
