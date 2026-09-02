@@ -420,10 +420,9 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
       }
     }
   }
-  // Mostramos los 6 resultados publicados mas recientemente (sin importar de que
-  // loteria son), para no dejar afuera loterias que aparecen mas tarde en la lista.
+  // Mostramos todos los resultados publicados hoy, del mas reciente al mas viejo
+  // (sin limite), igual que lo hacen otros sitios de resultados de loteria.
   filas.sort(function (a, b) { return new Date(b.creadoEn).getTime() - new Date(a.creadoEn).getTime(); });
-  filas.splice(6);
 
   if (filas.length === 0) {
     for (let i = 0; i < loterias.length && filas.length < 4; i++) {
