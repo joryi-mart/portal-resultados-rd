@@ -277,14 +277,14 @@ function PanelSuperior(props: { cambios: Cambio[]; fechaActual: string }) {
   );
 }
 
-function ResumenResultados(props: { items: UltimoResultado[] }) {
+function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
   const items = props.items;
   if (items.length === 0) return null;
 
   return (
     <div className="mb-8 rounded-xl border border-[#10203A]/12 bg-white">
       <h2 className="px-5 pb-3 pt-5 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
-        Resumen de resultados
+        Resumen de resultados <span className="font-mono text-sm font-normal" style={{ color: COLOR_TEXTO_SECUNDARIO }}>· {formatearFechaCorta(props.fecha)}</span>
       </h2>
       <div>
         {items.map(function (item, i) {
@@ -501,7 +501,12 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
     }
   }
   ultimosResultados.sort(function (a, b) { return new Date(b.creadoEn).getTime() - new Date(a.creadoEn).getTime(); });
-  const resumenHoy = ultimosResultados.filter(function (r) { return r.fecha === fechaSeleccionada; });
+  // Si el dia elegido todavia no tiene resultados (ej. madrugada, nada ha salido
+  // hoy), mostramos el dia mas reciente que si tenga, en vez de dejar el resumen vacio.
+  const fechaResumen = ultimosResultados.some(function (r) { return r.fecha === fechaSeleccionada; })
+    ? fechaSeleccionada
+    : (ultimosResultados[0]?.fecha || fechaSeleccionada);
+  const resumenHoy = ultimosResultados.filter(function (r) { return r.fecha === fechaResumen; });
 
   const fechaTitulo = new Date(fechaSeleccionada + "T00:00:00").toLocaleDateString("es-DO", {
     weekday: "long",
@@ -548,7 +553,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
           <PizarronDelDia loterias={listaLoterias} fechaSeleccionada={fechaSeleccionada} fechaTitulo={fechaTitulo} />
         </div>
 
-        <ResumenResultados items={resumenHoy} />
+        <ResumenResultados items={resumenHoy} fecha={fechaResumen} />
 
         <div className="mb-6 flex items-baseline justify-between">
           <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Loterías</h2>
