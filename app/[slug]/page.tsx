@@ -29,6 +29,17 @@ function nombreDia(letra: string) {
   return mapa[letra] || letra;
 }
 
+function formatearHora12(hora24: string) {
+  if (!hora24) return "";
+  const partes = hora24.split(":");
+  let h = parseInt(partes[0], 10);
+  const m = partes[1] || "00";
+  const sufijo = h >= 12 ? "p.m." : "a.m.";
+  h = h % 12;
+  if (h === 0) h = 12;
+  return h + ":" + m + " " + sufijo;
+}
+
 function formatearDias(diasSemana: string) {
   if (!diasSemana) return "Todos los días";
   const letras = diasSemana.split(",").map(function (l) { return l.trim(); });
@@ -131,7 +142,7 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
                         {sorteo.nombre}
                       </p>
                       <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-                        {sorteo.hora_sorteo || "Hora por confirmar"} · {formatearDias(sorteo.dias_semana)}
+                        {sorteo.hora_sorteo ? formatearHora12(sorteo.hora_sorteo) : "Hora por confirmar"} · {formatearDias(sorteo.dias_semana)}
                       </p>
                     </div>
                     <a

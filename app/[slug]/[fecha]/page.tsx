@@ -41,6 +41,17 @@ function formatearFechaLarga(fechaISO: string) {
   return d.toLocaleDateString("es-DO", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 }
 
+function formatearHora12(hora24: string) {
+  if (!hora24) return "";
+  const partes = hora24.split(":");
+  let h = parseInt(partes[0], 10);
+  const m = partes[1] || "00";
+  const sufijo = h >= 12 ? "p.m." : "a.m.";
+  h = h % 12;
+  if (h === 0) h = 12;
+  return h + ":" + m + " " + sufijo;
+}
+
 function tamanoBolita(cantidad: number) {
   if (cantidad >= 6) return "h-10 w-10 text-sm";
   if (cantidad >= 5) return "h-11 w-11 text-base";
@@ -151,7 +162,7 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
                   <p className="mb-1 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">
                     {sorteo.nombre}
                   </p>
-                  <p className="mb-4 font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Sorteo: {sorteo.hora_sorteo}</p>
+                  <p className="mb-4 font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Sorteo: {formatearHora12(sorteo.hora_sorteo)}</p>
 
                   {numeros.length > 0 ? (
                     <div className="flex flex-wrap items-center gap-2">

@@ -102,6 +102,7 @@ function formatearFechaCorta(fechaISO: string) {
 function formatearPublicacion(creadoEn: string) {
   const fecha = new Date(creadoEn);
   return fecha.toLocaleString("es-DO", {
+    timeZone: "America/Santo_Domingo",
     day: "2-digit",
     month: "short",
     hour: "numeric",
@@ -115,6 +116,17 @@ function nombreDia(letra: string) {
     L: "Lun", M: "Mar", X: "Mié", J: "Jue", V: "Vie", S: "Sáb", D: "Dom",
   };
   return mapa[letra] || letra;
+}
+
+function formatearHora12(hora24: string) {
+  if (!hora24) return "";
+  const partes = hora24.split(":");
+  let h = parseInt(partes[0], 10);
+  const m = partes[1] || "00";
+  const sufijo = h >= 12 ? "p.m." : "a.m.";
+  h = h % 12;
+  if (h === 0) h = 12;
+  return h + ":" + m + " " + sufijo;
 }
 
 function formatearDias(diasSemana: string) {
@@ -184,7 +196,7 @@ function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string; loteriaS
       ) : null}
       <div className="min-w-0">
         <p className="truncate text-xl font-extrabold text-[#10203A]">{sorteo.nombre}</p>
-        <p className="font-mono text-base" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{sorteo.hora_sorteo}</p>
+        <p className="font-mono text-base" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearHora12(sorteo.hora_sorteo)}</p>
       </div>
       <div className="flex flex-nowrap items-center gap-1.5 overflow-x-auto">
         {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano} opaca={!hayResultadoReal} colorEspecial={colorEspecial} primera={i === 0}>{n}</Bolita>; })}
@@ -316,7 +328,7 @@ function TablaHorarios(props: { loterias: Loteria[] }) {
                     <div key={sorteo.id} className="flex items-center justify-between gap-2 font-mono text-xs">
                       <span className="truncate text-[#10203A]">{sorteo.nombre}</span>
                       <span className="shrink-0 whitespace-nowrap" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-                        {sorteo.hora_sorteo}
+                        {formatearHora12(sorteo.hora_sorteo)}
                       </span>
                     </div>
                   );
