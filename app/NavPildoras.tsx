@@ -198,6 +198,10 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
           {loterias.map(function (l) {
             return <ItemLoteria key={l.slug} loteria={l} />;
           })}
+          <div className="my-1 border-t border-white/10" />
+          <a href="/dias-feriados" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">
+            📅 Días feriados 2026
+          </a>
         </PillCategoria>
 
         <PillCategoria
