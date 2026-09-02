@@ -196,7 +196,10 @@ function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string; loteriaS
       ) : null}
       <div className="min-w-0">
         <p className="truncate text-xl font-extrabold text-[#10203A]">{sorteo.nombre}</p>
-        <p className="font-mono text-base" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearHora12(sorteo.hora_sorteo)}</p>
+        <p className="font-mono text-base" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          {formatearHora12(sorteo.hora_sorteo)}
+          {sorteo.dias_semana && sorteo.dias_semana.split(",").length < 7 ? " · " + formatearDias(sorteo.dias_semana) : ""}
+        </p>
       </div>
       <div className="flex flex-nowrap items-center gap-1.5 overflow-x-auto">
         {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano} opaca={!hayResultadoReal} colorEspecial={colorEspecial} primera={i === 0}>{n}</Bolita>; })}
