@@ -609,11 +609,11 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
               Una de las loterías más jugadas del país, con varios sorteos seguidos cada noche.
             </p>
             <ul className="ml-5 list-disc text-base">
-              <li>Quiniela Leidsa — 8:55 p.m.</li>
+              <li>Quiniela Palé — 8:55 p.m.</li>
               <li>Pega 3 Más — 8:55 p.m.</li>
               <li>Loto Pool — 8:55 p.m.</li>
               <li>Super Kino TV — 8:55 p.m.</li>
-              <li>Loto (martes y sábados) — 8:55 p.m.</li>
+              <li>Loto Más (miércoles y sábados) — 8:55 p.m.</li>
             </ul>
           </div>
 
@@ -636,7 +636,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
             </p>
             <ul className="ml-5 list-disc text-base">
               <li>Quiniela Loteka — 7:55 p.m.</li>
-              <li>MegaLotto — 7:55 p.m.</li>
+              <li>Mega Lotto (lunes y jueves) — 7:55 p.m.</li>
               <li>Mega Chances — 7:55 p.m.</li>
               <li>El Extra — 7:55 p.m.</li>
               <li>Toca 3 — 7:55 p.m.</li>
