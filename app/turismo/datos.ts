@@ -185,4 +185,163 @@ export const CIUDADES: Ciudad[] = [
       "La Rejoya y Charco de los Militares — cascadas y piscinas naturales menos conocidas",
     ],
   },
+  {
+    slug: "samana",
+    nombre: "Samaná",
+    lat: 19.2058,
+    lon: -69.3364,
+    foto: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Cayo_Levantado%2C_Samana%2C_Dominican_Republic.jpg/1280px-Cayo_Levantado%2C_Samana%2C_Dominican_Republic.jpg",
+      autor: "viajor (Flickr)",
+      licencia: "CC BY 2.0",
+    },
+    galeria: [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/El_Limon.JPG/1280px-El_Limon.JPG",
+        autor: "AMartiniouk",
+        licencia: "CC BY-SA 3.0",
+        alt: "Cascada El Limón",
+      },
+    ],
+    resumen: "Península en el nordeste del país, famosa por el avistamiento de ballenas jorobadas y playas rodeadas de montañas y cayos.",
+    descripcion:
+      "Samaná, en el extremo nordeste de República Dominicana, es una península de montañas verdes que caen directo al mar, con " +
+      "unas 25 playas y una decena de cayos repartidos entre sus tres zonas turísticas: Santa Bárbara de Samaná, Las Terrenas y " +
+      "Las Galeras. Entre enero y marzo es uno de los mejores lugares del mundo para observar ballenas jorobadas, que migran " +
+      "hasta la bahía para reproducirse.",
+    atracciones: [
+      "Cayo Levantado — islote con playas públicas y restaurantes, a corta distancia en lancha",
+      "Las Terrenas — playas de ambiente relajado con fuerte influencia francesa y europea",
+      "Playa Rincón — una de las playas más premiadas del Caribe, de arena blanca y palmeras",
+    ],
+    hoteles: [
+      "Las Terrenas — la zona con más hoteles boutique, villas y restaurantes de playa",
+      "Santa Bárbara de Samaná — cerca del puerto de salida de las excursiones para ver ballenas",
+      "Las Galeras — la zona más tranquila y menos desarrollada, ideal para desconectar",
+    ],
+    ecoturismo: [
+      "Avistamiento de ballenas jorobadas — de enero a marzo, en excursiones en barco desde la bahía de Samaná",
+      "Cascada El Limón — salto de unos 40 metros con piscina natural, se llega a pie o a caballo",
+      "Parque Nacional Los Haitises — manglares, cuevas con pictografías taínas y mogotes de piedra caliza",
+    ],
+  },
+  {
+    slug: "bahia-de-las-aguilas",
+    nombre: "Bahía de las Águilas",
+    lat: 17.85,
+    lon: -71.65,
+    foto: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Bahia_de_las_Aguilas_beach.jpg/1280px-Bahia_de_las_Aguilas_beach.jpg",
+      autor: "jordina_collellcortacans (Flickr)",
+      licencia: "CC BY-SA 2.0",
+    },
+    galeria: [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Dusk_-_Bahia_de_las_Aguilas%2C_Pedernales_-_Dominican_Republic.jpg/1280px-Dusk_-_Bahia_de_las_Aguilas%2C_Pedernales_-_Dominican_Republic.jpg",
+        autor: "Remedylane",
+        licencia: "Dominio público",
+        alt: "Costa de Bahía de las Águilas al atardecer",
+      },
+    ],
+    resumen: "Una de las playas vírgenes más espectaculares del Caribe, dentro del Parque Nacional Jaragua, en el extremo suroeste del país.",
+    descripcion:
+      "Bahía de las Águilas es una playa de casi 10 kilómetros dentro del Parque Nacional Jaragua, en la provincia de Pedernales, " +
+      "junto a la frontera con Haití. Al ser un área protegida no tiene hoteles, tiendas ni restaurantes: solo se llega en " +
+      "vehículo 4x4, a pie o en lancha desde el poblado de Cabo Rojo. Es uno de los últimos tramos de costa realmente virgen " +
+      "del Caribe, con arrecifes de coral y aguas cristalinas.",
+    atracciones: [
+      "Bahía de las Águilas — casi 10 km de playa virgen, solo accesible en 4x4, lancha o caminando",
+      "Cabo Rojo — mirador natural con vistas al mar Caribe, punto de partida hacia la bahía",
+      "Isla Beata — isla deshabitada dentro del parque nacional, se visita en excursión en lancha",
+    ],
+    hoteles: [
+      "Dentro de la bahía no hay hoteles por ser área protegida — el alojamiento más cercano está en Cabo Rojo y Pedernales",
+      "Glamping EcoLodge Cueva de las Águilas — alojamiento tipo glamping en Cabo Rojo, organiza excursiones a la bahía",
+      "Pedernales — el pueblo más cercano, con las opciones de hospedaje más completas de la zona",
+    ],
+    ecoturismo: [
+      "Parque Nacional Jaragua — la mayor área protegida del país, con playas vírgenes y bosque seco subtropical",
+      "Arrecifes de coral y praderas marinas — aguas cristalinas ideales para esnórquel y buceo",
+      "Observación de aves — el parque alberga flamencos y otras especies costeras",
+    ],
+  },
+  {
+    slug: "miches",
+    nombre: "Miches",
+    lat: 18.9833,
+    lon: -69.0333,
+    foto: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/7/76/Playa_esmeralda_miches.png",
+      autor: "Ugly (Wikimedia Commons)",
+      licencia: "CC BY-SA 3.0",
+    },
+    galeria: [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Laguna_Lim%C3%B3n.JPG/1280px-Laguna_Lim%C3%B3n.JPG",
+        autor: "Ramon Armora",
+        licencia: "CC BY-SA 3.0",
+        alt: "Recorrido en kayak por la Laguna Limón",
+      },
+    ],
+    resumen: "El destino emergente de lujo y naturaleza en la costa sur de la bahía de Samaná, con lagunas, montañas y playas vírgenes.",
+    descripcion:
+      "Miches, en la provincia de El Seibo, frente a la bahía de Samaná, es uno de los destinos que más ha crecido en los " +
+      "últimos años en República Dominicana. Combina playas de arena dorada todavía poco desarrolladas con paisajes de " +
+      "montaña, lagunas protegidas y una oferta hotelera que va desde resorts todo incluido hasta pequeños hoteles boutique " +
+      "y villas de perfil ecológico.",
+    atracciones: [
+      "Montaña Redonda — columpios panorámicos con vista a la Laguna Limón y la costa",
+      "Playa Esmeralda — una de las playas más vírgenes del país, de aguas turquesa",
+      "Playa El Limón — extenso arenal poco concurrido junto a la laguna del mismo nombre",
+    ],
+    hoteles: [
+      "Resorts todo incluido frente al mar, como Club Med Miches y Temptation Miches",
+      "Hotel La Loma — en lo alto de una colina, con vista panorámica al pueblo y la bahía",
+      "Hoteles boutique y villas de perfil ecológico integradas al paisaje",
+    ],
+    ecoturismo: [
+      "Laguna Limón y Laguna Redonda — reservas científicas con manglares y aves migratorias, se recorren en bote o a caballo",
+      "Salto Grande y Salto Cucuyo — cascadas poco conocidas en los alrededores",
+      "Pesca artesanal con comunidades locales y recorridos por humedales protegidos",
+    ],
+  },
+  {
+    slug: "jarabacoa",
+    nombre: "Jarabacoa",
+    lat: 19.1167,
+    lon: -70.6333,
+    foto: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Salto_de_Jimenoa_816.jpg",
+      autor: "Jos1950",
+      licencia: "CC BY-SA 4.0",
+    },
+    galeria: [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Rio_Yaque_del_Norte_-_Jarabacoa.JPG/1280px-Rio_Yaque_del_Norte_-_Jarabacoa.JPG",
+        autor: "Starus",
+        licencia: "CC BY-SA 3.0",
+        alt: "Río Yaque del Norte en Jarabacoa",
+      },
+    ],
+    resumen: "En el corazón de la Cordillera Central, conocida como la 'ciudad de la eterna primavera' por su clima fresco, cascadas y montañas.",
+    descripcion:
+      "Jarabacoa, en la Cordillera Central, es el principal destino de montaña de República Dominicana. Su clima fresco todo " +
+      "el año le ganó el apodo de 'ciudad de la eterna primavera', y su entorno de ríos, cascadas y picos la convirtió en la " +
+      "capital dominicana de los deportes de aventura: rafting, canyoning, senderismo y ciclismo de montaña.",
+    atracciones: [
+      "Salto de Jimenoa — cascada de unos 35 metros, con un puente colgante de acceso",
+      "Salto de Baiguate — cascada de fácil acceso rodeada de vegetación",
+      "El Mogote — mirador natural con vista panorámica al valle de Jarabacoa",
+    ],
+    hoteles: [
+      "Hotel Gran Jimenoa — a orillas del río Jimenoa, cerca del salto",
+      "Rancho Baiguate — hotel de aventura con actividades de río incluidas",
+      "Villas y cabañas de montaña — opción popular por el clima fresco de la zona",
+    ],
+    ecoturismo: [
+      "Pico Duarte — el pico más alto del Caribe (3,087 m), ascenso guiado de 2 días",
+      "Deportes de río — rafting, kayak y canyoning en los ríos Yaque del Norte y Jimenoa",
+      "La Confluencia — punto de encuentro de los ríos Yaque del Norte y Jimenoa, popular para nadar",
+    ],
+  },
 ];
