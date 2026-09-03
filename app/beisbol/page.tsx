@@ -242,6 +242,11 @@ export default function BeisbolPage() {
     const hayPicheo = !terminado && (pitcherVisitante || pitcherLocal);
     const destacado = destacadosPorJuego[juego.gamePk];
 
+    const scoreVisitante = juego.teams.away.score;
+    const scoreLocal = juego.teams.home.score;
+    const ganoVisitante = terminado && scoreVisitante != null && scoreLocal != null && scoreVisitante > scoreLocal;
+    const ganoLocal = terminado && scoreVisitante != null && scoreLocal != null && scoreLocal > scoreVisitante;
+
     return (
       <div key={juego.gamePk} className="border-b border-[#10203A]/10 px-4 py-3 last:border-0">
         <p className="mb-1.5 font-mono text-xs font-semibold uppercase tracking-wide text-[#5C6B78]">
@@ -255,9 +260,11 @@ export default function BeisbolPage() {
               alt=""
               className="h-7 w-7 shrink-0"
             />
-            <span className="truncate text-base font-semibold text-[#10203A]">{juego.teams.away.team.name}</span>
+            <span className={"truncate text-base " + (ganoVisitante ? "font-bold text-[#007A33]" : "font-semibold text-[#10203A]")}>
+              {ganoVisitante ? "🏆 " : ""}{juego.teams.away.team.name}
+            </span>
           </div>
-          <span className="shrink-0 font-mono text-2xl font-bold text-[#1E4D8C]">{juego.teams.away.score ?? "-"}</span>
+          <span className={"shrink-0 font-mono text-2xl font-bold " + (ganoVisitante ? "text-[#007A33]" : "text-[#1E4D8C]")}>{scoreVisitante ?? "-"}</span>
         </div>
         <div className="mt-1.5 flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
@@ -266,9 +273,11 @@ export default function BeisbolPage() {
               alt=""
               className="h-7 w-7 shrink-0"
             />
-            <span className="truncate text-base font-semibold text-[#10203A]">{juego.teams.home.team.name}</span>
+            <span className={"truncate text-base " + (ganoLocal ? "font-bold text-[#007A33]" : "font-semibold text-[#10203A]")}>
+              {ganoLocal ? "🏆 " : ""}{juego.teams.home.team.name}
+            </span>
           </div>
-          <span className="shrink-0 font-mono text-2xl font-bold text-[#1E4D8C]">{juego.teams.home.score ?? "-"}</span>
+          <span className={"shrink-0 font-mono text-2xl font-bold " + (ganoLocal ? "text-[#007A33]" : "text-[#1E4D8C]")}>{scoreLocal ?? "-"}</span>
         </div>
         {hayPicheo && (
           <p className="mt-2 text-sm text-[#1E4D8C]">

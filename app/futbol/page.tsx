@@ -147,6 +147,11 @@ export default function FutbolPage() {
     const golesLocal = goles.filter((g) => String(g.equipo) === String(local.team.id));
     const golesVisitante = goles.filter((g) => String(g.equipo) === String(visitante.team.id));
 
+    const numLocal = local.score != null ? Number(local.score) : null;
+    const numVisitante = visitante.score != null ? Number(visitante.score) : null;
+    const ganoLocal = terminado && numLocal != null && numVisitante != null && numLocal > numVisitante;
+    const ganoVisitante = terminado && numLocal != null && numVisitante != null && numVisitante > numLocal;
+
     function listaGoles(lista: Gol[]) {
       if (lista.length === 0) return null;
       return (
@@ -167,8 +172,8 @@ export default function FutbolPage() {
             {local.team.logo ? (
               <Image src={local.team.logo} alt="" width={28} height={28} className="h-7 w-7 shrink-0" />
             ) : null}
-            <span className="text-base font-semibold text-[#10203A]">
-              {local.team.displayName}
+            <span className={"text-base " + (ganoLocal ? "font-bold text-[#007A33]" : "font-semibold text-[#10203A]")}>
+              {ganoLocal ? "🏆 " : ""}{local.team.displayName}
             </span>
           </div>
           {terminado ? listaGoles(golesLocal) : null}
@@ -176,15 +181,15 @@ export default function FutbolPage() {
             {visitante.team.logo ? (
               <Image src={visitante.team.logo} alt="" width={28} height={28} className="h-7 w-7 shrink-0" />
             ) : null}
-            <span className="text-base font-semibold text-[#10203A]">
-              {visitante.team.displayName}
+            <span className={"text-base " + (ganoVisitante ? "font-bold text-[#007A33]" : "font-semibold text-[#10203A]")}>
+              {ganoVisitante ? "🏆 " : ""}{visitante.team.displayName}
             </span>
           </div>
           {terminado ? listaGoles(golesVisitante) : null}
         </td>
         <td className="w-24 py-3 pr-4 text-right align-top">
-          <p className="font-mono text-2xl font-bold text-[#1E4D8C]">{local.score ?? "-"}</p>
-          <p className="mt-6 font-mono text-2xl font-bold text-[#1E4D8C]">{visitante.score ?? "-"}</p>
+          <p className={"font-mono text-2xl font-bold " + (ganoLocal ? "text-[#007A33]" : "text-[#1E4D8C]")}>{local.score ?? "-"}</p>
+          <p className={"mt-6 font-mono text-2xl font-bold " + (ganoVisitante ? "text-[#007A33]" : "text-[#1E4D8C]")}>{visitante.score ?? "-"}</p>
         </td>
       </tr>
     );
