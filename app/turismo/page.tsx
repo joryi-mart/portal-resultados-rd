@@ -24,27 +24,33 @@ export default function TurismoPage() {
   return (
     <div className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
       <NavPildoras />
-      <header className="bg-[#10203A] px-6 py-8 sm:px-10">
-        <div className="mx-auto max-w-2xl">
+      <header className="bg-[#10203A] px-6 py-10 sm:px-10">
+        <div className="mx-auto max-w-5xl">
           <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold text-[#FBF7EE] sm:text-4xl">
             Turismo en República Dominicana
           </h1>
           <p className="mt-2 text-sm text-[#D5DEEA]">
-            Guías de qué ver y hacer en los destinos más visitados del país
+            Guías de qué ver y hacer, dónde alojarte y ecoturismo en los destinos más visitados del país
           </p>
         </div>
       </header>
 
-      <main className="mx-auto max-w-2xl px-6 py-10 sm:px-10">
-        <div className="grid gap-4 sm:grid-cols-1">
+      <main className="mx-auto max-w-5xl px-6 py-10 sm:px-10">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {CIUDADES.map(function (c) {
             return (
               <a
                 key={c.slug}
                 href={"/turismo/" + c.slug}
-                className="block overflow-hidden rounded-xl border border-[#10203A]/15 bg-white transition hover:border-[#007A33]/40 hover:shadow-md"
+                className="group block overflow-hidden rounded-xl border border-[#10203A]/15 bg-white transition hover:border-[#007A33]/40 hover:shadow-lg"
               >
-                <img src={c.foto.url} alt={c.nombre} className="h-40 w-full object-cover" />
+                <div className="h-48 w-full overflow-hidden">
+                  <img
+                    src={c.foto.url}
+                    alt={c.nombre}
+                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                  />
+                </div>
                 <div className="p-5">
                   <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
                     {c.nombre}

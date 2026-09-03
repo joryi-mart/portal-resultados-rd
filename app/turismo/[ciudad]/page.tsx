@@ -9,6 +9,8 @@ const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "600"], variabl
 
 const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 const COLOR_VERDE_RD = "#007A33";
+const COLOR_AZUL = "#1E4D8C";
+const COLOR_TEAL = "#0D9488";
 
 type LugarCercano = { id: number; nombre: string; categoria: string; distanciaKm: number; lat: number; lon: number };
 
@@ -106,6 +108,46 @@ export async function generateMetadata(props: { params: Promise<{ ciudad: string
   };
 }
 
+function TarjetaItem(props: { texto: string; icono: string; color: string; indice: number }) {
+  const { texto, icono, color, indice } = props;
+  const partes = texto.split(" — ");
+  const titulo = partes[0];
+  const detalle = partes.slice(1).join(" — ");
+
+  return (
+    <div className="flex gap-3 rounded-xl border border-[#10203A]/12 bg-white p-4 shadow-sm transition hover:shadow-md">
+      <span
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-base"
+        style={{ backgroundColor: color + "18" }}
+      >
+        {icono}
+      </span>
+      <div>
+        <p className="text-sm font-semibold text-[#10203A]">{titulo}</p>
+        {detalle ? <p className="mt-0.5 text-xs leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{detalle}</p> : null}
+      </div>
+      <span className="sr-only">{indice}</span>
+    </div>
+  );
+}
+
+function SeccionTarjetas(props: { titulo: string; items: string[]; icono: string; color: string }) {
+  const { titulo, items, icono, color } = props;
+  if (items.length === 0) return null;
+  return (
+    <section className="mt-10">
+      <h2 className="mb-4 flex items-center gap-2 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
+        <span>{icono}</span> {titulo}
+      </h2>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {items.map(function (item, i) {
+          return <TarjetaItem key={i} texto={item} icono={icono} color={color} indice={i + 1} />;
+        })}
+      </div>
+    </section>
+  );
+}
+
 export default async function CiudadTurismoPage(props: { params: Promise<{ ciudad: string }> }) {
   const params = await props.params;
   const ciudad = CIUDADES.find(function (c) { return c.slug === params.ciudad; });
@@ -116,52 +158,42 @@ export default async function CiudadTurismoPage(props: { params: Promise<{ ciuda
   return (
     <div className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
       <NavPildoras />
-      <header className="bg-[#10203A] px-6 py-8 sm:px-10">
-        <div className="mx-auto max-w-2xl">
-          <a href="/turismo" className="font-mono text-sm text-[#E7A63C] hover:underline">← Ver todos los destinos</a>
-          <h1 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-bold text-[#FBF7EE] sm:text-4xl">
-            {ciudad.nombre}
-          </h1>
-          <p className="mt-2 text-sm text-[#D5DEEA]">{ciudad.resumen}</p>
-        </div>
-      </header>
 
-      <div className="mx-auto max-w-2xl px-6 pt-6 sm:px-10">
-        <img
-          src={ciudad.foto.url}
-          alt={ciudad.nombre}
-          className="h-56 w-full rounded-xl object-cover sm:h-80"
-        />
+      <div className="relative mx-auto max-w-5xl px-4 sm:px-8">
+        <div className="relative h-72 w-full overflow-hidden rounded-2xl sm:h-[420px]">
+          <img src={ciudad.foto.url} alt={ciudad.nombre} className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+          <a
+            href="/turismo"
+            className="absolute left-4 top-4 rounded-full bg-black/40 px-3 py-1.5 font-mono text-xs font-semibold text-white backdrop-blur-sm hover:bg-black/60 sm:left-6 sm:top-6"
+          >
+            ← Todos los destinos
+          </a>
+          <div className="absolute inset-x-0 bottom-0 p-5 sm:p-8">
+            <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold text-white drop-shadow sm:text-5xl">
+              {ciudad.nombre}
+            </h1>
+            <p className="mt-2 max-w-xl text-sm text-white/90 drop-shadow sm:text-base">{ciudad.resumen}</p>
+          </div>
+        </div>
         <p className="mt-1.5 text-right text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
           Foto: {ciudad.foto.autor} / Wikimedia Commons ({ciudad.foto.licencia})
         </p>
       </div>
 
-      <main className="mx-auto max-w-2xl px-6 pb-10 pt-6 sm:px-10">
-        <p className="mb-8 text-base leading-relaxed">{ciudad.descripcion}</p>
+      <main className="mx-auto max-w-5xl px-4 pb-14 pt-6 sm:px-8">
+        <p className="max-w-3xl text-base leading-relaxed">{ciudad.descripcion}</p>
 
-        <h2 className="mb-4 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
-          Qué ver y hacer
-        </h2>
-        <div className="rounded-xl border border-[#10203A]/15 bg-white">
-          {ciudad.atracciones.map(function (a, i) {
-            return (
-              <div key={i} className="flex items-start gap-3 border-t border-[#10203A]/8 px-5 py-4 first:border-t-0">
-                <span className="mt-0.5 shrink-0 rounded-full px-2 py-0.5 font-mono text-xs font-bold text-white" style={{ backgroundColor: COLOR_VERDE_RD }}>
-                  {i + 1}
-                </span>
-                <p className="text-sm leading-relaxed">{a}</p>
-              </div>
-            );
-          })}
-        </div>
+        <SeccionTarjetas titulo="Qué ver y hacer" items={ciudad.atracciones} icono="📍" color={COLOR_VERDE_RD} />
+        <SeccionTarjetas titulo="Dónde alojarse" items={ciudad.hoteles} icono="🏨" color={COLOR_AZUL} />
+        <SeccionTarjetas titulo="Ecoturismo y naturaleza" items={ciudad.ecoturismo} icono="🌿" color={COLOR_TEAL} />
 
         {lugaresCercanos.length > 0 ? (
-          <>
-            <h2 className="mb-4 mt-10 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
+          <section className="mt-10">
+            <h2 className="mb-4 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
               Más lugares cerca de {ciudad.nombre}
             </h2>
-            <div className="rounded-xl border border-[#10203A]/15 bg-white">
+            <div className="grid gap-3 sm:grid-cols-2">
               {lugaresCercanos.map(function (l) {
                 return (
                   <a
@@ -169,7 +201,7 @@ export default async function CiudadTurismoPage(props: { params: Promise<{ ciuda
                     href={`https://www.google.com/maps?q=${l.lat},${l.lon}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between gap-3 border-t border-[#10203A]/8 px-5 py-3 first:border-t-0 hover:bg-[#FBF7EE]"
+                    className="flex items-center justify-between gap-3 rounded-xl border border-[#10203A]/12 bg-white p-4 shadow-sm transition hover:shadow-md"
                   >
                     <div>
                       <p className="text-sm font-semibold text-[#10203A]">{l.nombre}</p>
@@ -185,7 +217,7 @@ export default async function CiudadTurismoPage(props: { params: Promise<{ ciuda
             <p className="mt-3 text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
               Datos de ubicación de <a href="https://www.openstreetmap.org" target="_blank" rel="noopener noreferrer" className="underline">OpenStreetMap</a>, un mapa colaborativo y abierto. Haz clic en un lugar para verlo en el mapa.
             </p>
-          </>
+          </section>
         ) : null}
       </main>
 

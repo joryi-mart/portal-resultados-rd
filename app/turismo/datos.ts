@@ -4,6 +4,8 @@ export type Ciudad = {
   resumen: string;
   descripcion: string;
   atracciones: string[];
+  hoteles: string[];
+  ecoturismo: string[];
   lat: number;
   lon: number;
   foto: { url: string; autor: string; licencia: string };
@@ -29,9 +31,19 @@ export const CIUDADES: Ciudad[] = [
     atracciones: [
       "Playa Bávaro — una de las playas más premiadas del Caribe",
       "Isla Saona — excursión en catamarán o lancha, dentro del Parque Nacional del Este",
-      "Ojos Indígenas — reserva ecológica con lagunas naturales para nadar",
       "Campos de golf de nivel internacional (Cap Cana, Punta Espada)",
       "Vida nocturna y centros comerciales en Bávaro y Cap Cana",
+    ],
+    hoteles: [
+      "Bávaro — la zona con mayor concentración de resorts todo incluido, ideal para una primera visita",
+      "Cap Cana — la zona más exclusiva, con hoteles de lujo y campos de golf frente al mar",
+      "Uvero Alto — resorts grandes y más aislados, ideal para desconectar",
+      "Playa Macao — la zona hotelera más nueva, con oleaje fuerte y ambiente más local",
+    ],
+    ecoturismo: [
+      "Ojos Indígenas — reserva ecológica con 12 lagunas naturales de agua dulce para nadar",
+      "Hoyo Azul (Scape Park) — cenote de aguas turquesa dentro de un parque ecológico",
+      "Manatí Park — fauna dominicana, delfines y aves tropicales en un entorno natural",
     ],
   },
   {
@@ -57,6 +69,16 @@ export const CIUDADES: Ciudad[] = [
       "El Malecón — avenida costera con vista al mar Caribe",
       "Mercado Modelo — artesanías y productos típicos dominicanos",
     ],
+    hoteles: [
+      "Zona Colonial — hoteles boutique en edificios históricos restaurados, a pasos de las principales atracciones",
+      "Piantini y Naco — el distrito financiero, con hoteles de cadenas internacionales orientados a viajes de negocios",
+      "El Malecón — hoteles frente al mar Caribe, a corta distancia de la Zona Colonial",
+    ],
+    ecoturismo: [
+      "Jardín Botánico Nacional Dr. Rafael Ma. Moscoso — el más grande del Caribe, con jardín japonés y recorrido en tren",
+      "Los Tres Ojos — cuevas con lagunas subterráneas de agua dulce y pinturas rupestres taínas",
+      "Parque Mirador Sur — 6 km de áreas verdes junto al mar, ideal para caminar o andar en bicicleta",
+    ],
   },
   {
     slug: "puerto-plata",
@@ -75,11 +97,19 @@ export const CIUDADES: Ciudad[] = [
       "que Punta Cana y acceso cercano a montañas y ríos. Su malecón y el histórico Fuerte de San Felipe reflejan su pasado " +
       "colonial y comercial.",
     atracciones: [
-      "Teleférico de Puerto Plata — el único de su tipo en el Caribe, con vista al Pico Isabel de Torres",
-      "27 Charcos de Damajagua — cascadas y toboganes naturales para hacer canyoning",
-      "Fuerte de San Felipe — fortaleza del siglo XVI",
-      "Playa Sosúa y Playa Dorada — zonas de playa cercanas con buena infraestructura turística",
+      "Fuerte de San Felipe — fortaleza del siglo XVI a la entrada de la bahía",
+      "Playa Sosúa — playa cercana con buena infraestructura turística y arrecife de coral",
       "Museo del Ámbar Dominicano",
+    ],
+    hoteles: [
+      "Playa Dorada — la zona hotelera más establecida, con resorts todo incluido y campo de golf",
+      "Costambar — zona residencial y más tranquila, popular entre extranjeros residentes",
+      "Cofresí — a 10 minutos del centro histórico, junto a Ocean World Adventure Park",
+    ],
+    ecoturismo: [
+      "27 Charcos de Damajagua — cascadas y toboganes naturales para hacer canyoning",
+      "Teleférico y Reserva Científica Isabel de Torres — el único teleférico del Caribe, sube a un bosque nublado",
+      "La Rejoya y Charco de los Militares — cascadas y piscinas naturales menos conocidas",
     ],
   },
 ];
