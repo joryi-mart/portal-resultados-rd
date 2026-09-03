@@ -2,9 +2,9 @@ name: Scraper de resultados
 
 on:
   schedule:
-    # Corre cada 30 minutos, todo el día. GitHub Actions es gratis para repos
-    # públicos y da 2000 minutos/mes gratis en repos privados (esto usa muy poco).
-    - cron: "*/30 * * * *"
+    # Corre cada 2 minutos, todo el día. El repositorio es público, así que
+    # GitHub Actions es gratis e ilimitado (no hay límite de minutos que cuidar).
+    - cron: "*/2 * * * *"
   workflow_dispatch: # permite correrlo manualmente desde la pestaña "Actions" en GitHub
 
 jobs:
