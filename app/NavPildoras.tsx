@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Space_Grotesk } from "next/font/google";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"] });
@@ -103,9 +103,28 @@ function PillCategoria(props: {
   alinearDerecha?: boolean;
 }) {
   const { href, icono, etiqueta, activo, onAlternar, children, alinearDerecha } = props;
+  const contenedorRef = useRef<HTMLDivElement>(null);
+  const [posicion, setPosicion] = useState<{ top: number; left?: number; right?: number } | null>(null);
+
+  // El menú de pills se desliza horizontalmente en pantallas chicas (overflow-x-auto),
+  // y eso recorta cualquier hijo "absolute" que se salga de esa franja. Por eso el
+  // desplegable se posiciona con "fixed" y coordenadas calculadas en pantalla, para
+  // que no dependa del contenedor con scroll y no se quede invisible en el celular.
+  useEffect(function () {
+    if (!activo || !contenedorRef.current) {
+      setPosicion(null);
+      return;
+    }
+    const rect = contenedorRef.current.getBoundingClientRect();
+    if (alinearDerecha) {
+      setPosicion({ top: rect.bottom + 8, right: window.innerWidth - rect.right });
+    } else {
+      setPosicion({ top: rect.bottom + 8, left: rect.left });
+    }
+  }, [activo, alinearDerecha]);
 
   return (
-    <div className="relative shrink-0">
+    <div ref={contenedorRef} className="relative shrink-0">
       <div
         className={
           "flex items-stretch overflow-hidden whitespace-nowrap rounded-lg text-base font-bold text-white " +
@@ -132,14 +151,16 @@ function PillCategoria(props: {
         </button>
       </div>
 
-      {activo ? (
+      {activo && posicion ? (
         <>
           <div className="fixed inset-0 z-40" onClick={onAlternar} />
           <div
-            className={
-              "absolute top-full z-50 mt-2 w-60 overflow-hidden rounded-xl bg-[#10203A] py-2 shadow-2xl " +
-              (alinearDerecha ? "right-0" : "left-0")
-            }
+            className="fixed z-50 w-60 overflow-hidden rounded-xl bg-[#10203A] py-2 shadow-2xl"
+            style={{
+              top: posicion.top,
+              left: posicion.left,
+              right: posicion.right,
+            }}
           >
             {children}
           </div>
@@ -243,7 +264,7 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
         <PillCategoria
           href="/cine"
           icono={<IconoVariedades />}
-          etiqueta="Variedades"
+          etiqueta="TiempoLibre"
           activo={menuAbierto === "variedades"}
           onAlternar={function () { alternar("variedades"); }}
           alinearDerecha
