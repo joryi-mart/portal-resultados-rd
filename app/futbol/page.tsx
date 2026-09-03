@@ -1,8 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Space_Grotesk } from "next/font/google";
 import NavPildoras from "../NavPildoras";
 import Image from "next/image";
+
+const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"] });
+
+function tituloDelDia(fechaSeleccionada: string | null, nombreLiga: string) {
+  if (!fechaSeleccionada) return `¿Qué pasó hoy en la ${nombreLiga}?`;
+
+  const hoy = new Date();
+  const ayer = new Date();
+  ayer.setDate(hoy.getDate() - 1);
+  const ayerISO = ayer.toISOString().slice(0, 10);
+
+  if (fechaSeleccionada === ayerISO) return `¿Qué pasó ayer en la ${nombreLiga}?`;
+
+  const fechaLarga = new Date(fechaSeleccionada + "T00:00:00").toLocaleDateString("es-DO", {
+    day: "numeric",
+    month: "long",
+  });
+  return `¿Qué pasó el ${fechaLarga} en la ${nombreLiga}?`;
+}
 
 type LigaId = "esp.1" | "eng.1" | "uefa.champions";
 
@@ -256,8 +276,8 @@ export default function FutbolPage() {
         {!cargando && !error && (
           <>
             <section id="juegos" className="mb-10">
-              <h2 className="mb-4 text-lg font-semibold text-[#10203A]">
-                Juegos de hoy
+              <h2 className={display.className + " mb-6 text-center text-3xl font-bold text-[#10203A] sm:text-4xl"}>
+                {tituloDelDia(fechaSeleccionada, LIGAS.find((l) => l.id === liga)?.nombre || "liga")}
               </h2>
               {juegos.length > 0 ? (
                 <div className="overflow-x-auto rounded-xl border border-[#10203A]/15 bg-white">
