@@ -13,6 +13,7 @@ Solo guarda:
 """
 
 import os
+from datetime import datetime, timedelta, timezone
 import requests
 from bs4 import BeautifulSoup
 
@@ -83,6 +84,11 @@ MESES = {
     "mayo": "05", "junio": "06", "julio": "07", "agosto": "08",
     "septiembre": "09", "octubre": "10", "noviembre": "11", "diciembre": "12",
 }
+
+
+def hoy_rd():
+    # Republica Dominicana esta siempre en UTC-4 (no usa horario de verano).
+    return (datetime.now(timezone.utc) - timedelta(hours=4)).strftime("%Y-%m-%d")
 
 
 def parsear_fecha(texto_fecha):
@@ -190,9 +196,14 @@ def main():
 
     guardados = []
     sin_mapear_actualizados = []
+    hoy = hoy_rd()
 
     for r in resultados:
-        if not r["actualizado"]:
+        # Algunas tarjetas (ej. Super Kino TV, un juego tipo Kino) nunca traen
+        # la insignia "Actualizado" en el sitio fuente, aunque sí muestran un
+        # resultado real y vigente. Por eso también aceptamos la tarjeta si su
+        # fecha coincide con la de hoy en Republica Dominicana.
+        if not r["actualizado"] and r["fecha"] != hoy:
             continue
 
         clave = (r["loteria_slug"], r["sorteo_nombre"])
