@@ -40,11 +40,13 @@ function IconoFutbol() {
     </svg>
   );
 }
-function IconoCine() {
+function IconoVariedades() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 8h18M3 8l2-4h3l-2 4M8 8l2-4h3l-2 4M13 8l2-4h3l-2 4" />
-      <rect x="3" y="8" width="18" height="12" rx="1.5" />
+      <rect x="3" y="3" width="8" height="8" rx="1.5" />
+      <rect x="13" y="3" width="8" height="8" rx="1.5" />
+      <rect x="3" y="13" width="8" height="8" rx="1.5" />
+      <rect x="13" y="13" width="8" height="8" rx="1.5" />
     </svg>
   );
 }
@@ -84,7 +86,7 @@ function ItemDesplegable(props: { item: ItemMenu }) {
   );
 }
 
-type MenuId = "loterias" | "beisbol" | "nba" | "futbol" | "cine" | null;
+type MenuId = "loterias" | "beisbol" | "nba" | "futbol" | "variedades" | null;
 
 /**
  * Un pill con dos zonas clicables:
@@ -175,10 +177,12 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
     { etiqueta: "Tabla de posiciones", href: "/futbol#posiciones" },
   ];
 
-  const itemsCine: ItemMenu[] = [
-    { etiqueta: "En cartelera", href: "/cine" },
-    { etiqueta: "Próximos estrenos", href: "/cine" },
-    { etiqueta: "Populares", href: "/cine" },
+  const itemsVariedades: ItemMenu[] = [
+    { etiqueta: "🎬 Cine", href: "/cine" },
+    { etiqueta: "🏝️ Turismo", href: "/turismo" },
+    { etiqueta: "⛽ Precio del combustible", href: "/precios-combustibles" },
+    { etiqueta: "📍 Códigos postales", href: "/codigos-postales" },
+    { etiqueta: "📅 Días feriados 2026", href: "/dias-feriados" },
   ];
 
   return (
@@ -198,19 +202,6 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
           {loterias.map(function (l) {
             return <ItemLoteria key={l.slug} loteria={l} />;
           })}
-          <div className="my-1 border-t border-white/10" />
-          <a href="/dias-feriados" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">
-            📅 Días feriados 2026
-          </a>
-          <a href="/codigos-postales" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">
-            📍 Códigos postales
-          </a>
-          <a href="/precios-combustibles" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">
-            ⛽ Precio del combustible
-          </a>
-          <a href="/turismo" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">
-            🏝️ Turismo
-          </a>
         </PillCategoria>
 
         <PillCategoria
@@ -251,13 +242,13 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
 
         <PillCategoria
           href="/cine"
-          icono={<IconoCine />}
-          etiqueta="Cine"
-          activo={menuAbierto === "cine"}
-          onAlternar={function () { alternar("cine"); }}
+          icono={<IconoVariedades />}
+          etiqueta="Variedades"
+          activo={menuAbierto === "variedades"}
+          onAlternar={function () { alternar("variedades"); }}
           alinearDerecha
         >
-          {itemsCine.map(function (item, i) {
+          {itemsVariedades.map(function (item, i) {
             return <ItemDesplegable key={i} item={item} />;
           })}
         </PillCategoria>
