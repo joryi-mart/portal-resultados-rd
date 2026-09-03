@@ -113,7 +113,9 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
   }
 
   const loteriaData = loteria as unknown as Loteria;
-  const sorteos = loteriaData.sorteos || [];
+  // Sorteos que la fuente de datos ya no ofrece (descontinuados o renombrados).
+  const SORTEOS_DESCONTINUADOS = [73, 116, 78, 112];
+  const sorteos = (loteriaData.sorteos || []).filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id); });
   const fechaLarga = formatearFechaLarga(params.fecha);
 
   return (

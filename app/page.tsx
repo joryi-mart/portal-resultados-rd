@@ -531,7 +531,12 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
     .limit(2);
   const cambios = cambiosResult.data || [];
 
-  const listaLoterias = loterias || [];
+  // Sorteos que la fuente de datos ya no ofrece (descontinuados o renombrados).
+  // Se ocultan aquí en vez de borrarlos de la base de datos, para no perder el historial.
+  const SORTEOS_DESCONTINUADOS = [73, 116, 78, 112];
+  const listaLoterias = (loterias || []).map(function (l) {
+    return { ...l, sorteos: (l.sorteos || []).filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id); }) };
+  });
   const ultimosResultados: UltimoResultado[] = [];
   for (let i = 0; i < listaLoterias.length; i++) {
     const loteria = listaLoterias[i];
