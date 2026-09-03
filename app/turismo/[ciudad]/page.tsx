@@ -184,6 +184,21 @@ export default async function CiudadTurismoPage(props: { params: Promise<{ ciuda
       <main className="mx-auto max-w-5xl px-4 pb-14 pt-6 sm:px-8">
         <p className="max-w-3xl text-base leading-relaxed">{ciudad.descripcion}</p>
 
+        {ciudad.galeria.length > 0 ? (
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            {ciudad.galeria.map(function (g, i) {
+              return (
+                <figure key={i}>
+                  <img src={g.url} alt={g.alt} className="h-52 w-full rounded-xl object-cover sm:h-64" />
+                  <figcaption className="mt-1.5 text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                    {g.alt} · Foto: {g.autor} / Wikimedia Commons ({g.licencia})
+                  </figcaption>
+                </figure>
+              );
+            })}
+          </div>
+        ) : null}
+
         <SeccionTarjetas titulo="Qué ver y hacer" items={ciudad.atracciones} icono="📍" color={COLOR_VERDE_RD} />
         <SeccionTarjetas titulo="Dónde alojarse" items={ciudad.hoteles} icono="🏨" color={COLOR_AZUL} />
         <SeccionTarjetas titulo="Ecoturismo y naturaleza" items={ciudad.ecoturismo} icono="🌿" color={COLOR_TEAL} />

@@ -9,6 +9,7 @@ export type Ciudad = {
   lat: number;
   lon: number;
   foto: { url: string; autor: string; licencia: string };
+  galeria: { url: string; autor: string; licencia: string; alt: string }[];
 };
 
 export const CIUDADES: Ciudad[] = [
@@ -22,6 +23,20 @@ export const CIUDADES: Ciudad[] = [
       autor: "Oleg Yunakov",
       licencia: "CC BY-SA 4.0",
     },
+    galeria: [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Lopesan_Costa_B%C3%A1varo_Resort%2C_Spa_%26_Casino.jpg/1280px-Lopesan_Costa_B%C3%A1varo_Resort%2C_Spa_%26_Casino.jpg",
+        autor: "IsaiahRogers",
+        licencia: "CC BY-SA 4.0",
+        alt: "Resort todo incluido en Bávaro, Punta Cana",
+      },
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Dominican_Republic_Hoyo_Azul.jpg/1280px-Dominican_Republic_Hoyo_Azul.jpg",
+        autor: "asw909 (Flickr)",
+        licencia: "CC BY 2.0",
+        alt: "Hoyo Azul, cenote de aguas turquesa",
+      },
+    ],
     resumen: "El destino de playa más famoso de República Dominicana, conocido por sus resorts todo incluido y arena blanca.",
     descripcion:
       "Punta Cana, en el extremo este del país (provincia La Altagracia), es el destino turístico más visitado de República Dominicana. " +
@@ -56,6 +71,20 @@ export const CIUDADES: Ciudad[] = [
       autor: "Desox7x",
       licencia: "CC0",
     },
+    galeria: [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Santo_Domingo_-_Alcazar_de_Colon_01.JPG/1280px-Santo_Domingo_-_Alcazar_de_Colon_01.JPG",
+        autor: "Martin Falbisoner",
+        licencia: "CC BY-SA 4.0",
+        alt: "Alcázar de Colón en la Zona Colonial",
+      },
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/LosTresOjos.JPG/1280px-LosTresOjos.JPG",
+        autor: "Swatigsood",
+        licencia: "Dominio público",
+        alt: "Los Tres Ojos, cuevas con lagunas de agua dulce",
+      },
+    ],
     resumen: "La capital del país y la ciudad más antigua fundada por europeos en América, con su Zona Colonial declarada Patrimonio de la Humanidad.",
     descripcion:
       "Santo Domingo es la capital de República Dominicana y la primera ciudad europea permanente del continente americano, " +
@@ -90,6 +119,20 @@ export const CIUDADES: Ciudad[] = [
       autor: "Max Bosio",
       licencia: "CC BY 2.0",
     },
+    galeria: [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Fortaleza_de_San_Felipe_DR_1.jpg/1280px-Fortaleza_de_San_Felipe_DR_1.jpg",
+        autor: "CareAhLine",
+        licencia: "CC0",
+        alt: "Fortaleza de San Felipe",
+      },
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/27_Charcas_rio_Damajagua_-_panoramio.jpg/1280px-27_Charcas_rio_Damajagua_-_panoramio.jpg",
+        autor: "kikeam71",
+        licencia: "CC BY-SA 3.0",
+        alt: "Canyoning en los 27 Charcos de Damajagua",
+      },
+    ],
     resumen: "En la Costa Ámbar, al norte del país, conocida por su teleférico, cascadas y playas menos concurridas.",
     descripcion:
       "Puerto Plata, en la costa norte de República Dominicana, es el corazón de la llamada Costa Ámbar, nombrada así por los " +
