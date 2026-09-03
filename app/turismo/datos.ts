@@ -344,4 +344,74 @@ export const CIUDADES: Ciudad[] = [
       "La Confluencia — punto de encuentro de los ríos Yaque del Norte y Jimenoa, popular para nadar",
     ],
   },
+  {
+    slug: "boca-chica",
+    nombre: "Boca Chica",
+    lat: 18.4515,
+    lon: -69.6067,
+    foto: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Playa_de_La_Caleta.jpg/1280px-Playa_de_La_Caleta.jpg",
+      autor: "KelvisDorville",
+      licencia: "CC BY 3.0",
+    },
+    galeria: [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Wv_Boca_Chica_banner.jpg/1280px-Wv_Boca_Chica_banner.jpg",
+        autor: "Mariordo (Mario Roberto Durán Ortiz)",
+        licencia: "CC BY-SA 4.0",
+        alt: "Marina y muelle de Boca Chica",
+      },
+    ],
+    resumen: "La playa clásica de los capitaleños, a solo 30 minutos de Santo Domingo, con aguas poco profundas ideales para familias.",
+    descripcion:
+      "Boca Chica, en la bahía de Andrés a unos 30 km al este de Santo Domingo, es la playa de fin de semana por excelencia " +
+      "para quienes viven en la capital. Su fondo arenoso y poco profundo, protegido por un arrecife natural, la hace ideal " +
+      "para familias con niños. La zona también incluye La Caleta, con su parque nacional submarino, uno de los mejores " +
+      "puntos de buceo cercanos a Santo Domingo.",
+    atracciones: [
+      "Playa Boca Chica — aguas poco profundas y tranquilas, protegidas por un arrecife natural",
+      "La Marina de Boca Chica — paseo con restaurantes de mariscos frente al mar",
+      "Parque La Caleta — playa y mirador para ver el atardecer, a pocos minutos",
+    ],
+    hoteles: [
+      "Zona de la playa principal — hoteles y apartamentos económicos a pasos de la arena",
+      "Guayacanes — a corta distancia, con más oferta de hoteles y vida nocturna",
+      "San Antonio de Guerra — alojamientos orientados a la cultura y gastronomía local",
+    ],
+    ecoturismo: [
+      "Parque Nacional Submarino La Caleta — arrecifes de coral y barcos hundidos para buceo",
+      "Parque La Caleta — paseo costero para ver el atardecer",
+    ],
+  },
+  {
+    slug: "guayacanes",
+    nombre: "Guayacanes",
+    lat: 18.4167,
+    lon: -69.5333,
+    foto: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/6/62/Juan_Dolio_Beach_1.jpg",
+      autor: "Kille",
+      licencia: "CC BY-SA 3.0",
+    },
+    galeria: [],
+    resumen: "Playa familiar de arena blanca y aguas tranquilas, entre Boca Chica y Juan Dolio, muy popular entre los residentes de Santo Domingo.",
+    descripcion:
+      "Guayacanes, en la provincia de San Pedro de Macorís, es una de las playas de fin de semana favoritas de quienes viven " +
+      "en la capital. Comparte la misma franja de costa que Juan Dolio, con arena blanca y aguas tranquilas ideales para " +
+      "nadar. Es fácil de visitar en transporte público desde San Pedro de Macorís, y está a pocos minutos de otras playas " +
+      "populares como Palenque.",
+    atracciones: [
+      "Playa Guayacanes — arena blanca y aguas tranquilas ideales para nadar y hacer esnórquel",
+      "Chiringuitos y restaurantes de playa — gastronomía dominicana frente al mar",
+      "Playa Juan Dolio — la vecina inmediata, con más oferta de hoteles y vida nocturna",
+    ],
+    hoteles: [
+      "Hoteles y resorts frente al mar en Guayacanes y la vecina Juan Dolio",
+      "Apartamentos y villas de alquiler, populares entre visitantes de fin de semana",
+    ],
+    ecoturismo: [
+      "Esnórquel en los arrecifes cercanos a la costa",
+      "Paseos en bote hacia las playas vecinas de Juan Dolio y Palenque",
+    ],
+  },
 ];
