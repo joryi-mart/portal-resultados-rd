@@ -38,7 +38,7 @@ async function obtenerCalendarioMLB(fecha: string | null) {
 
   const parametroFecha = fecha ? `&date=${fecha}` : "";
   const res = await fetch(
-    `https://statsapi.mlb.com/api/v1/schedule?sportId=1&hydrate=probablePitcher,broadcasts${parametroFecha}`
+    `https://statsapi.mlb.com/api/v1/schedule?sportId=1&hydrate=probablePitcher,broadcasts,decisions${parametroFecha}`
   );
   if (!res.ok) throw new Error(`Error MLB API: ${res.status}`);
   const data = await res.json();
@@ -223,21 +223,62 @@ async function obtenerPosicionesLIDOM(ligaId: number | null) {
   return posiciones;
 }
 
-async function obtenerDesempenoDominicanos(juegosHoy: any[], idsDominicanos: Set<number>, fecha: string | null) {
-  const claveCache = "mlb-desempeno-" + (fecha || "hoy");
+async function obtenerBoxscores(juegos: any[], fecha: string | null) {
+  const claveCache = "mlb-boxscores-" + (fecha || "hoy");
   const cacheado = getCache(claveCache);
   if (cacheado) return cacheado;
 
-  if (juegosHoy.length === 0) return [];
+  if (juegos.length === 0) return [];
 
   const boxscores = await Promise.all(
-    juegosHoy.map((juego) =>
+    juegos.map((juego) =>
       fetch(`https://statsapi.mlb.com/api/v1/game/${juego.gamePk}/boxscore`)
         .then((res) => (res.ok ? res.json() : null))
         .catch(() => null)
     )
   );
 
+  setCache(claveCache, boxscores, 10 * 60 * 1000);
+  return boxscores;
+}
+
+function calcularDestacadoPorJuego(juegosHoy: any[], boxscores: any[]) {
+  const destacados: Record<number, any> = {};
+
+  boxscores.forEach((box, indice) => {
+    if (!box) return;
+    const juego = juegosHoy[indice];
+    let mejor: any = null;
+    let mejorPuntaje = 0;
+
+    [box.teams?.away, box.teams?.home].forEach((datos) => {
+      if (!datos) return;
+      Object.values(datos.players || {}).forEach((j: any) => {
+        const bateo = j.stats?.batting;
+        if (!bateo || Number(bateo.atBats) === 0) return;
+
+        const puntaje = Number(bateo.hits || 0) + Number(bateo.homeRuns || 0) * 2 + Number(bateo.rbi || 0);
+        if (puntaje > mejorPuntaje) {
+          mejorPuntaje = puntaje;
+          mejor = {
+            nombre: j.person?.fullName || "",
+            equipo: datos.team?.name || "",
+            turnos: bateo.atBats,
+            hits: bateo.hits,
+            jonrones: bateo.homeRuns,
+            empujadas: bateo.rbi,
+          };
+        }
+      });
+    });
+
+    if (mejor) destacados[juego.gamePk] = mejor;
+  });
+
+  return destacados;
+}
+
+async function obtenerDesempenoDominicanos(juegosHoy: any[], boxscores: any[], idsDominicanos: Set<number>) {
   const desempenos: any[] = [];
 
   boxscores.forEach((box, indice) => {
@@ -290,7 +331,6 @@ async function obtenerDesempenoDominicanos(juegosHoy: any[], idsDominicanos: Set
     });
   });
 
-  setCache(claveCache, desempenos, 10 * 60 * 1000);
   return desempenos;
 }
 
@@ -313,11 +353,14 @@ export async function GET(request: Request) {
     const idsDominicanos = new Set<number>(jugadoresDominicanos.map((j: any) => Number(j.id)));
     const juegosHoy = mlb?.dates?.[0]?.games || [];
 
-    const [noticiasMLB, posicionesLIDOM, desempenoDominicanos] = await Promise.all([
+    const [noticiasMLB, posicionesLIDOM, boxscores] = await Promise.all([
       obtenerNoticiasMLB(),
       obtenerPosicionesLIDOM(lidom.ligaId),
-      obtenerDesempenoDominicanos(juegosHoy, idsDominicanos, fecha),
+      obtenerBoxscores(juegosHoy, fecha),
     ]);
+
+    const desempenoDominicanos = await obtenerDesempenoDominicanos(juegosHoy, boxscores, idsDominicanos);
+    const destacadosPorJuego = calcularDestacadoPorJuego(juegosHoy, boxscores);
 
     return NextResponse.json({
       actualizado: new Date().toISOString(),
@@ -332,6 +375,7 @@ export async function GET(request: Request) {
       posicionesMLB,
       posicionesLIDOM,
       desempenoDominicanos,
+      destacadosPorJuego,
     });
   } catch (error: any) {
     return NextResponse.json(

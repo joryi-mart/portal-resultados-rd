@@ -79,6 +79,12 @@ type DesempenoJugador = {
   asistencias: number;
 };
 
+type DestacadoJuego = {
+  nombre: string;
+  equipo: string;
+  valor: string;
+};
+
 export default function NBAPage() {
   const [juegos, setJuegos] = useState<Juego[]>([]);
   const [noticias, setNoticias] = useState<Noticia[]>([]);
@@ -88,6 +94,7 @@ export default function NBAPage() {
   const [dominicanos, setDominicanos] = useState<JugadorDominicano[]>([]);
   const [liderAtaque, setLiderAtaque] = useState<Lider[]>([]);
   const [liderDefensa, setLiderDefensa] = useState<Lider[]>([]);
+  const [destacadosPorJuego, setDestacadosPorJuego] = useState<Record<string, DestacadoJuego>>({});
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [fechaSeleccionada, setFechaSeleccionada] = useState<string | null>(null);
@@ -110,6 +117,7 @@ export default function NBAPage() {
         setDominicanos(data.jugadoresDominicanos || []);
         setLiderAtaque(data.liderAtaque || []);
         setLiderDefensa(data.liderDefensa || []);
+        setDestacadosPorJuego(data.destacadosPorJuego || {});
       })
       .catch(() => setError("No se pudo cargar la información"))
       .finally(() => setCargando(false));
@@ -195,6 +203,9 @@ export default function NBAPage() {
     const local = competidores.find((c) => c.homeAway === "home");
     if (!visitante || !local) return null;
 
+    const terminado = juego.status.type.state === "post";
+    const destacado = destacadosPorJuego[juego.id];
+
     return (
       <tr key={juego.id} className="border-b border-[#10203A]/10 last:border-0">
         <td className="py-3 pl-4 pr-3 align-top">
@@ -218,6 +229,11 @@ export default function NBAPage() {
               {local.team.displayName}
             </span>
           </div>
+          {terminado && destacado && (
+            <p className="mt-1.5 text-xs text-[#5C6B78]">
+              ⭐ Destacado: {destacado.nombre} ({destacado.equipo}) — {destacado.valor}
+            </p>
+          )}
         </td>
         <td className="w-24 py-3 pr-4 text-right align-top">
           <p className="font-mono text-2xl font-bold text-[#1E4D8C]">{visitante.score ?? "-"}</p>

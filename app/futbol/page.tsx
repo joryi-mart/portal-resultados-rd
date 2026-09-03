@@ -52,11 +52,19 @@ type EquipoPosicion = {
   diferencia: string;
 };
 
+type Gol = {
+  nombre: string;
+  equipo: string;
+  minuto: string;
+  penal: boolean;
+};
+
 export default function FutbolPage() {
   const [liga, setLiga] = useState<LigaId>("esp.1");
   const [juegos, setJuegos] = useState<Juego[]>([]);
   const [noticias, setNoticias] = useState<Noticia[]>([]);
   const [posiciones, setPosiciones] = useState<EquipoPosicion[]>([]);
+  const [goleadoresPorJuego, setGoleadoresPorJuego] = useState<Record<string, Gol[]>>({});
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [fechaSeleccionada, setFechaSeleccionada] = useState<string | null>(null);
@@ -75,6 +83,7 @@ export default function FutbolPage() {
         setJuegos(data.calendario?.events || []);
         setNoticias(data.noticias || []);
         setPosiciones(data.posiciones || []);
+        setGoleadoresPorJuego(data.goleadoresPorJuego || {});
       })
       .catch(() => setError("No se pudo cargar la información"))
       .finally(() => setCargando(false));
@@ -133,6 +142,20 @@ export default function FutbolPage() {
     const visitante = competidores.find((c) => c.homeAway === "away");
     if (!local || !visitante) return null;
 
+    const terminado = juego.status.type.state === "post";
+    const goles = goleadoresPorJuego[juego.id] || [];
+    const golesLocal = goles.filter((g) => String(g.equipo) === String(local.team.id));
+    const golesVisitante = goles.filter((g) => String(g.equipo) === String(visitante.team.id));
+
+    function listaGoles(lista: Gol[]) {
+      if (lista.length === 0) return null;
+      return (
+        <p className="mt-0.5 text-xs text-[#5C6B78]">
+          ⚽ {lista.map((g) => g.nombre + (g.minuto ? ` ${g.minuto}` : "") + (g.penal ? " (P)" : "")).join(", ")}
+        </p>
+      );
+    }
+
     return (
       <tr key={juego.id} className="border-b border-[#10203A]/10 last:border-0">
         <td className="py-3 pl-4 pr-3 align-top">
@@ -148,6 +171,7 @@ export default function FutbolPage() {
               {local.team.displayName}
             </span>
           </div>
+          {terminado ? listaGoles(golesLocal) : null}
           <div className="mt-1.5 flex items-center gap-2">
             {visitante.team.logo ? (
               <Image src={visitante.team.logo} alt="" width={28} height={28} className="h-7 w-7 shrink-0" />
@@ -156,6 +180,7 @@ export default function FutbolPage() {
               {visitante.team.displayName}
             </span>
           </div>
+          {terminado ? listaGoles(golesVisitante) : null}
         </td>
         <td className="w-24 py-3 pr-4 text-right align-top">
           <p className="font-mono text-2xl font-bold text-[#1E4D8C]">{local.score ?? "-"}</p>

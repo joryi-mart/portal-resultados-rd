@@ -66,6 +66,25 @@ async function obtenerNoticiasNBA() {
   return noticias;
 }
 
+function extraerDestacadosPorJuego(juegos: any[]) {
+  const destacados: Record<string, any> = {};
+
+  juegos.forEach((juego: any) => {
+    const lideres = juego.competitions?.[0]?.leaders || [];
+    const puntos = lideres.find((l: any) => l.name === "points");
+    const lider = puntos?.leaders?.[0];
+    if (!lider) return;
+
+    destacados[juego.id] = {
+      nombre: lider.athlete?.displayName || "",
+      equipo: lider.team?.displayName || "",
+      valor: lider.displayValue || "",
+    };
+  });
+
+  return destacados;
+}
+
 function extraerValorStat(stats: any[], nombre: string) {
   const stat = (stats || []).find((s: any) => s.name === nombre);
   return stat ? stat.value : 0;
@@ -261,6 +280,7 @@ export async function GET(request: Request) {
     );
 
     const { mejorAtaque, mejorDefensa } = calcularLideresOfensivaDefensiva(posicionesNBA);
+    const destacadosPorJuego = extraerDestacadosPorJuego(juegosHoy);
 
     return NextResponse.json({
       actualizado: new Date().toISOString(),
@@ -273,6 +293,7 @@ export async function GET(request: Request) {
       desempenoDominicanos,
       liderAtaque: mejorAtaque,
       liderDefensa: mejorDefensa,
+      destacadosPorJuego,
     });
   } catch (error: any) {
     return NextResponse.json(

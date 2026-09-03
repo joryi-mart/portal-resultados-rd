@@ -16,6 +16,16 @@ type Juego = {
   };
   venue: { name: string };
   gameDate: string;
+  decisions?: { winner?: Pitcher; loser?: Pitcher };
+};
+
+type DestacadoJuego = {
+  nombre: string;
+  equipo: string;
+  turnos: number;
+  hits: number;
+  jonrones: number;
+  empujadas: number;
 };
 
 type Noticia = {
@@ -91,6 +101,7 @@ export default function BeisbolPage() {
   const [dominicanos, setDominicanos] = useState<JugadorDominicano[]>([]);
   const [liderJonrones, setLiderJonrones] = useState<Lider[]>([]);
   const [liderPitcheo, setLiderPitcheo] = useState<Lider[]>([]);
+  const [destacadosPorJuego, setDestacadosPorJuego] = useState<Record<number, DestacadoJuego>>({});
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [fechaSeleccionada, setFechaSeleccionada] = useState<string | null>(null);
@@ -122,6 +133,7 @@ export default function BeisbolPage() {
         setDominicanos(data.jugadoresDominicanos || []);
         setLiderJonrones(data.liderJonrones || []);
         setLiderPitcheo(data.liderPitcheo || []);
+        setDestacadosPorJuego(data.destacadosPorJuego || {});
       })
       .catch(() => setError("No se pudo cargar la información"))
       .finally(() => setCargando(false));
@@ -228,6 +240,7 @@ export default function BeisbolPage() {
     const pitcherVisitante = juego.teams.away.probablePitcher?.fullName;
     const pitcherLocal = juego.teams.home.probablePitcher?.fullName;
     const hayPicheo = !terminado && (pitcherVisitante || pitcherLocal);
+    const destacado = destacadosPorJuego[juego.gamePk];
 
     return (
       <div key={juego.gamePk} className="border-b border-[#10203A]/10 px-4 py-3 last:border-0">
@@ -260,6 +273,19 @@ export default function BeisbolPage() {
         {hayPicheo && (
           <p className="mt-2 text-sm text-[#1E4D8C]">
             🥎 {pitcherVisitante || "Por confirmar"} vs {pitcherLocal || "Por confirmar"}
+          </p>
+        )}
+        {terminado && juego.decisions?.winner && (
+          <p className="mt-2 text-sm text-[#007A33]">
+            🏆 Pícher ganador: {juego.decisions.winner.fullName}
+            {juego.decisions.loser ? ` · Perdedor: ${juego.decisions.loser.fullName}` : ""}
+          </p>
+        )}
+        {terminado && destacado && (
+          <p className="mt-1 text-sm text-[#5C6B78]">
+            ⭐ Destacado: {destacado.nombre} ({destacado.equipo}) — {destacado.hits}-{destacado.turnos}
+            {destacado.jonrones > 0 ? `, ${destacado.jonrones} HR` : ""}
+            {destacado.empujadas > 0 ? `, ${destacado.empujadas} IC` : ""}
           </p>
         )}
       </div>

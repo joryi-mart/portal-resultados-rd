@@ -70,6 +70,25 @@ async function obtenerNoticias(liga: string) {
   return noticias;
 }
 
+function extraerGoleadoresPorJuego(juegos: any[]) {
+  const goleadores: Record<string, any[]> = {};
+
+  juegos.forEach((juego: any) => {
+    const detalles = juego.competitions?.[0]?.details || [];
+    const goles = detalles.filter((d: any) => d.type?.text === "Goal" || d.scoringPlay);
+    if (goles.length === 0) return;
+
+    goleadores[juego.id] = goles.map((g: any) => ({
+      nombre: g.athletesInvolved?.[0]?.displayName || "",
+      equipo: g.team?.id || "",
+      minuto: g.clock?.displayValue || "",
+      penal: !!g.penaltyKick,
+    }));
+  });
+
+  return goleadores;
+}
+
 function extraerValorStat(stats: any[], nombre: string) {
   const stat = (stats || []).find((s: any) => s.name === nombre);
   return stat ? stat.value : 0;
@@ -137,6 +156,8 @@ export async function GET(request: Request) {
       obtenerPosiciones(liga),
     ]);
 
+    const goleadoresPorJuego = extraerGoleadoresPorJuego(calendario?.events || []);
+
     return NextResponse.json({
       actualizado: new Date().toISOString(),
       liga,
@@ -145,6 +166,7 @@ export async function GET(request: Request) {
       equipos,
       noticias,
       posiciones,
+      goleadoresPorJuego,
     });
   } catch (error: any) {
     return NextResponse.json(
