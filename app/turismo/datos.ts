@@ -36,6 +36,18 @@ export const CIUDADES: Ciudad[] = [
         licencia: "CC BY 2.0",
         alt: "Hoyo Azul, cenote de aguas turquesa",
       },
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Isla_Saona_Dominican_Republic.jpg/1280px-Isla_Saona_Dominican_Republic.jpg",
+        autor: "bez_uk (Flickr)",
+        licencia: "CC BY-SA 2.0",
+        alt: "Playa de Isla Saona",
+      },
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Cap_Cana_Marina_Dominican_Republic.jpg/1280px-Cap_Cana_Marina_Dominican_Republic.jpg",
+        autor: "uira (Flickr)",
+        licencia: "CC BY-SA 2.0",
+        alt: "Marina de Cap Cana",
+      },
     ],
     resumen: "El destino de playa más famoso de República Dominicana, conocido por sus resorts todo incluido y arena blanca.",
     descripcion:
@@ -84,6 +96,12 @@ export const CIUDADES: Ciudad[] = [
         licencia: "Dominio público",
         alt: "Los Tres Ojos, cuevas con lagunas de agua dulce",
       },
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Catedral_Primada_CCSD_09_2018_1234.jpg/1280px-Catedral_Primada_CCSD_09_2018_1234.jpg",
+        autor: "Mariordo (Mario Roberto Durán Ortiz)",
+        licencia: "CC BY-SA 4.0",
+        alt: "Catedral Primada de América",
+      },
     ],
     resumen: "La capital del país y la ciudad más antigua fundada por europeos en América, con su Zona Colonial declarada Patrimonio de la Humanidad.",
     descripcion:
@@ -131,6 +149,18 @@ export const CIUDADES: Ciudad[] = [
         autor: "kikeam71",
         licencia: "CC BY-SA 3.0",
         alt: "Canyoning en los 27 Charcos de Damajagua",
+      },
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Sosua_Beach_Dominican_Republic.jpg/1280px-Sosua_Beach_Dominican_Republic.jpg",
+        autor: "stupiddingo (Flickr)",
+        licencia: "CC BY 2.0",
+        alt: "Playa Sosúa",
+      },
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/5/54/Telef%C3%A9rico_Puerto_Plata.jpg",
+        autor: "Ronny Medina",
+        licencia: "CC BY 4.0",
+        alt: "Teleférico de Puerto Plata",
       },
     ],
     resumen: "En la Costa Ámbar, al norte del país, conocida por su teleférico, cascadas y playas menos concurridas.",
