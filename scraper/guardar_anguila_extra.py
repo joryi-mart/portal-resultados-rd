@@ -1,11 +1,11 @@
 """
-Guardar resultados extra de Anguila (9:00 AM, 10:00 AM, 11:00 AM y La
-Cuarteta 10:00 AM) - La BankeraRD
+Guardar resultado de Anguila 10:00 AM - La BankeraRD
 ================================================================================
-loteriasdominicanas.us (la fuente principal) solo ofrece Anguila Mediodia,
-Tarde y Noche. Los sorteos de la manana (9, 10 y 11 AM) y La Cuarteta se
-sacan de losnumeros.com.do, la misma fuente que ya usamos para los extras
-de Loteria Real.
+El horario oficial de Anguila Lottery es de 4 sorteos diarios: 10:00 AM,
+1:00 PM, 6:00 PM y 9:00 PM. loteriasdominicanas.us (la fuente principal) ya
+cubre los de 1pm/6pm/9pm (Mediodia/Tarde/Noche); el de las 10:00 AM se saca
+de losnumeros.com.do, la misma fuente que ya usamos para los extras de
+Loteria Real.
 """
 
 import os
@@ -25,10 +25,7 @@ HEADERS = {
 
 # (url de losnumeros.com.do, sorteo_id correspondiente en nuestra base de datos)
 PAGINAS = [
-    ("https://losnumeros.com.do/anguilla/anguila-9-am/", 148),
     ("https://losnumeros.com.do/anguilla/anguila-10-am/", 116),
-    ("https://losnumeros.com.do/anguilla/anguila-11-am/", 149),
-    ("https://losnumeros.com.do/anguilla/la-cuarteta-manana/", 150),
 ]
 
 
