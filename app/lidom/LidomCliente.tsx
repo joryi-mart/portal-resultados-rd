@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Space_Grotesk } from "next/font/google";
 import NavPildoras from "../NavPildoras";
+import { HISTORIAS_LIDOM } from "./datos";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -46,27 +47,42 @@ export default function LidomCliente() {
 
   function renderEquipo(equipo: Equipo) {
     const pos = posiciones.find(function (p) { return p.equipoId === equipo.id; });
+    const foto = HISTORIAS_LIDOM[String(equipo.id)]?.foto;
     return (
       <a
         key={equipo.id}
         href={"/lidom/" + equipo.id}
-        className="flex items-center gap-3 rounded-xl border border-[#10203A]/15 bg-white p-4 shadow-sm hover:shadow-md"
+        className="overflow-hidden rounded-xl border border-[#10203A]/15 bg-white shadow-sm hover:shadow-md"
       >
-        <img
-          src={`https://www.mlbstatic.com/team-logos/${equipo.id}.svg`}
-          alt=""
-          className="h-12 w-12 shrink-0 object-contain"
-          onError={function (e) { (e.target as HTMLImageElement).style.display = "none"; }}
-        />
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-[#10203A]">{equipo.nombre}</p>
-          {pos ? (
-            <p className="truncate font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-              {pos.victorias}-{pos.derrotas} · {pos.diferencia === "-" ? "líder" : pos.diferencia + " GB"}
-            </p>
-          ) : (
-            <p className="truncate font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Fuera de temporada</p>
-          )}
+        {foto ? (
+          <img src={foto.url} alt="" className="h-28 w-full object-cover" />
+        ) : (
+          <div className="flex h-28 w-full items-center justify-center bg-[#10203A]/5">
+            <img
+              src={`https://www.mlbstatic.com/team-logos/${equipo.id}.svg`}
+              alt=""
+              className="h-14 w-14 object-contain"
+              onError={function (e) { (e.target as HTMLImageElement).style.display = "none"; }}
+            />
+          </div>
+        )}
+        <div className="flex items-center gap-3 p-4">
+          <img
+            src={`https://www.mlbstatic.com/team-logos/${equipo.id}.svg`}
+            alt=""
+            className="h-10 w-10 shrink-0 object-contain"
+            onError={function (e) { (e.target as HTMLImageElement).style.display = "none"; }}
+          />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-[#10203A]">{equipo.nombre}</p>
+            {pos ? (
+              <p className="truncate font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                {pos.victorias}-{pos.derrotas} · {pos.diferencia === "-" ? "líder" : pos.diferencia + " GB"}
+              </p>
+            ) : (
+              <p className="truncate font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Fuera de temporada</p>
+            )}
+          </div>
         </div>
       </a>
     );
