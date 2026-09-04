@@ -20,18 +20,23 @@ function ipDesdeOuts(outs: number) {
 function calcularEraCombinada(salidas: any[]) {
   let outsTotal = 0;
   let carrerasLimpias = 0;
+  let hitsMasBases = 0;
 
   salidas.forEach((s) => {
     outsTotal += outsDesdeIP(s.stat?.inningsPitched);
     carrerasLimpias += Number(s.stat?.earnedRuns) || 0;
+    hitsMasBases += (Number(s.stat?.hits) || 0) + (Number(s.stat?.baseOnBalls) || 0);
   });
 
+  const entradasDecimal = outsTotal / 3;
   const era = outsTotal > 0 ? ((carrerasLimpias * 27) / outsTotal).toFixed(2) : "-";
+  const whip = entradasDecimal > 0 ? (hitsMasBases / entradasDecimal).toFixed(2) : "-";
 
   return {
     entradas: ipDesdeOuts(outsTotal),
     carrerasLimpias,
     era,
+    whip,
   };
 }
 
@@ -47,6 +52,7 @@ async function obtenerTemporada(id: string) {
     victorias: stat.wins ?? 0,
     derrotas: stat.losses ?? 0,
     era: stat.era ?? "-",
+    whip: stat.whip ?? "-",
   };
 }
 

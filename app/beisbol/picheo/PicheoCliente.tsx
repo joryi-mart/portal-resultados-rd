@@ -26,7 +26,7 @@ type Juego = {
 };
 
 type DetallePitcher = {
-  temporada: { victorias: number; derrotas: number; era: string } | null;
+  temporada: { victorias: number; derrotas: number; era: string; whip: string } | null;
   ultimaSalida: {
     fecha: string;
     rival: string;
@@ -36,7 +36,7 @@ type DetallePitcher = {
     ponches: number;
     carrerasLimpias: number;
   } | null;
-  ultimasTres: { entradas: string; carrerasLimpias: number; era: string } | null;
+  ultimasTres: { entradas: string; carrerasLimpias: number; era: string; whip: string } | null;
   splits: {
     casa: { entradas: string; era: string } | null;
     ruta: { entradas: string; era: string } | null;
@@ -127,7 +127,7 @@ export default function PicheoCliente() {
             {detalle.temporada && (
               <p>
                 <span className="text-[#5C6B78]">Temporada: </span>
-                {detalle.temporada.victorias}-{detalle.temporada.derrotas}, ERA {detalle.temporada.era}
+                {detalle.temporada.victorias}-{detalle.temporada.derrotas}, <b>ERA</b> {detalle.temporada.era}, <b>WHIP</b> {detalle.temporada.whip}
               </p>
             )}
 
@@ -141,16 +141,16 @@ export default function PicheoCliente() {
             {detalle.ultimasTres && (
               <p>
                 <span className="text-[#5C6B78]">Últimas 3 salidas: </span>
-                {detalle.ultimasTres.entradas} IP, ERA {detalle.ultimasTres.era}
+                {detalle.ultimasTres.entradas} IP, <b>ERA</b> {detalle.ultimasTres.era}, <b>WHIP</b> {detalle.ultimasTres.whip}
               </p>
             )}
 
             {(detalle.splits.casa || detalle.splits.ruta) && (
               <p>
                 <span className="text-[#5C6B78]">Casa/Ruta: </span>
-                {detalle.splits.casa ? "ERA " + detalle.splits.casa.era + " (casa)" : "-"}
+                {detalle.splits.casa ? <><b>ERA</b> {detalle.splits.casa.era} (casa)</> : "-"}
                 {" · "}
-                {detalle.splits.ruta ? "ERA " + detalle.splits.ruta.era + " (ruta)" : "-"}
+                {detalle.splits.ruta ? <><b>ERA</b> {detalle.splits.ruta.era} (ruta)</> : "-"}
               </p>
             )}
           </div>
