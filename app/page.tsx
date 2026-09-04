@@ -442,69 +442,64 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
   }
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-[#10203A] p-6 sm:p-8">
-      <div className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(#FBF7EE 1px, transparent 1px)", backgroundSize: "18px 18px" }} />
-      <div className="relative">
-        <p className="mb-1 font-mono text-base font-semibold text-[#FFD166]">● En vivo · {fechaTitulo}</p>
-        <h2 className="mb-1 font-[family-name:var(--font-display)] text-3xl font-bold text-white sm:text-4xl">
+    <div className="overflow-hidden rounded-2xl bg-[#10203A]">
+      <div className="p-5 pb-3 sm:p-6 sm:pb-4">
+        <p className="mb-1 font-mono text-xs font-semibold text-[#FFD166]">● En vivo · {fechaTitulo}</p>
+        <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold text-white sm:text-3xl">
           ¿Qué salió {fechaSeleccionada === hoyISO() ? "hoy" : "ese día"}?
         </h2>
-        <p className="mb-6 text-base text-[#E8ECF1]">Toca una lotería abajo para ver más resultados.</p>
-
-        {filas.length === 0 ? (
-          <p className="rounded-xl bg-white/10 px-4 py-4 text-base text-white">
-            Todavía no hay resultados publicados para este día.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {filas.map(function (fila, i) {
-              const colorEspecial = COLOR_ESPECIAL_SORTEOS[fila.sorteoId];
-              const href = fila.esVistaPrevia ? "/" + fila.loteriaSlug : "/" + fila.loteriaSlug + "/" + fechaSeleccionada;
-              return (
-                <a key={i} href={href} className="flex flex-col gap-3 rounded-xl bg-white px-5 py-4 hover:bg-[#FBF7EE]">
-                  <div className="flex items-center justify-between">
-                    {fila.esVistaPrevia ? (
-                      <span
-                        className="inline-block shrink-0 rounded-md px-2.5 py-1 font-mono text-xs font-bold italic"
-                        style={{ backgroundColor: "#E4E8EB", color: "#7B858F" }}
-                      >
-                        vista previa
-                      </span>
-                    ) : (
-                      <EtiquetaFecha fechaISO={fechaSeleccionada} />
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-lg font-bold text-[#10203A]">{fila.loteria}</p>
-                    <p className="truncate text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-                      {fila.sorteo}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {fila.numeros.map(function (n, j) {
-                      const esPrimera = j === 0 && !colorEspecial;
-                      const estiloEspecial = !fila.esVistaPrevia && colorEspecial
-                        ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
-                        : !fila.esVistaPrevia && esPrimera
-                        ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
-                        : undefined;
-                      return (
-                        <span
-                          key={j}
-                          className={"flex h-14 w-14 items-center justify-center rounded-full font-mono text-2xl font-bold sm:h-16 sm:w-16 " + (fila.esVistaPrevia ? "border-2 border-dashed border-[#9AA5AF] bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
-                          style={estiloEspecial}
-                        >
-                          {n}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </a>
-              );
-            })}
-          </div>
-        )}
       </div>
+
+      {filas.length === 0 ? (
+        <p className="mx-5 mb-5 rounded-xl bg-white/10 px-4 py-4 text-base text-white sm:mx-6">
+          Todavía no hay resultados publicados para este día.
+        </p>
+      ) : (
+        <div className="mx-3 mb-3 overflow-hidden rounded-xl bg-white sm:mx-4 sm:mb-4">
+          {filas.map(function (fila, i) {
+            const colorEspecial = COLOR_ESPECIAL_SORTEOS[fila.sorteoId];
+            const href = fila.esVistaPrevia ? "/" + fila.loteriaSlug : "/" + fila.loteriaSlug + "/" + fechaSeleccionada;
+            return (
+              <a
+                key={i}
+                href={href}
+                className="flex items-center gap-3 border-t border-[#10203A]/8 px-4 py-3 transition hover:bg-[#FBF7EE] first:border-t-0"
+              >
+                <span
+                  className="h-8 w-1 shrink-0 rounded-full"
+                  style={{ backgroundColor: fila.esVistaPrevia ? "#9AA5AF" : COLOR_VERDE_RD }}
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-base font-semibold text-[#10203A]">{fila.sorteo}</p>
+                  <p className="truncate font-mono text-[11px]" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                    {fila.loteria}
+                    {fila.esVistaPrevia ? " · vista previa" : ""}
+                  </p>
+                </div>
+                <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+                  {fila.numeros.map(function (n, j) {
+                    const esPrimera = j === 0 && !colorEspecial;
+                    const estiloEspecial = !fila.esVistaPrevia && colorEspecial
+                      ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
+                      : !fila.esVistaPrevia && esPrimera
+                      ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
+                      : undefined;
+                    return (
+                      <span
+                        key={j}
+                        className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (fila.esVistaPrevia ? "border border-dashed border-[#9AA5AF] bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
+                        style={estiloEspecial}
+                      >
+                        {n}
+                      </span>
+                    );
+                  })}
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
