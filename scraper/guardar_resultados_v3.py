@@ -51,6 +51,7 @@ MAPEO_SORTEOS = {
     ("loteria-real", "Quiniela Real"): 75,
     ("loteria-real", "Tu Fecha"): 77,
     ("loteria-real", "Loto Real"): 76,
+    ("loteria-real", "Loto Pool Real"): 137,
     ("lotedom", "Quiniela Lotedom"): 79,
     ("lotedom", "Quemaito Mayor"): 80,
     ("lotedom", "Super Pale"): 82,
