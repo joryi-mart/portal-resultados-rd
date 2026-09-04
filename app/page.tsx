@@ -364,8 +364,9 @@ function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
   );
 }
 
-function TablaHorarios(props: { loterias: Loteria[] }) {
+function TablaHorarios(props: { loterias: Loteria[]; fechaSeleccionada: string }) {
   const loterias = props.loterias;
+  const fechaSeleccionada = props.fechaSeleccionada;
   return (
     <div className="mt-8 rounded-xl border border-[#10203A]/12 bg-white p-5">
       <h2 className="mb-1 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Horarios de sorteos</h2>
@@ -379,9 +380,12 @@ function TablaHorarios(props: { loterias: Loteria[] }) {
               <p className="mb-1.5 font-[family-name:var(--font-display)] text-sm font-bold text-[#10203A]">{loteria.nombre}</p>
               <div className="flex flex-col gap-1">
                 {sorteos.map(function (sorteo) {
+                  const yaSalioHoy = (sorteo.resultados || []).some(function (r) { return r.fecha === fechaSeleccionada; });
                   return (
                     <div key={sorteo.id} className="flex items-center justify-between gap-2 font-mono text-xs">
-                      <span className="truncate text-[#10203A]">{sorteo.nombre}</span>
+                      <span className={"truncate text-[#10203A] " + (yaSalioHoy ? "font-bold" : "")}>
+                        {yaSalioHoy ? "✓ " : ""}{sorteo.nombre}
+                      </span>
                       <span className="shrink-0 whitespace-nowrap" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
                         {formatearHora12(sorteo.hora_sorteo)}
                       </span>
@@ -689,7 +693,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
           })}
         </div>
 
-        <TablaHorarios loterias={listaLoterias} />
+        <TablaHorarios loterias={listaLoterias} fechaSeleccionada={fechaSeleccionada} />
 
         <section className="mt-8 rounded-xl border border-[#10203A]/12 bg-white p-5 sm:p-8">
           <h2 className="mb-4 font-[family-name:var(--font-display)] text-2xl font-bold text-[#10203A]">
