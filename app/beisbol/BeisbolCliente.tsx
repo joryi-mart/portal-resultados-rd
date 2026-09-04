@@ -301,6 +301,11 @@ export default function BeisbolCliente() {
           </div>
           <span className={"shrink-0 font-mono text-2xl font-bold " + (ganoLocal ? "text-[#007A33]" : "text-[#1E4D8C]")}>{scoreLocal ?? "-"}</span>
         </div>
+        {terminado && scoreVisitante != null && scoreLocal != null && (
+          <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-[#5C6B78]">
+            ⚾ Total de carreras del juego: {scoreVisitante + scoreLocal}
+          </p>
+        )}
         {hayPicheo && (
           <p className="mt-2 text-sm text-[#1E4D8C]">
             🥎 {pitcherVisitante || "Por confirmar"} vs {pitcherLocal || "Por confirmar"}
