@@ -202,8 +202,18 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
 
                   {numeros.length > 0 ? (
                     sorteo.nombre.toLowerCase().includes("kino") ? (
-                      <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1 pb-1">
-                        {numeros.map(function (n, i) { return <Bolita key={i} tamano="h-9 w-9 text-sm">{n}</Bolita>; })}
+                      <div className="grid grid-cols-5 gap-2 sm:gap-3">
+                        {numeros.map(function (n, i) {
+                          return (
+                            <div
+                              key={i}
+                              className="flex aspect-square items-center justify-center rounded-full border-2 font-mono text-base font-bold sm:text-lg"
+                              style={{ backgroundColor: "#FFFFFF", borderColor: COLOR_AZUL, color: COLOR_AZUL }}
+                            >
+                              {n}
+                            </div>
+                          );
+                        })}
                       </div>
                     ) : (
                       <div className="flex flex-wrap items-center gap-2">
