@@ -69,18 +69,27 @@ export default function EquipoLidomCliente(props: { equipoId: string }) {
               </div>
             )}
 
-            <div className="mb-6 flex items-center gap-3">
+            <div
+              className="mb-6 flex items-center gap-3 rounded-xl p-4"
+              style={{
+                backgroundColor: (HISTORIAS_LIDOM[String(detalle.id)]?.color || "#10203A") + "14",
+                borderLeft: `6px solid ${HISTORIAS_LIDOM[String(detalle.id)]?.color || "#10203A"}`,
+              }}
+            >
               <img
                 src={`https://www.mlbstatic.com/team-logos/${detalle.id}.svg`}
                 alt=""
                 className="h-14 w-14 object-contain"
                 onError={function (e) { (e.target as HTMLImageElement).style.display = "none"; }}
               />
-              <h1 className="text-2xl font-bold text-[#10203A]">{detalle.nombre}</h1>
+              <h1 className="text-2xl font-bold" style={{ color: HISTORIAS_LIDOM[String(detalle.id)]?.color || "#10203A" }}>{detalle.nombre}</h1>
             </div>
 
             {HISTORIAS_LIDOM[String(detalle.id)] && (
-              <div className="mb-8 rounded-xl border border-[#10203A]/15 bg-white p-5">
+              <div
+                className="mb-8 rounded-xl border bg-white p-5"
+                style={{ borderColor: HISTORIAS_LIDOM[String(detalle.id)].color + "40" }}
+              >
                 <p className="mb-3 text-sm leading-relaxed text-[#10203A]">{HISTORIAS_LIDOM[String(detalle.id)].resumen}</p>
                 <div className="grid grid-cols-1 gap-2 font-mono text-xs sm:grid-cols-3" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
                   <p>🗓️ <b>Fundado:</b> {HISTORIAS_LIDOM[String(detalle.id)].fundado}</p>

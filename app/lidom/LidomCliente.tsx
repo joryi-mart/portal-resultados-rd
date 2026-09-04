@@ -48,11 +48,13 @@ export default function LidomCliente() {
   function renderEquipo(equipo: Equipo) {
     const pos = posiciones.find(function (p) { return p.equipoId === equipo.id; });
     const foto = HISTORIAS_LIDOM[String(equipo.id)]?.foto;
+    const color = HISTORIAS_LIDOM[String(equipo.id)]?.color || "#10203A";
     return (
       <a
         key={equipo.id}
         href={"/lidom/" + equipo.id}
-        className="overflow-hidden rounded-xl border border-[#10203A]/15 bg-white shadow-sm hover:shadow-md"
+        className="overflow-hidden rounded-xl border-2 bg-white shadow-sm hover:shadow-md"
+        style={{ borderColor: color }}
       >
         {foto ? (
           <img src={foto.url} alt="" className="h-28 w-full object-cover" />
@@ -74,7 +76,7 @@ export default function LidomCliente() {
             onError={function (e) { (e.target as HTMLImageElement).style.display = "none"; }}
           />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-[#10203A]">{equipo.nombre}</p>
+            <p className="truncate text-sm font-bold" style={{ color }}>{equipo.nombre}</p>
             {pos ? (
               <p className="truncate font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
                 {pos.victorias}-{pos.derrotas} · {pos.diferencia === "-" ? "líder" : pos.diferencia + " GB"}

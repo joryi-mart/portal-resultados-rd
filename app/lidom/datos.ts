@@ -9,6 +9,7 @@ export type HistoriaEquipo = {
   instagram: string;
   x: string;
   foto: { url: string; autor: string; licencia: string } | null;
+  color: string;
 };
 
 export const HISTORIAS_LIDOM: Record<string, HistoriaEquipo> = {
@@ -31,6 +32,7 @@ export const HISTORIAS_LIDOM: Record<string, HistoriaEquipo> = {
       autor: "Calt2001",
       licencia: "CC0",
     },
+    color: "#0047AB",
   },
   "667": {
     fundado: "2 de enero de 1933",
@@ -51,6 +53,7 @@ export const HISTORIAS_LIDOM: Record<string, HistoriaEquipo> = {
       autor: "ThePapo309",
       licencia: "CC BY-SA 4.0",
     },
+    color: "#C9971A",
   },
   "671": {
     fundado: "17 de febrero de 1921",
@@ -71,6 +74,7 @@ export const HISTORIAS_LIDOM: Record<string, HistoriaEquipo> = {
       autor: "Calt2001",
       licencia: "CC0",
     },
+    color: "#C8102E",
   },
   "669": {
     fundado: "15 de diciembre de 1910",
@@ -90,6 +94,7 @@ export const HISTORIAS_LIDOM: Record<string, HistoriaEquipo> = {
       autor: "Missael1990",
       licencia: "CC BY-SA 4.0",
     },
+    color: "#046A38",
   },
   "668": {
     fundado: "1983 (como Azucareros del Este)",
@@ -105,6 +110,7 @@ export const HISTORIAS_LIDOM: Record<string, HistoriaEquipo> = {
     instagram: "torosdeleste",
     x: "TorosdelEste",
     foto: null,
+    color: "#F26522",
   },
   "670": {
     fundado: "23 de abril de 1996 (como Gigante del Nordeste)",
@@ -125,5 +131,6 @@ export const HISTORIAS_LIDOM: Record<string, HistoriaEquipo> = {
       autor: "OzzyDiaz",
       licencia: "CC BY-SA 3.0",
     },
+    color: "#722F37",
   },
 };
