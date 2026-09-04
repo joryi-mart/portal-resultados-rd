@@ -558,11 +558,21 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
   // Sorteos que la fuente de datos ya no ofrece (descontinuados o renombrados).
   // Se ocultan aquí en vez de borrarlos de la base de datos, para no perder el historial.
   const SORTEOS_DESCONTINUADOS = [73, 78, 119];
+  // Las loterias mas jugadas van primero; el resto mantiene su orden habitual.
+  const ORDEN_PRIORIDAD = ["leidsa", "nacional", "real", "la-suerte"];
   const listaLoterias = (loterias || [])
     .map(function (l) {
       return { ...l, sorteos: (l.sorteos || []).filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id); }) };
     })
-    .filter(function (l) { return l.sorteos.length > 0; });
+    .filter(function (l) { return l.sorteos.length > 0; })
+    .sort(function (a, b) {
+      const posA = ORDEN_PRIORIDAD.indexOf(a.slug);
+      const posB = ORDEN_PRIORIDAD.indexOf(b.slug);
+      if (posA === -1 && posB === -1) return 0;
+      if (posA === -1) return 1;
+      if (posB === -1) return -1;
+      return posA - posB;
+    });
   const ultimosResultados: UltimoResultado[] = [];
   for (let i = 0; i < listaLoterias.length; i++) {
     const loteria = listaLoterias[i];
