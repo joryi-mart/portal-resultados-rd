@@ -19,7 +19,7 @@ type Juego = {
   carrerasPropias: number;
   carrerasRival: number;
 };
-type Detalle = { id: number; nombre: string; roster: Jugador[]; ultimosJuegos: Juego[] };
+type Detalle = { id: number; nombre: string; roster: Jugador[]; ultimosJuegos: Juego[]; proximosJuegos: Juego[] };
 
 export default function EquipoLidomCliente(props: { equipoId: string }) {
   const [detalle, setDetalle] = useState<Detalle | null>(null);
@@ -65,31 +65,51 @@ export default function EquipoLidomCliente(props: { equipoId: string }) {
               <h1 className="text-2xl font-bold text-[#10203A]">{detalle.nombre}</h1>
             </div>
 
-            <h2 className="mb-3 text-lg font-semibold text-[#10203A]">📋 Últimos juegos</h2>
-            <div className="mb-10 overflow-hidden rounded-xl border border-[#10203A]/15 bg-white">
-              {detalle.ultimosJuegos.length === 0 ? (
-                <p className="p-4 text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-                  Todavía no hay juegos registrados de la temporada actual.
-                </p>
-              ) : (
-                detalle.ultimosJuegos.map(function (j, i) {
-                  const gano = j.carrerasPropias > j.carrerasRival;
-                  return (
-                    <div key={j.gamePk} className={"flex items-center justify-between gap-3 px-4 py-3 " + (i > 0 ? "border-t border-[#10203A]/8" : "")}>
-                      <div>
-                        <p className="text-sm font-semibold text-[#10203A]">
-                          {j.esLocal ? "vs" : "@"} {j.rival}
+            {detalle.ultimosJuegos.length > 0 ? (
+              <>
+                <h2 className="mb-3 text-lg font-semibold text-[#10203A]">📋 Últimos juegos</h2>
+                <div className="mb-10 overflow-hidden rounded-xl border border-[#10203A]/15 bg-white">
+                  {detalle.ultimosJuegos.map(function (j, i) {
+                    const gano = j.carrerasPropias > j.carrerasRival;
+                    return (
+                      <div key={j.gamePk} className={"flex items-center justify-between gap-3 px-4 py-3 " + (i > 0 ? "border-t border-[#10203A]/8" : "")}>
+                        <div>
+                          <p className="text-sm font-semibold text-[#10203A]">
+                            {j.esLocal ? "vs" : "@"} {j.rival}
+                          </p>
+                          <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearFecha(j.fecha)}</p>
+                        </div>
+                        <p className="font-mono text-base font-bold" style={{ color: gano ? COLOR_VERDE : COLOR_ROJO }}>
+                          {gano ? "G" : "P"} {j.carrerasPropias}-{j.carrerasRival}
                         </p>
-                        <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearFecha(j.fecha)}</p>
                       </div>
-                      <p className="font-mono text-base font-bold" style={{ color: gano ? COLOR_VERDE : COLOR_ROJO }}>
-                        {gano ? "G" : "P"} {j.carrerasPropias}-{j.carrerasRival}
-                      </p>
-                    </div>
-                  );
-                })
-              )}
-            </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="mb-3 text-lg font-semibold text-[#10203A]">📅 Próximos juegos</h2>
+                <div className="mb-10 overflow-hidden rounded-xl border border-[#10203A]/15 bg-white">
+                  {detalle.proximosJuegos.length === 0 ? (
+                    <p className="p-4 text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                      El calendario de la próxima temporada todavía no está publicado.
+                    </p>
+                  ) : (
+                    detalle.proximosJuegos.map(function (j, i) {
+                      return (
+                        <div key={j.gamePk} className={"flex items-center justify-between gap-3 px-4 py-3 " + (i > 0 ? "border-t border-[#10203A]/8" : "")}>
+                          <p className="text-sm font-semibold text-[#10203A]">
+                            {j.esLocal ? "vs" : "@"} {j.rival}
+                          </p>
+                          <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearFecha(j.fecha)}</p>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </>
+            )}
 
             <h2 className="mb-3 text-lg font-semibold text-[#10203A]">👥 Roster</h2>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">

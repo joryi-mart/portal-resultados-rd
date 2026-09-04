@@ -25,29 +25,41 @@ async function obtenerRoster(id: string) {
   }));
 }
 
-async function obtenerUltimosJuegos(id: string) {
+async function obtenerCalendario(id: string) {
   const res = await fetch(
     `https://statsapi.mlb.com/api/v1/schedule?sportId=${SPORT_ID_LIDOM}&teamId=${id}&season=${TEMPORADA_ACTUAL}&gameType=R`
   );
-  if (!res.ok) return [];
+  if (!res.ok) return { ultimosJuegos: [], proximosJuegos: [] };
   const data = await res.json();
   const juegos: any[] = [];
   (data.dates || []).forEach((d: any) => {
     (d.games || []).forEach((g: any) => juegos.push(g));
   });
 
-  return juegos
-    .filter((g) => g.status?.abstractGameState === "Final")
-    .sort((a, b) => new Date(b.gameDate).getTime() - new Date(a.gameDate).getTime())
-    .slice(0, 10)
-    .map((g) => ({
+  function formatear(g: any) {
+    return {
       gamePk: g.gamePk,
       fecha: g.gameDate,
       rival: g.teams?.away?.team?.id === Number(id) ? g.teams?.home?.team?.name : g.teams?.away?.team?.name,
       esLocal: g.teams?.home?.team?.id === Number(id),
       carrerasPropias: g.teams?.home?.team?.id === Number(id) ? g.teams?.home?.score : g.teams?.away?.score,
       carrerasRival: g.teams?.home?.team?.id === Number(id) ? g.teams?.away?.score : g.teams?.home?.score,
-    }));
+    };
+  }
+
+  const ultimosJuegos = juegos
+    .filter((g) => g.status?.abstractGameState === "Final")
+    .sort((a, b) => new Date(b.gameDate).getTime() - new Date(a.gameDate).getTime())
+    .slice(0, 10)
+    .map(formatear);
+
+  const proximosJuegos = juegos
+    .filter((g) => g.status?.abstractGameState === "Preview")
+    .sort((a, b) => new Date(a.gameDate).getTime() - new Date(b.gameDate).getTime())
+    .slice(0, 10)
+    .map(formatear);
+
+  return { ultimosJuegos, proximosJuegos };
 }
 
 export async function GET(request: Request) {
@@ -62,16 +74,17 @@ export async function GET(request: Request) {
     const cacheado = getCache(cacheKey);
     if (cacheado) return NextResponse.json(cacheado);
 
-    const [roster, ultimosJuegos] = await Promise.all([
+    const [roster, calendario] = await Promise.all([
       obtenerRoster(id),
-      obtenerUltimosJuegos(id),
+      obtenerCalendario(id),
     ]);
 
     const resultado = {
       id: Number(id),
       nombre: EQUIPOS_LIDOM[Number(id)],
       roster,
-      ultimosJuegos,
+      ultimosJuegos: calendario.ultimosJuegos,
+      proximosJuegos: calendario.proximosJuegos,
     };
 
     setCache(cacheKey, resultado, 3 * 60 * 60 * 1000);
