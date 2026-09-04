@@ -121,8 +121,8 @@ export default function LidomCliente() {
       <NavPildoras />
       <div className="px-4 py-8 sm:px-8">
         <h1 className="mb-2 text-2xl font-bold text-[#10203A]">🇩🇴 LIDOM</h1>
-        <p className="mb-6 rounded-lg bg-[#1E4D8C]/5 p-3 text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-          Liga de Béisbol Profesional de la República Dominicana. La serie regular corre de mediados de octubre a mediados de enero.
+        <p className="mb-6 rounded-lg bg-[#1E4D8C]/5 p-4 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          La Liga de Béisbol Profesional de la República Dominicana (LIDOM) es el torneo de béisbol invernal más seguido del país y una de las ligas más competitivas del Caribe. Seis equipos —Tigres del Licey, Águilas Cibaeñas, Leones del Escogido, Estrellas Orientales, Toros del Este y Gigantes del Cibao— se disputan la corona cada temporada, entre mediados de octubre y mediados de enero, con roster llenos de peloteros de Grandes Ligas que regresan a jugar en su país durante el invierno. El campeón representa a República Dominicana en la Serie del Caribe, el torneo más prestigioso del béisbol latinoamericano.
         </p>
 
         {cargando && <p className="font-mono text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Cargando...</p>}

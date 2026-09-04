@@ -88,13 +88,14 @@ export default function EquipoLidomCliente(props: { equipoId: string }) {
                   <p>🏆 <b>Títulos:</b> {HISTORIAS_LIDOM[String(detalle.id)].titulos}</p>
                 </div>
 
-                <p className="mb-1.5 mt-4 font-mono text-[10px] font-bold uppercase tracking-wide" style={{ color: COLOR_TEXTO_SECUNDARIO }}>⭐ Peloteros famosos que han vestido este uniforme</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {HISTORIAS_LIDOM[String(detalle.id)].famosos.map(function (nombre) {
+                <p className="mb-2 mt-4 font-mono text-xs font-bold uppercase tracking-wide" style={{ color: COLOR_TEXTO_SECUNDARIO }}>⭐ Peloteros famosos que han vestido este uniforme</p>
+                <div className="flex flex-col gap-3">
+                  {HISTORIAS_LIDOM[String(detalle.id)].famosos.map(function (jugador) {
                     return (
-                      <span key={nombre} className="rounded-full bg-[#1E4D8C]/8 px-2.5 py-1 text-xs font-semibold text-[#1E4D8C]">
-                        {nombre}
-                      </span>
+                      <div key={jugador.nombre} className="rounded-lg bg-[#1E4D8C]/5 p-3">
+                        <p className="text-base font-bold text-[#1E4D8C]">{jugador.nombre}</p>
+                        <p className="mt-0.5 text-sm leading-relaxed text-[#10203A]">{jugador.bio}</p>
+                      </div>
                     );
                   })}
                 </div>
