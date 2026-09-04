@@ -53,6 +53,22 @@ function tamanoBolita(cantidad: number) {
   return "h-14 w-14 text-xl";
 }
 
+const DESCRIPCIONES_LOTERIA: Record<string, string> = {
+  nacional: "La lotería más antigua y tradicional de República Dominicana, de origen estatal, con sorteos que se transmiten en vivo por televisión desde 1908.",
+  leidsa: "Una de las loterías privadas más grandes del país, conocida por su variedad de juegos como Loto Más, Quiniela Palé y Pega 3 Más.",
+  loteka: "Lotería dominicana con sorteos nocturnos, incluyendo la Quiniela Loteka y el juego acumulativo Mega Chances.",
+  real: "Empresa de loterías con sede en Santiago de los Caballeros, reconocida por sus sorteos del mediodía como Quiniela Real y Loto Real.",
+  lotedom: "Lotería dominicana con varios productos de quiniela y palé a lo largo del día.",
+  "la-primera": "Lotería con sorteos de mediodía y noche, incluyendo Quinielón y Loto 5.",
+  "la-suerte": "Lotería dominicana con sorteos de día y tarde.",
+  "new-york": "Resultados de la Lotería de Nueva York, muy seguida en República Dominicana por la comunidad dominicana en Estados Unidos.",
+  florida: "Resultados de la Lotería de Florida, popular entre la comunidad dominicana en Estados Unidos.",
+  anguila: "Lotería de la isla caribeña de Anguila, con varios sorteos a lo largo del día.",
+  haiti: "Lotería de Haití ('Bolet'), con múltiples sorteos diarios, muy seguida por la comunidad haitiana en República Dominicana.",
+  sxm: "Lotería de la isla de San Martín (lado holandés), con sorteos de día y noche.",
+  "loterias-americanas": "Resultados de loterías de estados de Estados Unidos, como Nueva Jersey y Georgia, seguidas por la comunidad dominicana allí.",
+};
+
 function numerosVistaPrevia(sorteoId: number) {
   void sorteoId;
   return ["--", "--", "--"];
@@ -134,6 +150,11 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
           <p className="mt-2 font-mono text-sm text-[#D5DEEA]">
             {sorteos.length} producto{sorteos.length === 1 ? "" : "s"} · resultados de hoy
           </p>
+          {DESCRIPCIONES_LOTERIA[params.slug] ? (
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-[#D5DEEA]">
+              {DESCRIPCIONES_LOTERIA[params.slug]}
+            </p>
+          ) : null}
         </div>
       </header>
 
