@@ -407,47 +407,49 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
   const fechaTitulo = props.fechaTitulo;
 
   type Tarjeta = { loteria: string; loteriaSlug: string; sorteo: string; sorteoId: number; numeros: string[]; esDeAyer: boolean; fechaMostrada: string };
-  const tarjetas: Tarjeta[] = [];
+  const tarjetasHoy: Tarjeta[] = [];
+  const tarjetasAnteriores: Tarjeta[] = [];
 
   for (let i = 0; i < loterias.length; i++) {
     const sorteos = loterias[i].sorteos || [];
-    if (sorteos.length === 0) continue;
-    // Mostramos el primer sorteo de cada loteria (el principal), buscando su
-    // resultado de hoy o, si aun no ha salido, el ultimo real que tengamos.
-    const sorteo = sorteos[0];
-    const resultados = sorteo.resultados || [];
-    const deHoy = resultados.find(function (r) { return r.fecha === fechaSeleccionada; });
-    if (deHoy) {
-      tarjetas.push({
-        loteria: loterias[i].nombre,
-        loteriaSlug: loterias[i].slug,
-        sorteo: sorteo.nombre,
-        sorteoId: sorteo.id,
-        numeros: deHoy.numeros.split("-"),
-        esDeAyer: false,
-        fechaMostrada: deHoy.fecha,
-      });
-      continue;
-    }
-    let masReciente: Resultado | null = null;
-    for (let k = 0; k < resultados.length; k++) {
-      const r = resultados[k];
-      if (r.fecha < fechaSeleccionada && (!masReciente || r.fecha > masReciente.fecha)) {
-        masReciente = r;
+    for (let j = 0; j < sorteos.length; j++) {
+      const sorteo = sorteos[j];
+      const resultados = sorteo.resultados || [];
+      const deHoy = resultados.find(function (r) { return r.fecha === fechaSeleccionada; });
+      if (deHoy) {
+        tarjetasHoy.push({
+          loteria: loterias[i].nombre,
+          loteriaSlug: loterias[i].slug,
+          sorteo: sorteo.nombre,
+          sorteoId: sorteo.id,
+          numeros: deHoy.numeros.split("-"),
+          esDeAyer: false,
+          fechaMostrada: deHoy.fecha,
+        });
+        continue;
+      }
+      let masReciente: Resultado | null = null;
+      for (let k = 0; k < resultados.length; k++) {
+        const r = resultados[k];
+        if (r.fecha < fechaSeleccionada && (!masReciente || r.fecha > masReciente.fecha)) {
+          masReciente = r;
+        }
+      }
+      if (masReciente) {
+        tarjetasAnteriores.push({
+          loteria: loterias[i].nombre,
+          loteriaSlug: loterias[i].slug,
+          sorteo: sorteo.nombre,
+          sorteoId: sorteo.id,
+          numeros: masReciente.numeros.split("-"),
+          esDeAyer: true,
+          fechaMostrada: masReciente.fecha,
+        });
       }
     }
-    if (masReciente) {
-      tarjetas.push({
-        loteria: loterias[i].nombre,
-        loteriaSlug: loterias[i].slug,
-        sorteo: sorteo.nombre,
-        sorteoId: sorteo.id,
-        numeros: masReciente.numeros.split("-"),
-        esDeAyer: true,
-        fechaMostrada: masReciente.fecha,
-      });
-    }
   }
+
+  const tarjetas = tarjetasHoy.concat(tarjetasAnteriores);
 
   return (
     <div className="overflow-hidden rounded-2xl bg-[#10203A]">
