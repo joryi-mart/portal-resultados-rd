@@ -402,44 +402,59 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
   const fechaSeleccionada = props.fechaSeleccionada;
   const fechaTitulo = props.fechaTitulo;
 
-  const filas: { loteria: string; loteriaSlug: string; sorteo: string; sorteoId: number; numeros: string[]; esVistaPrevia: boolean; creadoEn: string }[] = [];
+  type Fila = { loteria: string; loteriaSlug: string; sorteo: string; sorteoId: number; horaSorteo: string; numeros: string[]; esDeAyer: boolean; fechaMostrada: string; creadoEn: string };
+  const filasHoy: Fila[] = [];
+  const filasAnteriores: Fila[] = [];
+
   for (let i = 0; i < loterias.length; i++) {
     const sorteos = loterias[i].sorteos || [];
     for (let j = 0; j < sorteos.length; j++) {
-      const resultado = sorteos[j].resultados.find(function (r) { return r.fecha === fechaSeleccionada; });
-      if (resultado) {
-        filas.push({
+      const resultados = sorteos[j].resultados || [];
+      const deHoy = resultados.find(function (r) { return r.fecha === fechaSeleccionada; });
+      if (deHoy) {
+        filasHoy.push({
           loteria: loterias[i].nombre,
           loteriaSlug: loterias[i].slug,
           sorteo: sorteos[j].nombre,
           sorteoId: sorteos[j].id,
-          numeros: resultado.numeros.split("-"),
-          esVistaPrevia: false,
-          creadoEn: resultado.creado_en,
+          horaSorteo: sorteos[j].hora_sorteo,
+          numeros: deHoy.numeros.split("-"),
+          esDeAyer: false,
+          fechaMostrada: deHoy.fecha,
+          creadoEn: deHoy.creado_en,
         });
+        continue;
       }
-    }
-  }
-  // Mostramos todos los resultados publicados hoy, del mas reciente al mas viejo
-  // (sin limite), igual que lo hacen otros sitios de resultados de loteria.
-  filas.sort(function (a, b) { return new Date(b.creadoEn).getTime() - new Date(a.creadoEn).getTime(); });
-
-  if (filas.length === 0) {
-    for (let i = 0; i < loterias.length && filas.length < 4; i++) {
-      const sorteos = loterias[i].sorteos || [];
-      if (sorteos.length > 0) {
-        filas.push({
+      // Todavia no ha salido el de hoy: mostramos el ultimo resultado real
+      // que si tenemos (normalmente el de ayer), en vez de un guion vacio.
+      let masReciente: Resultado | null = null;
+      for (let k = 0; k < resultados.length; k++) {
+        const r = resultados[k];
+        if (r.fecha < fechaSeleccionada && (!masReciente || r.fecha > masReciente.fecha)) {
+          masReciente = r;
+        }
+      }
+      if (masReciente) {
+        filasAnteriores.push({
           loteria: loterias[i].nombre,
           loteriaSlug: loterias[i].slug,
-          sorteo: sorteos[0].nombre,
-          sorteoId: sorteos[0].id,
-          numeros: numerosVistaPrevia(sorteos[0].id),
-          esVistaPrevia: true,
-          creadoEn: "",
+          sorteo: sorteos[j].nombre,
+          sorteoId: sorteos[j].id,
+          horaSorteo: sorteos[j].hora_sorteo,
+          numeros: masReciente.numeros.split("-"),
+          esDeAyer: true,
+          fechaMostrada: masReciente.fecha,
+          creadoEn: masReciente.creado_en,
         });
       }
     }
   }
+  // Los que ya salieron hoy van primero (del mas reciente al mas viejo); despues,
+  // los que aun no salen hoy pero si tenemos un resultado anterior, en el orden
+  // en que se espera que salgan hoy.
+  filasHoy.sort(function (a, b) { return new Date(b.creadoEn).getTime() - new Date(a.creadoEn).getTime(); });
+  filasAnteriores.sort(function (a, b) { return (a.horaSorteo || "").localeCompare(b.horaSorteo || ""); });
+  const filas = filasHoy.concat(filasAnteriores);
 
   return (
     <div className="overflow-hidden rounded-2xl bg-[#10203A]">
@@ -458,7 +473,7 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
         <div className="mx-3 mb-3 overflow-hidden rounded-xl bg-white sm:mx-4 sm:mb-4">
           {filas.map(function (fila, i) {
             const colorEspecial = COLOR_ESPECIAL_SORTEOS[fila.sorteoId];
-            const href = fila.esVistaPrevia ? "/" + fila.loteriaSlug : "/" + fila.loteriaSlug + "/" + fechaSeleccionada;
+            const href = "/" + fila.loteriaSlug + "/" + fila.fechaMostrada;
             return (
               <a
                 key={i}
@@ -467,27 +482,27 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
               >
                 <span
                   className="h-8 w-1 shrink-0 rounded-full"
-                  style={{ backgroundColor: fila.esVistaPrevia ? "#9AA5AF" : COLOR_VERDE_RD }}
+                  style={{ backgroundColor: fila.esDeAyer ? "#9AA5AF" : COLOR_VERDE_RD }}
                 />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-base font-semibold text-[#10203A]">{fila.sorteo}</p>
                   <p className="truncate font-mono text-[11px]" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
                     {fila.loteria}
-                    {fila.esVistaPrevia ? " · vista previa" : ""}
+                    {fila.esDeAyer ? " · de ayer, esperando el de hoy" : ""}
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
                   {fila.numeros.map(function (n, j) {
                     const esPrimera = j === 0 && !colorEspecial;
-                    const estiloEspecial = !fila.esVistaPrevia && colorEspecial
+                    const estiloEspecial = !fila.esDeAyer && colorEspecial
                       ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
-                      : !fila.esVistaPrevia && esPrimera
+                      : !fila.esDeAyer && esPrimera
                       ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
                       : undefined;
                     return (
                       <span
                         key={j}
-                        className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (fila.esVistaPrevia ? "border border-dashed border-[#9AA5AF] bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
+                        className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (fila.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
                         style={estiloEspecial}
                       >
                         {n}
@@ -529,11 +544,21 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
   // Sorteos que la fuente de datos ya no ofrece (descontinuados o renombrados).
   // Se ocultan aquí en vez de borrarlos de la base de datos, para no perder el historial.
   const SORTEOS_DESCONTINUADOS = [73, 78, 119];
+  // Las loterias mas jugadas van primero; el resto mantiene su orden habitual.
+  const ORDEN_PRIORIDAD = ["leidsa", "nacional", "real", "la-suerte"];
   const listaLoterias = (loterias || [])
     .map(function (l) {
       return { ...l, sorteos: (l.sorteos || []).filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id); }) };
     })
-    .filter(function (l) { return l.sorteos.length > 0; });
+    .filter(function (l) { return l.sorteos.length > 0; })
+    .sort(function (a, b) {
+      const posA = ORDEN_PRIORIDAD.indexOf(a.slug);
+      const posB = ORDEN_PRIORIDAD.indexOf(b.slug);
+      if (posA === -1 && posB === -1) return 0;
+      if (posA === -1) return 1;
+      if (posB === -1) return -1;
+      return posA - posB;
+    });
   const ultimosResultados: UltimoResultado[] = [];
   for (let i = 0; i < listaLoterias.length; i++) {
     const loteria = listaLoterias[i];

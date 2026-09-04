@@ -201,9 +201,15 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
                   <p className="mb-4 font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Sorteo: {formatearHora12(sorteo.hora_sorteo)}</p>
 
                   {numeros.length > 0 ? (
-                    <div className="flex flex-wrap items-center gap-2">
-                      {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano}>{n}</Bolita>; })}
-                    </div>
+                    sorteo.nombre.toLowerCase().includes("kino") ? (
+                      <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1 pb-1">
+                        {numeros.map(function (n, i) { return <Bolita key={i} tamano="h-9 w-9 text-sm">{n}</Bolita>; })}
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap items-center gap-2">
+                        {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano}>{n}</Bolita>; })}
+                      </div>
+                    )
                   ) : (
                     <p className="text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
                       {esHoy ? "Todavía no hay resultado publicado para hoy." : "No hay resultado registrado para esta fecha."}

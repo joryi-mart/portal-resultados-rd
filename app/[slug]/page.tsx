@@ -193,9 +193,15 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
                   </div>
 
                   {hayResultadoReal ? (
-                    <div className="flex flex-wrap items-center gap-2">
-                      {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano}>{n}</Bolita>; })}
-                    </div>
+                    sorteo.nombre.toLowerCase().includes("kino") ? (
+                      <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1 pb-1">
+                        {numeros.map(function (n, i) { return <Bolita key={i} tamano="h-9 w-9 text-sm">{n}</Bolita>; })}
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap items-center gap-2">
+                        {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano}>{n}</Bolita>; })}
+                      </div>
+                    )
                   ) : (
                     <span className="inline-block rounded-full px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wide" style={{ backgroundColor: "#E4E8EB", color: "#7B858F" }}>
                       Pendiente
