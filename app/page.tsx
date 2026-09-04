@@ -528,7 +528,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
 
   // Sorteos que la fuente de datos ya no ofrece (descontinuados o renombrados).
   // Se ocultan aquí en vez de borrarlos de la base de datos, para no perder el historial.
-  const SORTEOS_DESCONTINUADOS = [73, 116, 78, 112, 119, 117];
+  const SORTEOS_DESCONTINUADOS = [73, 116, 78, 119];
   const listaLoterias = (loterias || [])
     .map(function (l) {
       return { ...l, sorteos: (l.sorteos || []).filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id); }) };
@@ -781,6 +781,8 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
               <li>New York — tarde (2:30 p.m.) y noche (10:30 p.m.)</li>
               <li>Florida — día (1:30 p.m.) y noche (10:00 p.m.)</li>
               <li>Anguila — mediodía, tarde y noche</li>
+              <li>PowerBall — lunes, miércoles y sábado (11:00 p.m.)</li>
+              <li>Mega Millions — martes y viernes (11:00 p.m.)</li>
             </ul>
           </div>
 
