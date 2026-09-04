@@ -571,8 +571,35 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
     month: "long",
   });
 
+  // Datos estructurados (schema.org) con los resultados del día que se muestra,
+  // para que Google pueda leer los números ganadores directamente, no solo el texto.
+  const eventosParaGoogle = resumenHoy.map(function (r) {
+    return {
+      "@type": "Event",
+      name: `${r.sorteoNombre} - ${r.loteriaNombre} - ${r.fecha}`,
+      startDate: `${r.fecha}T${r.horaSorteo || "00:00"}:00-04:00`,
+      eventStatus: "https://schema.org/EventScheduled",
+      eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+      location: { "@type": "VirtualLocation", url: `https://labankerard.com/${r.loteriaSlug}/${r.fecha}` },
+      organizer: { "@type": "Organization", name: r.loteriaNombre },
+      additionalProperty: {
+        "@type": "PropertyValue",
+        name: "Números ganadores",
+        value: r.numeros,
+      },
+    };
+  });
+  const datosEstructurados =
+    eventosParaGoogle.length > 0 ? { "@context": "https://schema.org", "@graph": eventosParaGoogle } : null;
+
   return (
     <div id="top" className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
+      {datosEstructurados ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }}
+        />
+      ) : null}
       <header className="relative overflow-hidden bg-[#10203A] px-6 py-5 sm:px-10 sm:py-6">
         <div className="pointer-events-none absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "radial-gradient(#FBF7EE 1px, transparent 1px)", backgroundSize: "18px 18px" }} />
         <img

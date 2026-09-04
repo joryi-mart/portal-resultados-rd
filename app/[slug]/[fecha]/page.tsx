@@ -118,8 +118,42 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
   const sorteos = (loteriaData.sorteos || []).filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id); });
   const fechaLarga = formatearFechaLarga(params.fecha);
 
+  // Datos estructurados (schema.org) para que Google entienda que esto es un
+  // resultado de sorteo real y con fecha concreta, no solo texto suelto.
+  const eventosParaGoogle = sorteos
+    .map(function (sorteo) {
+      const resultado = sorteo.resultados.find(function (r) { return r.fecha === params.fecha; });
+      if (!resultado) return null;
+      return {
+        "@type": "Event",
+        name: `${sorteo.nombre} - ${loteriaData.nombre} - ${params.fecha}`,
+        startDate: `${params.fecha}T${sorteo.hora_sorteo || "00:00"}:00-04:00`,
+        eventStatus: "https://schema.org/EventScheduled",
+        eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+        location: { "@type": "VirtualLocation", url: `https://labankerard.com/${params.slug}/${params.fecha}` },
+        organizer: { "@type": "Organization", name: loteriaData.nombre },
+        additionalProperty: {
+          "@type": "PropertyValue",
+          name: "Números ganadores",
+          value: resultado.numeros,
+        },
+      };
+    })
+    .filter(Boolean);
+
+  const datosEstructurados =
+    eventosParaGoogle.length > 0
+      ? { "@context": "https://schema.org", "@graph": eventosParaGoogle }
+      : null;
+
   return (
     <div className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
+      {datosEstructurados ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }}
+        />
+      ) : null}
       <header className="bg-[#10203A] px-6 py-8 sm:px-10">
         <div className="mx-auto max-w-3xl">
           <a href={"/" + params.slug + "/historial"} className="font-mono text-sm text-[#E7A63C] hover:underline">← Ver historial completo de {loteriaData.nombre}</a>
