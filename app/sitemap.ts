@@ -72,6 +72,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     },
     {
+      url: `${SITIO}/lidom`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.6,
+    },
+    {
       url: `${SITIO}/dias-feriados`,
       lastModified: new Date(),
       changeFrequency: "monthly",
@@ -106,5 +112,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
-  return [...paginasFijas, ...paginasLoterias, ...paginasHistorial, ...paginasTurismo];
+  const EQUIPOS_LIDOM = ["672", "667", "671", "669", "668", "670"];
+  const paginasLidom: MetadataRoute.Sitemap = EQUIPOS_LIDOM.map(function (id) {
+    return {
+      url: `${SITIO}/lidom/${id}`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.5,
+    };
+  });
+
+  return [...paginasFijas, ...paginasLoterias, ...paginasHistorial, ...paginasTurismo, ...paginasLidom];
 }
