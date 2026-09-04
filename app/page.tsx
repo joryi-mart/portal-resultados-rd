@@ -406,9 +406,8 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
   const fechaSeleccionada = props.fechaSeleccionada;
   const fechaTitulo = props.fechaTitulo;
 
-  type Tarjeta = { loteria: string; loteriaSlug: string; sorteo: string; sorteoId: number; numeros: string[]; esDeAyer: boolean; fechaMostrada: string };
-  const tarjetasHoy: Tarjeta[] = [];
-  const tarjetasAnteriores: Tarjeta[] = [];
+  type Tarjeta = { loteria: string; loteriaSlug: string; sorteo: string; sorteoId: number; horaSorteo: string; numeros: string[]; esDeAyer: boolean; fechaMostrada: string };
+  const tarjetas: Tarjeta[] = [];
 
   for (let i = 0; i < loterias.length; i++) {
     const sorteos = loterias[i].sorteos || [];
@@ -417,11 +416,12 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
       const resultados = sorteo.resultados || [];
       const deHoy = resultados.find(function (r) { return r.fecha === fechaSeleccionada; });
       if (deHoy) {
-        tarjetasHoy.push({
+        tarjetas.push({
           loteria: loterias[i].nombre,
           loteriaSlug: loterias[i].slug,
           sorteo: sorteo.nombre,
           sorteoId: sorteo.id,
+          horaSorteo: sorteo.hora_sorteo,
           numeros: deHoy.numeros.split("-"),
           esDeAyer: false,
           fechaMostrada: deHoy.fecha,
@@ -436,11 +436,12 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
         }
       }
       if (masReciente) {
-        tarjetasAnteriores.push({
+        tarjetas.push({
           loteria: loterias[i].nombre,
           loteriaSlug: loterias[i].slug,
           sorteo: sorteo.nombre,
           sorteoId: sorteo.id,
+          horaSorteo: sorteo.hora_sorteo,
           numeros: masReciente.numeros.split("-"),
           esDeAyer: true,
           fechaMostrada: masReciente.fecha,
@@ -449,7 +450,9 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
     }
   }
 
-  const tarjetas = tarjetasHoy.concat(tarjetasAnteriores);
+  // Ordenamos por la hora real del sorteo, para que las tarjetas se lean
+  // en el mismo orden en que van saliendo los resultados durante el dia.
+  tarjetas.sort(function (a, b) { return (a.horaSorteo || "99:99").localeCompare(b.horaSorteo || "99:99"); });
 
   return (
     <div className="overflow-hidden rounded-2xl bg-[#10203A]">
