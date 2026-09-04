@@ -73,6 +73,34 @@ async function obtenerNoticiasMLB() {
   return resultado;
 }
 
+async function obtenerNoticiasDominicanosDeporte() {
+  const cacheado = getCache("noticias-dominicanos-deporte");
+  if (cacheado) return cacheado;
+
+  const apiKey = process.env.CURRENTS_API_KEY;
+  if (!apiKey) throw new Error("Falta la clave CURRENTS_API_KEY en .env.local");
+
+  // Noticias de atletas dominicanos en deportes fuera del beisbol/MLB
+  // (atletismo, boxeo, etc.), para complementar el desempeño de peloteros.
+  const query = encodeURIComponent(
+    '"Marileidy Paulino" OR "atletismo dominicano" OR "boxeo dominicano" OR "atleta dominicano" OR "atleta dominicana" OR "deporte dominicano"'
+  );
+  const url = `https://api.currentsapi.services/v1/search?keywords=${query}&language=es`;
+
+  const res = await fetch(url, {
+    headers: {
+      Authorization: apiKey,
+    },
+  });
+  if (!res.ok) throw new Error(`Error Currents API (dominicanos deporte): ${res.status}`);
+  const data = await res.json();
+
+  const resultado = { ...data, news: data.news || [] };
+
+  setCache("noticias-dominicanos-deporte", resultado, 30 * 60 * 1000);
+  return resultado;
+}
+
 async function obtenerEquiposMLB() {
   const cacheado = getCache("mlb-equipos");
   if (cacheado) return cacheado;
@@ -353,8 +381,9 @@ export async function GET(request: Request) {
     const idsDominicanos = new Set<number>(jugadoresDominicanos.map((j: any) => Number(j.id)));
     const juegosHoy = mlb?.dates?.[0]?.games || [];
 
-    const [noticiasMLB, posicionesLIDOM, boxscores] = await Promise.all([
+    const [noticiasMLB, noticiasDominicanosDeporte, posicionesLIDOM, boxscores] = await Promise.all([
       obtenerNoticiasMLB(),
+      obtenerNoticiasDominicanosDeporte(),
       obtenerPosicionesLIDOM(lidom.ligaId),
       obtenerBoxscores(juegosHoy, fecha),
     ]);
@@ -367,6 +396,7 @@ export async function GET(request: Request) {
       fecha: fecha || "hoy",
       mlb,
       noticiasMLB,
+      noticiasDominicanosDeporte,
       equipos,
       jugadoresDominicanos,
       liderJonrones,

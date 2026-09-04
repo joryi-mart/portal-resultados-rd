@@ -122,6 +122,7 @@ export default function BeisbolCliente() {
   const [liderJonrones, setLiderJonrones] = useState<Lider[]>([]);
   const [liderPitcheo, setLiderPitcheo] = useState<Lider[]>([]);
   const [destacadosPorJuego, setDestacadosPorJuego] = useState<Record<number, DestacadoJuego>>({});
+  const [noticiasDominicanosDeporte, setNoticiasDominicanosDeporte] = useState<Noticia[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [fechaSeleccionada, setFechaSeleccionada] = useState<string | null>(null);
@@ -146,6 +147,7 @@ export default function BeisbolCliente() {
         });
         setJuegos(conPicheo.concat(sinPicheo));
         setNoticias(data.noticiasMLB?.news || []);
+        setNoticiasDominicanosDeporte(data.noticiasDominicanosDeporte?.news || []);
         setEquiposLIDOM(data.equiposLIDOM || []);
         setPosicionesMLB(data.posicionesMLB || []);
         setPosicionesLIDOM(data.posicionesLIDOM || []);
@@ -516,6 +518,20 @@ export default function BeisbolCliente() {
               )}
             </div>
           </section>
+
+          {noticiasDominicanosDeporte.length > 0 && (
+            <section className="mb-10">
+              <h2 className="mb-1 text-lg font-semibold text-[#10203A]">
+                🇩🇴 Dominicanos en otros deportes
+              </h2>
+              <p className="mb-4 text-xs text-[#5C6B78]">
+                Noticias de atletas dominicanos fuera del béisbol — atletismo, boxeo y más.
+              </p>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {noticiasDominicanosDeporte.map(renderNoticia)}
+              </div>
+            </section>
+          )}
 
           <section className="mb-10">
             <h2 className="mb-4 text-lg font-semibold text-[#10203A]">
