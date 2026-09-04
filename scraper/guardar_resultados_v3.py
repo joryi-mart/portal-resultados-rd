@@ -47,7 +47,7 @@ MAPEO_SORTEOS = {
     ("loteka", "Mega Chances"): 72,
     ("loteka", "Toca 3"): 74,
     ("loteka", "La Repartidera"): 125,
-    ("loteka", "Mega Lotto"): 71,
+    ("loteka", "MegaLotto"): 71,
     ("loteria-real", "Quiniela Real"): 75,
     ("loteria-real", "Tu Fecha"): 77,
     ("loteria-real", "Loto Real"): 76,
