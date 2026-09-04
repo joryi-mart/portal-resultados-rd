@@ -460,14 +460,22 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
     }
   }
 
-  // Cada tarjeta (loteria) trae sus sorteos ordenados por hora; las tarjetas
-  // en si se ordenan por la hora mas temprana que tengan, para que se lean
-  // en el mismo orden en que van saliendo los resultados durante el dia.
+  // Cada tarjeta (loteria) trae sus sorteos ordenados por hora. Las tarjetas
+  // en si se ordenan por importancia (cuanto se juegan), no por hora: las
+  // loterias mas apostadas ocupan los primeros lugares y el resto va bajando.
+  const ORDEN_IMPORTANCIA = ["nacional", "leidsa", "new-york", "real", "loteka", "anguila"];
   const tarjetas = Array.from(porLoteria.values());
   tarjetas.forEach(function (t) {
     t.filas.sort(function (a, b) { return (a.horaSorteo || "99:99").localeCompare(b.horaSorteo || "99:99"); });
   });
-  tarjetas.sort(function (a, b) { return a.horaMasTemprana.localeCompare(b.horaMasTemprana); });
+  tarjetas.sort(function (a, b) {
+    const posA = ORDEN_IMPORTANCIA.indexOf(a.loteriaSlug);
+    const posB = ORDEN_IMPORTANCIA.indexOf(b.loteriaSlug);
+    if (posA === -1 && posB === -1) return a.horaMasTemprana.localeCompare(b.horaMasTemprana);
+    if (posA === -1) return 1;
+    if (posB === -1) return -1;
+    return posA - posB;
+  });
 
   return (
     <div className="overflow-hidden rounded-2xl bg-[#10203A]">
