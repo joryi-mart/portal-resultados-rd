@@ -534,9 +534,11 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
   // Sorteos que la fuente de datos ya no ofrece (descontinuados o renombrados).
   // Se ocultan aquí en vez de borrarlos de la base de datos, para no perder el historial.
   const SORTEOS_DESCONTINUADOS = [73, 116, 78, 112, 119, 117];
-  const listaLoterias = (loterias || []).map(function (l) {
-    return { ...l, sorteos: (l.sorteos || []).filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id); }) };
-  });
+  const listaLoterias = (loterias || [])
+    .map(function (l) {
+      return { ...l, sorteos: (l.sorteos || []).filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id); }) };
+    })
+    .filter(function (l) { return l.sorteos.length > 0; });
   const ultimosResultados: UltimoResultado[] = [];
   for (let i = 0; i < listaLoterias.length; i++) {
     const loteria = listaLoterias[i];
@@ -756,9 +758,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
             <ul className="ml-5 list-disc text-base">
               <li>New York — tarde (2:30 p.m.) y noche (10:30 p.m.)</li>
               <li>Florida — día (1:30 p.m.) y noche (10:00 p.m.)</li>
-              <li>Anguila — 10:00 a.m.</li>
-              <li>PowerBall — lunes, miércoles y sábados, 11:00 p.m.</li>
-              <li>Mega Millions — martes y viernes, 11:00 p.m.</li>
+              <li>Anguila — mediodía, tarde y noche</li>
             </ul>
           </div>
 
