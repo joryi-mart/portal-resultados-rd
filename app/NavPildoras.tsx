@@ -200,7 +200,9 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
 
   const itemsVariedades: ItemMenu[] = [
     { etiqueta: "🎬 Cine", href: "/cine" },
+    { etiqueta: "📺 Series", href: "/series" },
     { etiqueta: "🎮 Videojuegos", href: "/videojuegos" },
+    { etiqueta: "🎤 Farándula y Dembow", href: "/farandula" },
     { etiqueta: "🏝️ Turismo", href: "/turismo" },
     { etiqueta: "⛽ Precio del combustible", href: "/precios-combustibles" },
     { etiqueta: "📍 Códigos postales", href: "/codigos-postales" },

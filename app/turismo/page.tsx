@@ -20,7 +20,16 @@ export const metadata = {
   alternates: { canonical: "https://labankerard.com/turismo" },
 };
 
+function destinoDelDia() {
+  const inicioDeAno = new Date(new Date().getFullYear(), 0, 0);
+  const diferencia = Date.now() - inicioDeAno.getTime();
+  const diaDelAno = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+  return CIUDADES[diaDelAno % CIUDADES.length];
+}
+
 export default function TurismoPage() {
+  const destacado = destinoDelDia();
+
   return (
     <div className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
       <NavPildoras />
@@ -36,6 +45,25 @@ export default function TurismoPage() {
       </header>
 
       <main className="mx-auto max-w-5xl px-6 py-10 sm:px-10">
+        <a
+          href={"/turismo/" + destacado.slug}
+          className="group mb-10 block overflow-hidden rounded-2xl border border-[#10203A]/15 bg-white shadow-md transition hover:shadow-xl sm:flex"
+        >
+          <div className="h-56 w-full overflow-hidden sm:h-auto sm:w-2/5">
+            <img
+              src={destacado.foto.url}
+              alt={destacado.nombre}
+              className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            />
+          </div>
+          <div className="flex flex-1 flex-col justify-center p-6 sm:p-8">
+            <p className="mb-1 font-mono text-xs font-bold uppercase tracking-wide text-[#007A33]">🧭 Destino a descubrir hoy</p>
+            <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[#10203A]">{destacado.nombre}</h2>
+            <p className="mt-2 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{destacado.resumen}</p>
+            <span className="mt-3 inline-block font-mono text-sm font-semibold text-[#1E4D8C]">Descubrir →</span>
+          </div>
+        </a>
+
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {CIUDADES.map(function (c) {
             return (
