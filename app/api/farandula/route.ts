@@ -9,7 +9,7 @@ async function obtenerNoticiasFarandula() {
   if (!apiKey) throw new Error("Falta la clave CURRENTS_API_KEY en .env.local");
 
   const query = encodeURIComponent(
-    'farándula dominicana OR "farandula dominicana" OR dembow OR "artista dominicano" OR "artista dominicana" OR "musica urbana" OR "República Dominicana" entretenimiento'
+    'dembow OR "farándula dominicana" OR "farandula dominicana" OR "El Alfa" OR Tokischa OR "Natti Natasha" OR Yailin OR Chimbala OR "Rochy RD" OR "Fernando Villalona" OR "Vicente García" OR "musica urbana dominicana"'
   );
   const url = `https://api.currentsapi.services/v1/search?keywords=${query}&language=es`;
 
