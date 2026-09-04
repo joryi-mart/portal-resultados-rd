@@ -16,16 +16,18 @@ async function obtenerEquipos() {
   const cacheado = getCache("lidom-equipos-v2");
   if (cacheado) return cacheado;
 
-  const ids = Object.keys(EQUIPOS_LIDOM).join(",");
-  const res = await fetch(`https://statsapi.mlb.com/api/v1/teams?teamIds=${ids}`);
+  const res = await fetch(`https://statsapi.mlb.com/api/v1/teams?sportId=17&season=${TEMPORADA_ACTUAL}`);
   if (!res.ok) throw new Error(`Error MLB API (equipos LIDOM): ${res.status}`);
   const data = await res.json();
 
-  const equipos = (data.teams || []).map((t: any) => ({
-    id: t.id,
-    nombre: EQUIPOS_LIDOM[t.id] || t.name,
-    ligaId: t.league?.id || null,
-  }));
+  const idsLidom = Object.keys(EQUIPOS_LIDOM).map(Number);
+  const equipos = (data.teams || [])
+    .filter((t: any) => idsLidom.includes(t.id))
+    .map((t: any) => ({
+      id: t.id,
+      nombre: EQUIPOS_LIDOM[t.id] || t.name,
+      ligaId: t.league?.id || null,
+    }));
 
   setCache("lidom-equipos-v2", equipos, 12 * 60 * 60 * 1000);
   return equipos;
