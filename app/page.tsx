@@ -94,6 +94,18 @@ function sumarDias(fechaISO: string, dias: number) {
   return yy + "-" + mm + "-" + dd;
 }
 
+function etiquetaFechaResumen(fechaISO: string) {
+  const hoy = hoyISO();
+  if (fechaISO === hoy) return "Hoy";
+  const ayer = sumarDias(hoy, -1);
+  if (fechaISO === ayer) {
+    const nombreDia = new Date(fechaISO + "T00:00:00").toLocaleDateString("es-DO", { weekday: "long" });
+    return "Ayer, " + nombreDia;
+  }
+  const fechaLarga = new Date(fechaISO + "T00:00:00").toLocaleDateString("es-DO", { weekday: "long", day: "numeric", month: "long" });
+  return fechaLarga;
+}
+
 function formatearFechaCorta(fechaISO: string) {
   const partes = fechaISO.split("-");
   if (partes.length !== 3) return fechaISO;
@@ -318,7 +330,7 @@ function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
     <div className="mb-8 overflow-hidden rounded-xl border border-[#10203A]/12 bg-white">
       <div className="flex flex-wrap items-baseline justify-between gap-2 px-5 pb-1 pt-5">
         <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
-          Resumen de resultados <span className="font-mono text-sm font-normal" style={{ color: COLOR_TEXTO_SECUNDARIO }}>· {formatearFechaCorta(props.fecha)}</span>
+          Resumen de resultados de <span className="capitalize">{etiquetaFechaResumen(props.fecha)}</span>
         </h2>
         <a href={"/?fecha=" + fechaAnterior} className="font-mono text-xs font-bold text-[#1E4D8C] hover:underline">
           Ver resumen de ayer →
