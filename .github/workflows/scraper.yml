@@ -22,8 +22,14 @@ jobs:
       - name: Instalar dependencias
         run: pip install -r scraper/requirements.txt
 
-      - name: Correr el scraper
+      - name: Correr el scraper (loterias dominicanas)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: python scraper/guardar_resultados_v3.py
+
+      - name: "Correr el scraper (loterias americanas: New Jersey y Georgia)"
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python scraper/guardar_americanas.py
