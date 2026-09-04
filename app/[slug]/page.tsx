@@ -136,7 +136,7 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
   const loteriaData = loteria as unknown as Loteria;
   // Sorteos que la fuente de datos ya no ofrece (descontinuados o renombrados).
   // Se ocultan aquí en vez de borrarlos de la base de datos, para no perder el historial.
-  const SORTEOS_DESCONTINUADOS = [73, 116, 78, 119];
+  const SORTEOS_DESCONTINUADOS = [73, 78, 119];
   const sorteos = (loteriaData.sorteos || []).filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id); });
 
   return (
