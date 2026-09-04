@@ -402,59 +402,48 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
   const fechaSeleccionada = props.fechaSeleccionada;
   const fechaTitulo = props.fechaTitulo;
 
-  type Fila = { loteria: string; loteriaSlug: string; sorteo: string; sorteoId: number; horaSorteo: string; numeros: string[]; esDeAyer: boolean; fechaMostrada: string; creadoEn: string };
-  const filasHoy: Fila[] = [];
-  const filasAnteriores: Fila[] = [];
+  type Tarjeta = { loteria: string; loteriaSlug: string; sorteo: string; sorteoId: number; numeros: string[]; esDeAyer: boolean; fechaMostrada: string };
+  const tarjetas: Tarjeta[] = [];
 
   for (let i = 0; i < loterias.length; i++) {
     const sorteos = loterias[i].sorteos || [];
-    for (let j = 0; j < sorteos.length; j++) {
-      const resultados = sorteos[j].resultados || [];
-      const deHoy = resultados.find(function (r) { return r.fecha === fechaSeleccionada; });
-      if (deHoy) {
-        filasHoy.push({
-          loteria: loterias[i].nombre,
-          loteriaSlug: loterias[i].slug,
-          sorteo: sorteos[j].nombre,
-          sorteoId: sorteos[j].id,
-          horaSorteo: sorteos[j].hora_sorteo,
-          numeros: deHoy.numeros.split("-"),
-          esDeAyer: false,
-          fechaMostrada: deHoy.fecha,
-          creadoEn: deHoy.creado_en,
-        });
-        continue;
-      }
-      // Todavia no ha salido el de hoy: mostramos el ultimo resultado real
-      // que si tenemos (normalmente el de ayer), en vez de un guion vacio.
-      let masReciente: Resultado | null = null;
-      for (let k = 0; k < resultados.length; k++) {
-        const r = resultados[k];
-        if (r.fecha < fechaSeleccionada && (!masReciente || r.fecha > masReciente.fecha)) {
-          masReciente = r;
-        }
-      }
-      if (masReciente) {
-        filasAnteriores.push({
-          loteria: loterias[i].nombre,
-          loteriaSlug: loterias[i].slug,
-          sorteo: sorteos[j].nombre,
-          sorteoId: sorteos[j].id,
-          horaSorteo: sorteos[j].hora_sorteo,
-          numeros: masReciente.numeros.split("-"),
-          esDeAyer: true,
-          fechaMostrada: masReciente.fecha,
-          creadoEn: masReciente.creado_en,
-        });
+    if (sorteos.length === 0) continue;
+    // Mostramos el primer sorteo de cada loteria (el principal), buscando su
+    // resultado de hoy o, si aun no ha salido, el ultimo real que tengamos.
+    const sorteo = sorteos[0];
+    const resultados = sorteo.resultados || [];
+    const deHoy = resultados.find(function (r) { return r.fecha === fechaSeleccionada; });
+    if (deHoy) {
+      tarjetas.push({
+        loteria: loterias[i].nombre,
+        loteriaSlug: loterias[i].slug,
+        sorteo: sorteo.nombre,
+        sorteoId: sorteo.id,
+        numeros: deHoy.numeros.split("-"),
+        esDeAyer: false,
+        fechaMostrada: deHoy.fecha,
+      });
+      continue;
+    }
+    let masReciente: Resultado | null = null;
+    for (let k = 0; k < resultados.length; k++) {
+      const r = resultados[k];
+      if (r.fecha < fechaSeleccionada && (!masReciente || r.fecha > masReciente.fecha)) {
+        masReciente = r;
       }
     }
+    if (masReciente) {
+      tarjetas.push({
+        loteria: loterias[i].nombre,
+        loteriaSlug: loterias[i].slug,
+        sorteo: sorteo.nombre,
+        sorteoId: sorteo.id,
+        numeros: masReciente.numeros.split("-"),
+        esDeAyer: true,
+        fechaMostrada: masReciente.fecha,
+      });
+    }
   }
-  // Los que ya salieron hoy van primero (del mas reciente al mas viejo); despues,
-  // los que aun no salen hoy pero si tenemos un resultado anterior, en el orden
-  // en que se espera que salgan hoy.
-  filasHoy.sort(function (a, b) { return new Date(b.creadoEn).getTime() - new Date(a.creadoEn).getTime(); });
-  filasAnteriores.sort(function (a, b) { return (a.horaSorteo || "").localeCompare(b.horaSorteo || ""); });
-  const filas = filasHoy.concat(filasAnteriores);
 
   return (
     <div className="overflow-hidden rounded-2xl bg-[#10203A]">
@@ -463,46 +452,43 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
         <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold text-white sm:text-3xl">
           ¿Qué salió {fechaSeleccionada === hoyISO() ? "hoy" : "ese día"}?
         </h2>
+        <p className="mt-1 text-sm text-white/70">Toca una lotería abajo para ver más resultados.</p>
       </div>
 
-      {filas.length === 0 ? (
+      {tarjetas.length === 0 ? (
         <p className="mx-5 mb-5 rounded-xl bg-white/10 px-4 py-4 text-base text-white sm:mx-6">
           Todavía no hay resultados publicados para este día.
         </p>
       ) : (
-        <div className="mx-3 mb-3 overflow-hidden rounded-xl bg-white sm:mx-4 sm:mb-4">
-          {filas.map(function (fila, i) {
-            const colorEspecial = COLOR_ESPECIAL_SORTEOS[fila.sorteoId];
-            const href = "/" + fila.loteriaSlug + "/" + fila.fechaMostrada;
+        <div className="mx-3 mb-3 grid grid-cols-1 gap-3 sm:mx-4 sm:mb-4 sm:grid-cols-2">
+          {tarjetas.map(function (t, i) {
+            const colorEspecial = COLOR_ESPECIAL_SORTEOS[t.sorteoId];
+            const href = "/" + t.loteriaSlug + "/" + t.fechaMostrada;
             return (
               <a
                 key={i}
                 href={href}
-                className="flex items-center gap-3 border-t border-[#10203A]/8 px-4 py-3 transition hover:bg-[#FBF7EE] first:border-t-0"
+                className="relative rounded-xl border border-[#10203A]/10 bg-white p-4 transition hover:shadow-md"
               >
-                <span
-                  className="h-8 w-1 shrink-0 rounded-full"
-                  style={{ backgroundColor: fila.esDeAyer ? "#9AA5AF" : COLOR_VERDE_RD }}
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-base font-semibold text-[#10203A]">{fila.sorteo}</p>
-                  <p className="truncate font-mono text-[11px]" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-                    {fila.loteria}
-                    {fila.esDeAyer ? " · de ayer, esperando el de hoy" : ""}
-                  </p>
-                </div>
-                <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
-                  {fila.numeros.map(function (n, j) {
+                {t.esDeAyer && (
+                  <span className="absolute right-3 top-3 rounded-full bg-[#E4E8EB] px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide text-[#7B858F]">
+                    de ayer
+                  </span>
+                )}
+                <p className="truncate pr-16 text-base font-bold text-[#10203A]">{t.loteria}</p>
+                <p className="mb-3 truncate font-mono text-[11px]" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{t.sorteo}</p>
+                <div className="flex flex-wrap items-center gap-2">
+                  {t.numeros.map(function (n, j) {
                     const esPrimera = j === 0 && !colorEspecial;
-                    const estiloEspecial = !fila.esDeAyer && colorEspecial
+                    const estiloEspecial = !t.esDeAyer && colorEspecial
                       ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
-                      : !fila.esDeAyer && esPrimera
+                      : !t.esDeAyer && esPrimera
                       ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
                       : undefined;
                     return (
                       <span
                         key={j}
-                        className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (fila.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
+                        className={"flex h-11 w-11 items-center justify-center rounded-full font-mono text-base font-bold " + (t.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
                         style={estiloEspecial}
                       >
                         {n}
