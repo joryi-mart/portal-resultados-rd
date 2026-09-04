@@ -406,8 +406,9 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
   const fechaSeleccionada = props.fechaSeleccionada;
   const fechaTitulo = props.fechaTitulo;
 
-  type Tarjeta = { loteria: string; loteriaSlug: string; sorteo: string; sorteoId: number; horaSorteo: string; numeros: string[]; esDeAyer: boolean; fechaMostrada: string };
-  const tarjetas: Tarjeta[] = [];
+  type FilaSorteoResumen = { sorteo: string; sorteoId: number; horaSorteo: string; numeros: string[]; esDeAyer: boolean; fechaMostrada: string };
+  type TarjetaLoteria = { loteria: string; loteriaSlug: string; horaMasTemprana: string; filas: FilaSorteoResumen[] };
+  const porLoteria = new Map<string, TarjetaLoteria>();
 
   for (let i = 0; i < loterias.length; i++) {
     const sorteos = loterias[i].sorteos || [];
@@ -415,44 +416,58 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
       const sorteo = sorteos[j];
       const resultados = sorteo.resultados || [];
       const deHoy = resultados.find(function (r) { return r.fecha === fechaSeleccionada; });
+
+      let fila: FilaSorteoResumen | null = null;
       if (deHoy) {
-        tarjetas.push({
-          loteria: loterias[i].nombre,
-          loteriaSlug: loterias[i].slug,
+        fila = {
           sorteo: sorteo.nombre,
           sorteoId: sorteo.id,
           horaSorteo: sorteo.hora_sorteo,
           numeros: deHoy.numeros.split("-"),
           esDeAyer: false,
           fechaMostrada: deHoy.fecha,
-        });
-        continue;
-      }
-      let masReciente: Resultado | null = null;
-      for (let k = 0; k < resultados.length; k++) {
-        const r = resultados[k];
-        if (r.fecha < fechaSeleccionada && (!masReciente || r.fecha > masReciente.fecha)) {
-          masReciente = r;
+        };
+      } else {
+        let masReciente: Resultado | null = null;
+        for (let k = 0; k < resultados.length; k++) {
+          const r = resultados[k];
+          if (r.fecha < fechaSeleccionada && (!masReciente || r.fecha > masReciente.fecha)) {
+            masReciente = r;
+          }
+        }
+        if (masReciente) {
+          fila = {
+            sorteo: sorteo.nombre,
+            sorteoId: sorteo.id,
+            horaSorteo: sorteo.hora_sorteo,
+            numeros: masReciente.numeros.split("-"),
+            esDeAyer: true,
+            fechaMostrada: masReciente.fecha,
+          };
         }
       }
-      if (masReciente) {
-        tarjetas.push({
-          loteria: loterias[i].nombre,
-          loteriaSlug: loterias[i].slug,
-          sorteo: sorteo.nombre,
-          sorteoId: sorteo.id,
-          horaSorteo: sorteo.hora_sorteo,
-          numeros: masReciente.numeros.split("-"),
-          esDeAyer: true,
-          fechaMostrada: masReciente.fecha,
-        });
+
+      if (!fila) continue;
+      const slug = loterias[i].slug;
+      if (!porLoteria.has(slug)) {
+        porLoteria.set(slug, { loteria: loterias[i].nombre, loteriaSlug: slug, horaMasTemprana: fila.horaSorteo || "99:99", filas: [] });
+      }
+      const tarjeta = porLoteria.get(slug)!;
+      tarjeta.filas.push(fila);
+      if ((fila.horaSorteo || "99:99") < tarjeta.horaMasTemprana) {
+        tarjeta.horaMasTemprana = fila.horaSorteo || "99:99";
       }
     }
   }
 
-  // Ordenamos por la hora real del sorteo, para que las tarjetas se lean
+  // Cada tarjeta (loteria) trae sus sorteos ordenados por hora; las tarjetas
+  // en si se ordenan por la hora mas temprana que tengan, para que se lean
   // en el mismo orden en que van saliendo los resultados durante el dia.
-  tarjetas.sort(function (a, b) { return (a.horaSorteo || "99:99").localeCompare(b.horaSorteo || "99:99"); });
+  const tarjetas = Array.from(porLoteria.values());
+  tarjetas.forEach(function (t) {
+    t.filas.sort(function (a, b) { return (a.horaSorteo || "99:99").localeCompare(b.horaSorteo || "99:99"); });
+  });
+  tarjetas.sort(function (a, b) { return a.horaMasTemprana.localeCompare(b.horaMasTemprana); });
 
   return (
     <div className="overflow-hidden rounded-2xl bg-[#10203A]">
@@ -471,41 +486,45 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
       ) : (
         <div className="mx-3 mb-3 grid grid-cols-1 gap-3 sm:mx-4 sm:mb-4 sm:grid-cols-2">
           {tarjetas.map(function (t, i) {
-            const colorEspecial = COLOR_ESPECIAL_SORTEOS[t.sorteoId];
-            const href = "/" + t.loteriaSlug + "/" + t.fechaMostrada;
             return (
-              <a
-                key={i}
-                href={href}
-                className="relative rounded-xl border border-[#10203A]/10 bg-white p-4 transition hover:shadow-md"
-              >
-                {t.esDeAyer && (
-                  <span className="absolute right-3 top-3 rounded-full bg-[#E4E8EB] px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide text-[#7B858F]">
-                    de ayer
-                  </span>
-                )}
-                <p className="truncate pr-16 text-base font-bold text-[#10203A]">{t.loteria}</p>
-                <p className="mb-3 truncate font-mono text-[11px]" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{t.sorteo}</p>
-                <div className="flex flex-wrap items-center gap-2">
-                  {t.numeros.map(function (n, j) {
-                    const esPrimera = j === 0 && !colorEspecial;
-                    const estiloEspecial = !t.esDeAyer && colorEspecial
-                      ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
-                      : !t.esDeAyer && esPrimera
-                      ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
-                      : undefined;
+              <div key={i} className="rounded-xl border border-[#10203A]/10 bg-white p-4">
+                <p className="mb-2 truncate text-base font-bold text-[#10203A]">{t.loteria}</p>
+                <div className="flex flex-col gap-2.5">
+                  {t.filas.map(function (fila, j) {
+                    const colorEspecial = COLOR_ESPECIAL_SORTEOS[fila.sorteoId];
+                    const href = "/" + t.loteriaSlug + "/" + fila.fechaMostrada;
                     return (
-                      <span
-                        key={j}
-                        className={"flex h-11 w-11 items-center justify-center rounded-full font-mono text-base font-bold " + (t.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
-                        style={estiloEspecial}
-                      >
-                        {n}
-                      </span>
+                      <a key={j} href={href} className="flex items-center justify-between gap-2 rounded-lg -mx-1 px-1 py-1 transition hover:bg-[#FBF7EE]">
+                        <div className="min-w-0">
+                          <p className="truncate font-mono text-[11px]" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                            {fila.sorteo}
+                            {fila.esDeAyer ? " · de ayer" : ""}
+                          </p>
+                        </div>
+                        <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+                          {fila.numeros.map(function (n, k) {
+                            const esPrimera = k === 0 && !colorEspecial;
+                            const estiloEspecial = !fila.esDeAyer && colorEspecial
+                              ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
+                              : !fila.esDeAyer && esPrimera
+                              ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
+                              : undefined;
+                            return (
+                              <span
+                                key={k}
+                                className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (fila.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
+                                style={estiloEspecial}
+                              >
+                                {n}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </a>
                     );
                   })}
                 </div>
-              </a>
+              </div>
             );
           })}
         </div>
