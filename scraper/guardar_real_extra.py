@@ -51,8 +51,8 @@ def extraer_resultado(html):
     if not numeros:
         return None
 
-    m_fecha = re.search(r"📅\s*([^<]{1,30})", bloque)
-    etiqueta_fecha = m_fecha.group(1).strip() if m_fecha else ""
+    m_fecha = re.search(r"<span>(Hoy|Ayer)</span>", bloque)
+    etiqueta_fecha = m_fecha.group(1) if m_fecha else ""
 
     return {"numeros": numeros, "etiqueta_fecha": etiqueta_fecha}
 

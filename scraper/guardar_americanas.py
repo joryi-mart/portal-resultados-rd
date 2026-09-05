@@ -41,7 +41,7 @@ def hoy_rd():
 
 def extraer_resultado(html):
     """Busca el bloque JSON-LD con additionalProperty (Primer/Segundo/Tercer Premio)."""
-    match = re.search(r'"additionalProperty":(\[[^\]]*\])', html)
+    match = re.search(r'"additionalProperty":\s*(\[[^\]]*\])', html)
     if not match:
         return None
     try:
