@@ -39,8 +39,9 @@ def hoy_rd():
 
 
 def extraer_resultado(html):
-    """Busca el primer bloque de bolitas (numeros) y la etiqueta de fecha que
-    lo acompana (Hoy / Ayer / etc). Solo nos interesan los resultados de hoy."""
+    """Busca el primer bloque de bolitas (numeros) y la fecha EXACTA que trae
+    la pagina junto a ellos (no solo la etiqueta relativa Hoy/Ayer, que puede
+    confundirse justo a la medianoche si la fuente todavia no actualizo)."""
     idx = html.find("Numbers Area")
     if idx < 0:
         return None
@@ -51,10 +52,17 @@ def extraer_resultado(html):
     if not numeros:
         return None
 
-    m_fecha = re.search(r"<span>(Hoy|Ayer)</span>", bloque)
-    etiqueta_fecha = m_fecha.group(1) if m_fecha else ""
+    m_fecha = re.search(
+        r'<span>(?:📅\s*)?(Hoy|Ayer)</span><span class="font-normal opacity-85">[^,]*,\s*(\d{2})-(\d{2})-(\d{4})</span>',
+        bloque,
+    )
+    if not m_fecha:
+        return None
 
-    return {"numeros": numeros, "etiqueta_fecha": etiqueta_fecha}
+    etiqueta_fecha, dia, mes, anio = m_fecha.groups()
+    fecha_real = f"{anio}-{mes}-{dia}"
+
+    return {"numeros": numeros, "etiqueta_fecha": etiqueta_fecha, "fecha": fecha_real}
 
 
 def guardar_en_supabase(sorteo_id, fecha, numeros):
@@ -113,10 +121,10 @@ def main():
             if not resultado:
                 print(f"  ⚠️ No se pudo leer el resultado de {url}")
                 continue
-            if resultado["etiqueta_fecha"].lower() != "hoy":
-                print(f"  ⏳ {url}: todavia muestra '{resultado['etiqueta_fecha']}', no es de hoy")
+            if resultado["fecha"] != hoy:
+                print(f"  ⏳ {url}: todavia muestra el resultado del {resultado['fecha']}, no de hoy ({hoy})")
                 continue
-            accion = guardar_en_supabase(sorteo_id, hoy, resultado["numeros"])
+            accion = guardar_en_supabase(sorteo_id, resultado["fecha"], resultado["numeros"])
             print(f"  ✅ sorteo_id {sorteo_id}: {resultado['numeros']} ({accion})")
         except Exception as e:
             print(f"  ❌ Error con {url}: {e}")
