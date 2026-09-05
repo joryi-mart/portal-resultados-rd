@@ -223,10 +223,27 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
           <a href="/" className="block px-4 py-2.5 font-mono text-sm font-semibold text-white hover:bg-white/10">
             Ver todas (resumen)
           </a>
-          {loterias.length > 0 ? <div className="my-1 border-t border-white/10" /> : null}
-          {loterias.map(function (l) {
-            return <ItemLoteria key={l.slug} loteria={l} />;
-          })}
+          {(function () {
+            const SLUGS_OTRAS = ["haiti", "powerball", "mega-millions", "sxm", "new-york", "florida", "loterias-americanas", "anguila"];
+            const principales = loterias.filter(function (l) { return !SLUGS_OTRAS.includes(l.slug); });
+            const otras = loterias.filter(function (l) { return SLUGS_OTRAS.includes(l.slug); });
+            return (
+              <>
+                {principales.length > 0 ? <div className="my-1 border-t border-white/10" /> : null}
+                {principales.map(function (l) {
+                  return <ItemLoteria key={l.slug} loteria={l} />;
+                })}
+                {otras.length > 0 ? (
+                  <>
+                    <p className="mt-1 px-4 pb-1 pt-2 font-mono text-[10px] font-bold uppercase tracking-wide text-white/40">Otras Loterías</p>
+                    {otras.map(function (l) {
+                      return <ItemLoteria key={l.slug} loteria={l} />;
+                    })}
+                  </>
+                ) : null}
+              </>
+            );
+          })()}
         </PillCategoria>
 
         <PillCategoria
