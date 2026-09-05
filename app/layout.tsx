@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
-import EstrellaMeGusta from "./EstrellaMeGusta";
 
 const GOOGLE_ANALYTICS_ID = "G-S0FTS8VX1J";
 
@@ -88,7 +87,6 @@ export default function RootLayout({
           </a>
         </div>
         {children}
-        <EstrellaMeGusta />
       </body>
     </html>
   );
