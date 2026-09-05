@@ -155,11 +155,12 @@ function PillCategoria(props: {
         <>
           <div className="fixed inset-0 z-40" onClick={onAlternar} />
           <div
-            className="fixed z-50 w-60 overflow-hidden rounded-xl bg-[#10203A] py-2 shadow-2xl"
+            className="fixed z-50 w-60 overflow-y-auto overscroll-contain rounded-xl bg-[#10203A] py-2 shadow-2xl"
             style={{
               top: posicion.top,
               left: posicion.left,
               right: posicion.right,
+              maxHeight: "calc(100vh - " + (posicion.top + 16) + "px)",
             }}
           >
             {children}
