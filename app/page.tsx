@@ -509,37 +509,43 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
             return (
               <div key={i} className="rounded-xl border border-[#10203A]/10 bg-white p-4">
                 <p className="mb-2 truncate text-base font-bold text-[#10203A]">{t.loteria}</p>
-                <div className="flex flex-col gap-2.5">
+                <div className="flex flex-col gap-3">
                   {t.filas.map(function (fila, j) {
                     const colorEspecial = COLOR_ESPECIAL_SORTEOS[fila.sorteoId];
                     const href = "/" + t.loteriaSlug + "/" + fila.fechaMostrada;
-                    return (
+                    const muchosNumeros = fila.numeros.length > 6;
+                    const bolitas = fila.numeros.map(function (n, k) {
+                      const esPrimera = k === 0 && !colorEspecial;
+                      const estiloEspecial = !fila.esDeAyer && colorEspecial
+                        ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
+                        : !fila.esDeAyer && esPrimera
+                        ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
+                        : undefined;
+                      return (
+                        <span
+                          key={k}
+                          className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (fila.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
+                          style={estiloEspecial}
+                        >
+                          {n}
+                        </span>
+                      );
+                    });
+                    const etiqueta = (
+                      <p className="truncate text-sm font-bold text-[#10203A]">
+                        {fila.sorteo}
+                        {fila.esDeAyer ? <span className="font-normal" style={{ color: COLOR_TEXTO_SECUNDARIO }}> · de ayer</span> : ""}
+                      </p>
+                    );
+                    return muchosNumeros ? (
+                      <a key={j} href={href} className="block rounded-lg -mx-1 px-1 py-1 transition hover:bg-[#FBF7EE]">
+                        <div className="mb-1.5">{etiqueta}</div>
+                        <div className="flex flex-wrap items-center gap-1.5">{bolitas}</div>
+                      </a>
+                    ) : (
                       <a key={j} href={href} className="flex items-center justify-between gap-2 rounded-lg -mx-1 px-1 py-1 transition hover:bg-[#FBF7EE]">
-                        <div className="min-w-0">
-                          <p className="truncate font-mono text-[11px]" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-                            {fila.sorteo}
-                            {fila.esDeAyer ? " · de ayer" : ""}
-                          </p>
-                        </div>
-                        <div className="flex shrink-0 flex-wrap items-center gap-1.5">
-                          {fila.numeros.map(function (n, k) {
-                            const esPrimera = k === 0 && !colorEspecial;
-                            const estiloEspecial = !fila.esDeAyer && colorEspecial
-                              ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
-                              : !fila.esDeAyer && esPrimera
-                              ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
-                              : undefined;
-                            return (
-                              <span
-                                key={k}
-                                className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (fila.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
-                                style={estiloEspecial}
-                              >
-                                {n}
-                              </span>
-                            );
-                          })}
-                        </div>
+                        <div className="min-w-0">{etiqueta}</div>
+                        <div className="flex shrink-0 flex-wrap items-center gap-1.5">{bolitas}</div>
                       </a>
                     );
                   })}
