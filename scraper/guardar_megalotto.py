@@ -45,10 +45,17 @@ def extraer_resultado(html):
     if len(numeros) != 6:
         return None
 
-    m_fecha = re.search(r"<span>(?:📅\s*)?(Hoy|Ayer)</span>", bloque)
-    etiqueta_fecha = m_fecha.group(1) if m_fecha else ""
+    m_fecha = re.search(
+        r'<span>(?:📅\s*)?(Hoy|Ayer)</span><span class="font-normal opacity-85">[^,]*,\s*(\d{2})-(\d{2})-(\d{4})</span>',
+        bloque,
+    )
+    if not m_fecha:
+        return None
 
-    return {"numeros": numeros, "etiqueta_fecha": etiqueta_fecha}
+    etiqueta_fecha, dia, mes, anio = m_fecha.groups()
+    fecha_real = f"{anio}-{mes}-{dia}"
+
+    return {"numeros": numeros, "etiqueta_fecha": etiqueta_fecha, "fecha": fecha_real}
 
 
 def guardar_en_supabase(fecha, numeros):
@@ -105,10 +112,10 @@ def main():
         resultado = extraer_resultado(resp.text)
         if not resultado:
             print("  ⚠️ No se pudo leer el resultado de MegaLotto")
-        elif resultado["etiqueta_fecha"].lower() != "hoy":
-            print(f"  ⏳ MegaLotto: todavia muestra el resultado de '{resultado['etiqueta_fecha']}', no de hoy")
+        elif resultado["fecha"] != hoy:
+            print(f"  ⏳ MegaLotto: todavia muestra el resultado del {resultado['fecha']}, no de hoy ({hoy})")
         else:
-            accion = guardar_en_supabase(hoy, resultado["numeros"])
+            accion = guardar_en_supabase(resultado["fecha"], resultado["numeros"])
             print(f"  ✅ MegaLotto: {resultado['numeros']} ({accion})")
     except Exception as e:
         print(f"  ❌ Error con MegaLotto: {e}")
