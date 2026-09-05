@@ -58,7 +58,7 @@ def obtener_powerball(hoy):
     if len(blancas) != 5 or not roja:
         return None
 
-    return {"fecha": fecha, "numeros": blancas + [roja.group(1)]}
+    return {"fecha": fecha, "numeros": [n.zfill(2) for n in blancas] + [roja.group(1).zfill(2)]}
 
 
 def obtener_mega_millions(hoy):
@@ -81,7 +81,7 @@ def obtener_mega_millions(hoy):
     if not fecha or any(n is None for n in numeros) or mega is None:
         return None
 
-    return {"fecha": fecha, "numeros": [str(n) for n in numeros] + [str(mega)]}
+    return {"fecha": fecha, "numeros": [str(n).zfill(2) for n in numeros] + [str(mega).zfill(2)]}
 
 
 def guardar_en_supabase(sorteo_id, fecha, numeros, fuente):
