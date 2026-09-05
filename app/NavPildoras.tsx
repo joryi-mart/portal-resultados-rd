@@ -174,6 +174,7 @@ function PillCategoria(props: {
 export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
   const loterias = props.loterias || [];
   const [menuAbierto, setMenuAbierto] = useState<MenuId>(null);
+  const [internacionalesAbierto, setInternacionalesAbierto] = useState(false);
 
   function alternar(menu: MenuId) {
     setMenuAbierto(menuAbierto === menu ? null : menu);
@@ -235,10 +236,22 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
                 })}
                 {otras.length > 0 ? (
                   <>
-                    <p className="mt-1 px-4 pb-1 pt-2 font-mono text-[10px] font-bold uppercase tracking-wide text-white/40">Otras Loterías</p>
-                    {otras.map(function (l) {
-                      return <ItemLoteria key={l.slug} loteria={l} />;
-                    })}
+                    <div className="my-1 border-t border-white/10" />
+                    <button
+                      type="button"
+                      onClick={function () { setInternacionalesAbierto(!internacionalesAbierto); }}
+                      className="flex w-full items-center justify-between px-4 py-2.5 font-mono text-sm font-semibold text-white hover:bg-white/10"
+                    >
+                      Internacionales
+                      <span className={"transition-transform " + (internacionalesAbierto ? "rotate-180" : "")}><IconoFlecha /></span>
+                    </button>
+                    {internacionalesAbierto ? (
+                      <div className="pb-1">
+                        {otras.map(function (l) {
+                          return <ItemLoteria key={l.slug} loteria={l} />;
+                        })}
+                      </div>
+                    ) : null}
                   </>
                 ) : null}
               </>
