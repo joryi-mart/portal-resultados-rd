@@ -65,7 +65,7 @@ type UltimoResultado = {
 const COLOR_AZUL = "#1E4D8C";
 const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 const COLOR_VERDE_RD = "#007A33";
-const COLOR_VERDE_PRESIDENTE = "#00A651";
+const COLOR_VERDE_PRESIDENTE = "#0A5C36";
 const COLOR_PRIMERA_POSICION = "#E7A63C";
 
 // Sorteos que llevan un color de bolita distinto al azul estándar.
