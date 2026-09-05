@@ -207,8 +207,8 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
                           return (
                             <div
                               key={i}
-                              className="flex aspect-square items-center justify-center rounded-full border-2 font-mono text-base font-bold sm:text-lg"
-                              style={{ backgroundColor: "#FFFFFF", borderColor: COLOR_AZUL, color: COLOR_AZUL }}
+                              className="flex aspect-square items-center justify-center rounded-full font-mono text-base font-bold text-white sm:text-lg"
+                              style={{ backgroundColor: COLOR_AZUL }}
                             >
                               {n}
                             </div>
