@@ -65,6 +65,7 @@ type UltimoResultado = {
 const COLOR_AZUL = "#1E4D8C";
 const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 const COLOR_VERDE_RD = "#007A33";
+const COLOR_VERDE_PRESIDENTE = "#00A651";
 const COLOR_PRIMERA_POSICION = "#E7A63C";
 
 // Sorteos que llevan un color de bolita distinto al azul estándar.
@@ -353,8 +354,11 @@ function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
                   <span className="h-8 w-1 shrink-0 rounded-full" style={{ backgroundColor: COLOR_VERDE_RD }} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-base font-semibold text-[#10203A]">{item.sorteoNombre}</p>
-                    <p className="truncate font-mono text-[11px]" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-                      {item.loteriaNombre} · {formatearHora12(item.horaSorteo)}
+                    <p className="mt-0.5 flex flex-wrap items-center gap-1.5 font-mono text-[11px]">
+                      <span className="rounded px-1.5 py-0.5 font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>
+                        {item.loteriaNombre}
+                      </span>
+                      <span style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearHora12(item.horaSorteo)}</span>
                     </p>
                   </div>
                   <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
@@ -508,7 +512,7 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
           {tarjetas.map(function (t, i) {
             return (
               <div key={i} className="rounded-xl border border-[#10203A]/10 bg-white p-4">
-                <p className="mb-2 truncate text-base font-bold text-[#10203A]">{t.loteria}</p>
+                <p className="mb-2 inline-block truncate rounded px-2 py-0.5 text-base font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{t.loteria}</p>
                 <div className="flex flex-col gap-3">
                   {t.filas.map(function (fila, j) {
                     const colorEspecial = COLOR_ESPECIAL_SORTEOS[fila.sorteoId];
@@ -734,7 +738,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
                 <div className="h-2 w-full" style={{ backgroundColor: COLOR_AZUL }} />
                 <div className="px-5 py-4">
                   <div className="mb-1 flex items-center justify-between">
-                    <a href={"/" + loteria.slug} className="inline-block rounded-lg px-2.5 py-1 font-[family-name:var(--font-display)] text-base font-bold text-white hover:opacity-90" style={{ backgroundColor: COLOR_VERDE_RD }}>{loteria.nombre}</a>
+                    <a href={"/" + loteria.slug} className="inline-block rounded-lg px-2.5 py-1 font-[family-name:var(--font-display)] text-base font-bold text-white hover:opacity-90" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{loteria.nombre}</a>
                     <span className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{sorteos.length} producto{sorteos.length === 1 ? "" : "s"}</span>
                   </div>
 
