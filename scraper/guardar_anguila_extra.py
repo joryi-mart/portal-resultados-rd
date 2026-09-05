@@ -1,11 +1,11 @@
 """
-Guardar resultado de Anguila 10:00 AM - La BankeraRD
+Guardar resultados de Anguila 10:00 AM y Anguila Noche - La BankeraRD
 ================================================================================
 El horario oficial de Anguila Lottery es de 4 sorteos diarios: 10:00 AM,
-1:00 PM, 6:00 PM y 9:00 PM. loteriasdominicanas.us (la fuente principal) ya
-cubre los de 1pm/6pm/9pm (Mediodia/Tarde/Noche); el de las 10:00 AM se saca
-de losnumeros.com.do, la misma fuente que ya usamos para los extras de
-Loteria Real.
+1:00 PM, 6:00 PM y 9:00 PM. loteriasdominicanas.us (la fuente principal) cubre
+bien el de 1pm y 6pm (Mediodia/Tarde), pero el de las 10:00 AM nunca lo tuvo y
+el de las 9:00 PM (Noche) se quedo trabado varios dias sin actualizar. Ambos
+se sacan de losnumeros.com.do en su lugar.
 """
 
 import os
@@ -26,6 +26,7 @@ HEADERS = {
 # (url de losnumeros.com.do, sorteo_id correspondiente en nuestra base de datos)
 PAGINAS = [
     ("https://losnumeros.com.do/anguilla/anguila-10-am/", 116),
+    ("https://losnumeros.com.do/anguilla/anguila-9-pm/", 128),
 ]
 
 
@@ -48,7 +49,7 @@ def extraer_resultado(html):
         return None
 
     m_fecha = re.search(
-        r'<span>(Hoy|Ayer)</span><span class="font-normal opacity-85">[^,]*,\s*(\d{2})-(\d{2})-(\d{4})</span>',
+        r'<span>(?:📅\s*)?(Hoy|Ayer)</span><span class="font-normal opacity-85">[^,]*,\s*(\d{2})-(\d{2})-(\d{4})</span>',
         bloque,
     )
     if not m_fecha:
