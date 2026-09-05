@@ -730,8 +730,12 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
           </div>
         ) : null}
 
-        <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
-          {listaLoterias.map(function (loteria: Loteria) {
+        {(function () {
+          const SLUGS_AMERICAS = ["haiti", "powerball", "mega-millions", "sxm", "new-york", "florida", "loterias-americanas", "anguila"];
+          const loteriasDominicanas = listaLoterias.filter(function (l) { return !SLUGS_AMERICAS.includes(l.slug); });
+          const loteriasAmericas = listaLoterias.filter(function (l) { return SLUGS_AMERICAS.includes(l.slug); });
+
+          function renderTarjetaLoteria(loteria: Loteria) {
             const sorteos = loteria.sorteos || [];
             return (
               <div key={loteria.id} className="mb-4 break-inside-avoid overflow-hidden rounded-xl border border-[#10203A]/12 bg-white shadow-[0_1px_3px_rgba(16,32,58,0.08)]">
@@ -754,8 +758,31 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
                 </div>
               </div>
             );
-          })}
-        </div>
+          }
+
+          return (
+            <>
+              <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
+                {loteriasDominicanas.map(renderTarjetaLoteria)}
+              </div>
+
+              {loteriasAmericas.length > 0 && (
+                <>
+                  <div className="mb-6 mt-10 flex items-baseline justify-between">
+                    <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">🌎 Loterías Américas</h2>
+                    <span className="font-mono text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{loteriasAmericas.length} activas</span>
+                  </div>
+                  <p className="mb-6 -mt-4 text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                    Loterías que se juegan fuera de República Dominicana, pero muy seguidas aquí: Haití, Anguila, Sint Maarten y Estados Unidos.
+                  </p>
+                  <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
+                    {loteriasAmericas.map(renderTarjetaLoteria)}
+                  </div>
+                </>
+              )}
+            </>
+          );
+        })()}
 
         <TablaHorarios loterias={listaLoterias} fechaSeleccionada={fechaSeleccionada} />
 
