@@ -71,8 +71,16 @@ const COLOR_PRIMERA_POSICION = "#E7A63C";
 // Sorteos que llevan un color de bolita distinto al azul estándar.
 // El "Loto" de Leidsa (id 69) sale solo miércoles y sábados, así que se
 // diferencia visualmente con un beige claro (distinto al beige de fondo de la página).
-const COLOR_ESPECIAL_SORTEOS: Record<number, { fondo: string; texto: string }> = {
-  69: { fondo: "#C9B896", texto: "#3A2E1A" },
+type ColorBolita = { fondo: string; texto: string };
+// Para sorteos donde no todos los numeros son iguales (ej. Loto Mas de Leidsa:
+// los primeros 6 son el loto normal, y trae 2 numeros extra de otro sorteo),
+// esta funcion decide el color segun la posicion del numero.
+const COLOR_POR_POSICION_SORTEOS: Record<number, (indice: number, total: number) => ColorBolita | null> = {
+  69: function (indice) {
+    if (indice === 6) return { fondo: "#D4E157", texto: "#3D4B0A" }; // verde amarillo claro
+    if (indice === 7) return { fondo: "#0A5C36", texto: "#FFFFFF" }; // verde presidente
+    return null; // los primeros 6 quedan en azul, como cualquier otro sorteo
+  },
 };
 
 function hoyISO() {
@@ -195,7 +203,7 @@ function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string; loteriaS
   const hayResultadoReal = !!resultado;
   const numeros = resultado ? resultado.numeros.split("-") : numerosVistaPrevia(sorteo.id);
   const tamano = tamanoBolita(numeros.length, false);
-  const colorEspecial = COLOR_ESPECIAL_SORTEOS[sorteo.id];
+  const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[sorteo.id];
   const href = hayResultadoReal ? "/" + props.loteriaSlug + "/" + fechaSeleccionada : "/" + props.loteriaSlug;
 
   if (!hayResultadoReal) {
@@ -228,7 +236,7 @@ function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string; loteriaS
         </p>
       </div>
       <div className="flex flex-nowrap items-center gap-1.5 overflow-x-auto">
-        {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano} colorEspecial={colorEspecial} primera={i === 0}>{n}</Bolita>; })}
+        {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano} colorEspecial={colorPorPosicion ? colorPorPosicion(i, numeros.length) ?? undefined : undefined} primera={i === 0}>{n}</Bolita>; })}
       </div>
       {resultado && resultado.creado_en ? (
         <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Publicado: {formatearPublicacion(resultado.creado_en)}</p>
@@ -515,10 +523,11 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
                 <p className="mb-2 inline-block truncate rounded px-2 py-0.5 text-base font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{t.loteria}</p>
                 <div className="flex flex-col gap-3">
                   {t.filas.map(function (fila, j) {
-                    const colorEspecial = COLOR_ESPECIAL_SORTEOS[fila.sorteoId];
+                    const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[fila.sorteoId];
                     const href = "/" + t.loteriaSlug + "/" + fila.fechaMostrada;
                     const muchosNumeros = fila.numeros.length > 6;
                     const bolitas = fila.numeros.map(function (n, k) {
+                      const colorEspecial = colorPorPosicion ? colorPorPosicion(k, fila.numeros.length) : null;
                       const esPrimera = k === 0 && !colorEspecial;
                       const estiloEspecial = !fila.esDeAyer && colorEspecial
                         ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
