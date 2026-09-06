@@ -107,10 +107,7 @@ function etiquetaFechaResumen(fechaISO: string) {
   const hoy = hoyISO();
   if (fechaISO === hoy) return "Hoy";
   const ayer = sumarDias(hoy, -1);
-  if (fechaISO === ayer) {
-    const nombreDia = new Date(fechaISO + "T00:00:00").toLocaleDateString("es-DO", { weekday: "long" });
-    return "Ayer, " + nombreDia;
-  }
+  if (fechaISO === ayer) return "Ayer";
   const fechaLarga = new Date(fechaISO + "T00:00:00").toLocaleDateString("es-DO", { weekday: "long", day: "numeric", month: "long" });
   return fechaLarga;
 }
