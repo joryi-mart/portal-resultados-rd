@@ -326,11 +326,21 @@ function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
     grupo.items.push(item);
     if ((item.horaSorteo || "99:99") < grupo.horaMasTemprana) grupo.horaMasTemprana = item.horaSorteo || "99:99";
   });
+  // Las tarjetas se ordenan por importancia (cuanto se juegan), igual que en
+  // "¿Que salio hoy?": las loterias mas apostadas van primero.
+  const ORDEN_IMPORTANCIA = ["nacional", "leidsa", "new-york", "real", "loteka", "anguila"];
   const grupos = Array.from(porLoteria.values());
   grupos.forEach(function (g) {
     g.items.sort(function (a, b) { return (a.horaSorteo || "99:99").localeCompare(b.horaSorteo || "99:99"); });
   });
-  grupos.sort(function (a, b) { return a.horaMasTemprana.localeCompare(b.horaMasTemprana); });
+  grupos.sort(function (a, b) {
+    const posA = ORDEN_IMPORTANCIA.indexOf(a.loteriaSlug);
+    const posB = ORDEN_IMPORTANCIA.indexOf(b.loteriaSlug);
+    if (posA === -1 && posB === -1) return a.horaMasTemprana.localeCompare(b.horaMasTemprana);
+    if (posA === -1) return 1;
+    if (posB === -1) return -1;
+    return posA - posB;
+  });
 
   return (
     <div className="mb-8 overflow-hidden rounded-xl border border-[#10203A]/12 bg-white p-5">
@@ -366,7 +376,7 @@ function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
                           return (
                             <span
                               key={k}
-                              className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (estilo ? "" : "bg-[#1E4D8C] text-white")}
+                              className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (estilo ? "" : "bg-[#E4E8EB] text-[#10203A]")}
                               style={estilo}
                             >
                               {n}
