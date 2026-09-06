@@ -55,6 +55,7 @@ type Cambio = {
 type UltimoResultado = {
   loteriaNombre: string;
   loteriaSlug: string;
+  sorteoId: number;
   sorteoNombre: string;
   horaSorteo: string;
   numeros: string;
@@ -308,33 +309,32 @@ function PanelSuperior(props: { cambios: Cambio[]; fechaActual: string }) {
   );
 }
 
-function periodoDelDia(hora: string) {
-  if (!hora) return "Otros horarios";
-  const h = parseInt(hora.split(":")[0], 10);
-  if (h < 12) return "Mañana";
-  if (h < 19) return "Tarde";
-  return "Noche";
-}
-
-const ICONO_PERIODO: Record<string, string> = { "Mañana": "🌅", "Tarde": "☀️", "Noche": "🌙", "Otros horarios": "🕓" };
-const ORDEN_PERIODO = ["Mañana", "Tarde", "Noche", "Otros horarios"];
 
 function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
   const items = props.items;
   if (items.length === 0) return null;
   const fechaAnterior = sumarDias(props.fecha, -1);
 
-  const grupos: Record<string, UltimoResultado[]> = {};
+  type GrupoLoteria = { loteria: string; loteriaSlug: string; items: UltimoResultado[]; horaMasTemprana: string };
+  const porLoteria = new Map<string, GrupoLoteria>();
   items.forEach(function (item) {
-    const periodo = periodoDelDia(item.horaSorteo);
-    if (!grupos[periodo]) grupos[periodo] = [];
-    grupos[periodo].push(item);
+    const clave = item.loteriaSlug;
+    if (!porLoteria.has(clave)) {
+      porLoteria.set(clave, { loteria: item.loteriaNombre, loteriaSlug: clave, items: [], horaMasTemprana: item.horaSorteo || "99:99" });
+    }
+    const grupo = porLoteria.get(clave)!;
+    grupo.items.push(item);
+    if ((item.horaSorteo || "99:99") < grupo.horaMasTemprana) grupo.horaMasTemprana = item.horaSorteo || "99:99";
   });
-  const periodosPresentes = ORDEN_PERIODO.filter(function (p) { return grupos[p] && grupos[p].length > 0; });
+  const grupos = Array.from(porLoteria.values());
+  grupos.forEach(function (g) {
+    g.items.sort(function (a, b) { return (a.horaSorteo || "99:99").localeCompare(b.horaSorteo || "99:99"); });
+  });
+  grupos.sort(function (a, b) { return a.horaMasTemprana.localeCompare(b.horaMasTemprana); });
 
   return (
-    <div className="mb-8 overflow-hidden rounded-xl border border-[#10203A]/12 bg-white">
-      <div className="flex flex-wrap items-baseline justify-between gap-2 px-5 pb-1 pt-5">
+    <div className="mb-8 overflow-hidden rounded-xl border border-[#10203A]/12 bg-white p-5">
+      <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
           Resumen de resultados de <span className="capitalize">{etiquetaFechaResumen(props.fecha)}</span>
         </h2>
@@ -342,45 +342,46 @@ function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
           Ver resumen de ayer →
         </a>
       </div>
-      {periodosPresentes.map(function (periodo) {
-        return (
-          <div key={periodo} className="pt-4">
-            <p className="px-5 pb-1.5 font-mono text-xs font-bold uppercase tracking-wide" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-              {ICONO_PERIODO[periodo]} {periodo}
-            </p>
-            {grupos[periodo].map(function (item, i) {
-              const numeros = item.numeros.split("-");
-              return (
-                <a
-                  key={i}
-                  href={"/" + item.loteriaSlug + "/" + item.fecha}
-                  className="flex items-center gap-3 border-t border-[#10203A]/6 px-5 py-3 transition hover:bg-[#FBF7EE]"
-                >
-                  <span className="h-8 w-1 shrink-0 rounded-full" style={{ backgroundColor: COLOR_VERDE_RD }} />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-base font-semibold text-[#10203A]">{item.sorteoNombre}</p>
-                    <p className="mt-0.5 flex flex-wrap items-center gap-1.5 font-mono text-[11px]">
-                      <span className="rounded px-1.5 py-0.5 font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>
-                        {item.loteriaNombre}
-                      </span>
-                      <span style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearHora12(item.horaSorteo)}</span>
-                    </p>
-                  </div>
-                  <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
-                    {numeros.map(function (n, j) {
-                      return (
-                        <span key={j} className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E4E8EB] font-mono text-sm font-bold text-[#10203A]">
-                          {n}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </a>
-              );
-            })}
-          </div>
-        );
-      })}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {grupos.map(function (g, i) {
+          return (
+            <div key={i} className="rounded-xl border border-[#10203A]/10 p-4">
+              <p className="mb-2 inline-block truncate rounded px-2 py-0.5 text-base font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{g.loteria}</p>
+              <div className="flex flex-col gap-2.5">
+                {g.items.map(function (item, j) {
+                  const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[item.sorteoId];
+                  const numeros = item.numeros.split("-");
+                  return (
+                    <a key={j} href={"/" + item.loteriaSlug + "/" + item.fecha} className="flex items-center justify-between gap-2 rounded-lg -mx-1 px-1 py-1 transition hover:bg-[#FBF7EE]">
+                      <p className="min-w-0 truncate font-mono text-[11px]" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{item.sorteoNombre}</p>
+                      <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+                        {numeros.map(function (n, k) {
+                          const colorEspecial = colorPorPosicion ? colorPorPosicion(k, numeros.length) : null;
+                          const esPrimera = k === 0 && !colorEspecial;
+                          const estilo = colorEspecial
+                            ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
+                            : esPrimera
+                            ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
+                            : undefined;
+                          return (
+                            <span
+                              key={k}
+                              className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (estilo ? "" : "bg-[#1E4D8C] text-white")}
+                              style={estilo}
+                            >
+                              {n}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -622,6 +623,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
           ultimosResultados.push({
             loteriaNombre: loteria.nombre,
             loteriaSlug: loteria.slug,
+            sorteoId: sorteo.id,
             sorteoNombre: sorteo.nombre,
             horaSorteo: sorteo.hora_sorteo,
             numeros: r.numeros,
