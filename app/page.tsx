@@ -314,6 +314,7 @@ function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
   const items = props.items;
   if (items.length === 0) return null;
   const fechaAnterior = sumarDias(props.fecha, -1);
+  const esHoy = props.fecha === hoyISO();
 
   type GrupoLoteria = { loteria: string; loteriaSlug: string; items: UltimoResultado[]; horaMasTemprana: string };
   const porLoteria = new Map<string, GrupoLoteria>();
@@ -376,7 +377,7 @@ function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
                           return (
                             <span
                               key={k}
-                              className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (estilo ? "" : "bg-[#E4E8EB] text-[#10203A]")}
+                              className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (estilo ? "" : esHoy ? "bg-[#1E4D8C] text-white" : "bg-[#E4E8EB] text-[#10203A]")}
                               style={estilo}
                             >
                               {n}
