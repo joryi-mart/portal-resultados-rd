@@ -15,31 +15,31 @@ import { supabase } from "@/lib/supabase";
 import NavPildoras from "./NavPildoras";
 import RelojDigital from "./RelojDigital";
 
-const display = Space_Grotesk({
+export const display = Space_Grotesk({
   subsets: ["latin"],
   weight: ["500", "700"],
   variable: "--font-display",
 });
-const body = Manrope({
+export const body = Manrope({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-body",
 });
-const mono = IBM_Plex_Mono({
+export const mono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "600"],
   variable: "--font-mono",
 });
 
-type Resultado = { numeros: string; fecha: string; creado_en: string };
-type Sorteo = {
+export type Resultado = { numeros: string; fecha: string; creado_en: string };
+export type Sorteo = {
   id: number;
   nombre: string;
   hora_sorteo: string;
   dias_semana: string;
   resultados: Resultado[];
 };
-type Loteria = {
+export type Loteria = {
   id: number;
   nombre: string;
   slug: string;
@@ -62,10 +62,10 @@ type UltimoResultado = {
   creadoEn: string;
 };
 
-const COLOR_AZUL = "#1E4D8C";
-const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
+export const COLOR_AZUL = "#1E4D8C";
+export const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 const COLOR_VERDE_RD = "#007A33";
-const COLOR_VERDE_PRESIDENTE = "#0A5C36";
+export const COLOR_VERDE_PRESIDENTE = "#0A5C36";
 const COLOR_PRIMERA_POSICION = "#E7A63C";
 
 // Sorteos que llevan un color de bolita distinto al azul estándar.
@@ -75,7 +75,7 @@ type ColorBolita = { fondo: string; texto: string };
 // Para sorteos donde no todos los numeros son iguales (ej. Loto Mas de Leidsa:
 // los primeros 6 son el loto normal, y trae 2 numeros extra de otro sorteo),
 // esta funcion decide el color segun la posicion del numero.
-const COLOR_POR_POSICION_SORTEOS: Record<number, (indice: number, total: number) => ColorBolita | null> = {
+export const COLOR_POR_POSICION_SORTEOS: Record<number, (indice: number, total: number) => ColorBolita | null> = {
   69: function (indice) {
     if (indice === 6) return { fondo: "#D4E157", texto: "#3D4B0A" }; // verde amarillo claro
     if (indice === 7) return { fondo: "#0A5C36", texto: "#FFFFFF" }; // verde presidente
@@ -83,7 +83,7 @@ const COLOR_POR_POSICION_SORTEOS: Record<number, (indice: number, total: number)
   },
 };
 
-function hoyISO() {
+export function hoyISO() {
   // Republica Dominicana esta fijo en UTC-4 (no usa horario de verano),
   // asi que restamos 4 horas sin importar en que zona horaria corra el servidor.
   const ahoraRD = new Date(Date.now() - 4 * 60 * 60 * 1000);
@@ -137,7 +137,7 @@ function nombreDia(letra: string) {
   return mapa[letra] || letra;
 }
 
-function formatearHora12(hora24: string) {
+export function formatearHora12(hora24: string) {
   if (!hora24) return "";
   const partes = hora24.split(":");
   let h = parseInt(partes[0], 10);
@@ -148,14 +148,14 @@ function formatearHora12(hora24: string) {
   return h + ":" + m + " " + sufijo;
 }
 
-function formatearDias(diasSemana: string) {
+export function formatearDias(diasSemana: string) {
   if (!diasSemana) return "Todos los días";
   const letras = diasSemana.split(",").map(function (l) { return l.trim(); });
   if (letras.length === 7) return "Todos los días";
   return letras.map(nombreDia).join(", ");
 }
 
-function tamanoBolita(cantidad: number, chico: boolean) {
+export function tamanoBolita(cantidad: number, chico: boolean) {
   if (chico) return "h-10 w-10 text-base";
   if (cantidad >= 6) return "h-12 w-12 text-lg";
   if (cantidad >= 5) return "h-13 w-13 text-xl";
@@ -163,12 +163,12 @@ function tamanoBolita(cantidad: number, chico: boolean) {
   return "h-16 w-16 text-2xl";
 }
 
-function numerosVistaPrevia(sorteoId: number) {
+export function numerosVistaPrevia(sorteoId: number) {
   void sorteoId;
   return ["--", "--", "--"];
 }
 
-function Bolita(props: { children: React.ReactNode; tamano: string; opaca?: boolean; colorEspecial?: { fondo: string; texto: string }; primera?: boolean }) {
+export function Bolita(props: { children: React.ReactNode; tamano: string; opaca?: boolean; colorEspecial?: { fondo: string; texto: string }; primera?: boolean }) {
   const opaca = props.opaca === true;
   const especial = props.colorEspecial;
   const primera = props.primera === true && !especial;
@@ -182,7 +182,7 @@ function Bolita(props: { children: React.ReactNode; tamano: string; opaca?: bool
   );
 }
 
-function EtiquetaFecha(props: { fechaISO: string }) {
+export function EtiquetaFecha(props: { fechaISO: string }) {
   return (
     <span
       className="inline-block shrink-0 rounded-md px-2.5 py-1 font-mono text-xs font-bold"
@@ -193,7 +193,7 @@ function EtiquetaFecha(props: { fechaISO: string }) {
   );
 }
 
-function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string; loteriaSlug: string }) {
+export function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string; loteriaSlug: string }) {
   const sorteo = props.sorteo;
   const fechaSeleccionada = props.fechaSeleccionada;
   const resultado = sorteo.resultados.find(function (r) { return r.fecha === fechaSeleccionada; });
@@ -385,7 +385,7 @@ function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
   );
 }
 
-function TablaHorarios(props: { loterias: Loteria[]; fechaSeleccionada: string }) {
+export function TablaHorarios(props: { loterias: Loteria[]; fechaSeleccionada: string }) {
   const loterias = props.loterias;
   const fechaSeleccionada = props.fechaSeleccionada;
   return (
@@ -720,77 +720,20 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
 
         <ResumenResultados items={resumenHoy} fecha={fechaResumen} />
 
-        <div className="mb-6 flex items-baseline justify-between">
-          <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Loterías</h2>
-          <span className="font-mono text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{listaLoterias.length} activas</span>
-        </div>
-
         {error ? (
-          <div className="rounded-lg border border-[#E4573D]/40 bg-[#E4573D]/5 p-4 text-sm text-[#B23B26]">No pudimos cargar los datos: {error.message}</div>
+          <div className="mb-6 rounded-lg border border-[#E4573D]/40 bg-[#E4573D]/5 p-4 text-sm text-[#B23B26]">No pudimos cargar los datos: {error.message}</div>
         ) : null}
 
-        {listaLoterias.length === 0 && !error ? (
-          <div className="rounded-xl border border-dashed border-[#10203A]/20 bg-white/60 p-8 text-center">
-            <p className="font-[family-name:var(--font-display)] text-lg font-bold">El tablón está vacío</p>
-            <p className="mt-1 text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Todavía no hay loterías registradas.</p>
+        <a
+          href="/loterias"
+          className="mb-8 flex items-center justify-between rounded-xl border border-[#10203A]/12 bg-white px-5 py-4 shadow-[0_1px_3px_rgba(16,32,58,0.08)] transition hover:shadow-md"
+        >
+          <div>
+            <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Ver todas las loterías</p>
+            <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{listaLoterias.length} loterías activas y sus horarios</p>
           </div>
-        ) : null}
-
-        {(function () {
-          const SLUGS_AMERICAS = ["haiti", "powerball", "mega-millions", "sxm", "new-york", "florida", "loterias-americanas", "anguila"];
-          const loteriasDominicanas = listaLoterias.filter(function (l) { return !SLUGS_AMERICAS.includes(l.slug); });
-          const loteriasAmericas = listaLoterias.filter(function (l) { return SLUGS_AMERICAS.includes(l.slug); });
-
-          function renderTarjetaLoteria(loteria: Loteria) {
-            const sorteos = loteria.sorteos || [];
-            return (
-              <div key={loteria.id} className="mb-4 break-inside-avoid overflow-hidden rounded-xl border border-[#10203A]/12 bg-white shadow-[0_1px_3px_rgba(16,32,58,0.08)]">
-                <div className="h-2 w-full" style={{ backgroundColor: COLOR_AZUL }} />
-                <div className="px-5 py-4">
-                  <div className="mb-1 flex items-center justify-between">
-                    <a href={"/" + loteria.slug} className="inline-block rounded-lg px-2.5 py-1 font-[family-name:var(--font-display)] text-base font-bold text-white hover:opacity-90" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{loteria.nombre}</a>
-                    <span className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{sorteos.length} producto{sorteos.length === 1 ? "" : "s"}</span>
-                  </div>
-
-                  {sorteos.length > 0 ? (
-                    <div className="mt-2">
-                      {sorteos.map(function (sorteo) {
-                        return <FilaSorteo key={sorteo.id} sorteo={sorteo} fechaSeleccionada={fechaSeleccionada} loteriaSlug={loteria.slug} />;
-                      })}
-                    </div>
-                  ) : (
-                    <p className="mt-2 font-mono text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Sin productos registrados aún.</p>
-                  )}
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <>
-              <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
-                {loteriasDominicanas.map(renderTarjetaLoteria)}
-              </div>
-
-              {loteriasAmericas.length > 0 && (
-                <>
-                  <div className="mb-6 mt-10 flex items-baseline justify-between">
-                    <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">🌎 Loterías Américas</h2>
-                    <span className="font-mono text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{loteriasAmericas.length} activas</span>
-                  </div>
-                  <p className="mb-6 -mt-4 text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-                    Loterías que se juegan fuera de República Dominicana, pero muy seguidas aquí: Haití, Anguila, Sint Maarten y Estados Unidos.
-                  </p>
-                  <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
-                    {loteriasAmericas.map(renderTarjetaLoteria)}
-                  </div>
-                </>
-              )}
-            </>
-          );
-        })()}
-
-        <TablaHorarios loterias={listaLoterias} fechaSeleccionada={fechaSeleccionada} />
+          <span className="font-mono text-sm font-semibold text-[#1E4D8C]">Ver todas →</span>
+        </a>
 
         <section className="mt-8 rounded-xl border border-[#10203A]/12 bg-white p-5 sm:p-8">
           <h2 className="mb-4 font-[family-name:var(--font-display)] text-2xl font-bold text-[#10203A]">

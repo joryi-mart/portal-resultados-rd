@@ -221,7 +221,7 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
           activo={menuAbierto === "loterias"}
           onAlternar={function () { alternar("loterias"); }}
         >
-          <a href="/" className="block px-4 py-2.5 font-mono text-sm font-semibold text-white hover:bg-white/10">
+          <a href="/loterias" className="block px-4 py-2.5 font-mono text-sm font-semibold text-white hover:bg-white/10">
             Ver todas (resumen)
           </a>
           {(function () {
