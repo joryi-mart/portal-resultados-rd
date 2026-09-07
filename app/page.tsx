@@ -583,7 +583,7 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
               return (
                 <span
                   key={k}
-                  className={"flex h-11 w-11 items-center justify-center rounded-full font-mono text-base font-bold " + (fila.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
+                  className={"flex h-12 w-12 items-center justify-center rounded-full font-mono text-lg font-bold " + (fila.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
                   style={estiloEspecial}
                 >
                   {n}
@@ -722,7 +722,7 @@ export function TablaResultadosDelDia(props: { loterias: Loteria[]; fechaSelecci
                     return (
                       <span
                         key={k}
-                        className="flex h-11 w-11 items-center justify-center rounded-full font-mono text-base font-bold text-black"
+                        className="flex h-12 w-12 items-center justify-center rounded-full font-mono text-lg font-bold text-black"
                         style={{ backgroundColor: fondo }}
                       >
                         {n}
