@@ -628,7 +628,7 @@ export function TablaResultadosDelDia(props: { loterias: Loteria[]; fechaSelecci
   const fechaSeleccionada = props.fechaSeleccionada;
 
   type FilaResumen = { sorteo: string; sorteoId: number; loteriaSlug: string; horaSorteo: string; numeros: string[]; esDeAyer: boolean; fechaMostrada: string };
-  const porLoteria = new Map<string, { horaMasTemprana: string; filas: FilaResumen[] }>();
+  const porLoteria = new Map<string, { loteriaNombre: string; horaMasTemprana: string; filas: FilaResumen[] }>();
 
   for (let i = 0; i < loterias.length; i++) {
     const sorteos = loterias[i].sorteos || [];
@@ -653,7 +653,7 @@ export function TablaResultadosDelDia(props: { loterias: Loteria[]; fechaSelecci
 
       if (!fila) continue;
       const slug = loterias[i].slug;
-      if (!porLoteria.has(slug)) porLoteria.set(slug, { horaMasTemprana: fila.horaSorteo || "99:99", filas: [] });
+      if (!porLoteria.has(slug)) porLoteria.set(slug, { loteriaNombre: loterias[i].nombre, horaMasTemprana: fila.horaSorteo || "99:99", filas: [] });
       const grupo = porLoteria.get(slug)!;
       grupo.filas.push(fila);
       if ((fila.horaSorteo || "99:99") < grupo.horaMasTemprana) grupo.horaMasTemprana = fila.horaSorteo || "99:99";
@@ -675,9 +675,7 @@ export function TablaResultadosDelDia(props: { loterias: Loteria[]; fechaSelecci
     if (posB === -1) return -1;
     return posA - posB;
   });
-  const filas = grupos.flatMap(function ([, g]) { return g.filas; });
-
-  if (filas.length === 0) return null;
+  if (grupos.length === 0) return null;
 
   return (
     <div className="mb-8 overflow-hidden rounded-xl border border-[#10203A]/12 bg-white">
@@ -688,39 +686,48 @@ export function TablaResultadosDelDia(props: { loterias: Loteria[]; fechaSelecci
         </p>
       </div>
       <div className="flex flex-col">
-        {filas.map(function (fila, i) {
-          const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[fila.sorteoId];
-          const href = "/" + fila.loteriaSlug + "/" + fila.fechaMostrada;
+        {grupos.map(function ([slug, g], gi) {
           return (
-            <a
-              key={i}
-              href={href}
-              className="flex items-center justify-between gap-3 border-t border-[#10203A]/6 px-5 py-3 first:border-t-0 hover:bg-[#FBF7EE]"
-            >
-              <span className="min-w-0 truncate text-base font-semibold text-[#10203A]">{fila.sorteo}</span>
-              <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
-                {fila.numeros.map(function (n, k) {
-                  const colorEspecial = colorPorPosicion ? colorPorPosicion(k, fila.numeros.length) : null;
-                  const esPrimera = k === 0 && !colorEspecial;
-                  const fondoEspecial = !fila.esDeAyer && colorEspecial
-                    ? colorEspecial.fondo
-                    : !fila.esDeAyer && esPrimera
-                    ? COLOR_PRIMERA_POSICION
-                    : undefined;
-                  const fondo = fondoEspecial || (fila.esDeAyer ? "#E4E8EB" : "#1E4D8C");
+            <div key={slug} className={gi > 0 ? "border-t-4 border-[#10203A]/10" : ""}>
+              <p className="mx-5 mt-4 inline-block rounded px-2 py-0.5 text-sm font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{g.loteriaNombre}</p>
+              <div className="flex flex-col">
+                {g.filas.map(function (fila, i) {
+                  const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[fila.sorteoId];
+                  const href = "/" + fila.loteriaSlug + "/" + fila.fechaMostrada;
                   return (
-                    <span
-                      key={k}
-                      className="flex h-8 w-8 items-center justify-center rounded-full font-mono text-xs font-bold text-black"
-                      style={{ backgroundColor: fondo }}
+                    <a
+                      key={i}
+                      href={href}
+                      className="flex items-center justify-between gap-3 border-t border-[#10203A]/6 px-5 py-3 hover:bg-[#FBF7EE]"
                     >
-                      {n}
-                    </span>
+                      <span className="min-w-0 truncate text-base font-semibold text-[#10203A]">{fila.sorteo}</span>
+                      <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+                        {fila.numeros.map(function (n, k) {
+                          const colorEspecial = colorPorPosicion ? colorPorPosicion(k, fila.numeros.length) : null;
+                          const esPrimera = k === 0 && !colorEspecial;
+                          const fondoEspecial = !fila.esDeAyer && colorEspecial
+                            ? colorEspecial.fondo
+                            : !fila.esDeAyer && esPrimera
+                            ? COLOR_PRIMERA_POSICION
+                            : undefined;
+                          const fondo = fondoEspecial || (fila.esDeAyer ? "#E4E8EB" : "#1E4D8C");
+                          return (
+                            <span
+                              key={k}
+                              className="flex h-8 w-8 items-center justify-center rounded-full font-mono text-xs font-bold text-black"
+                              style={{ backgroundColor: fondo }}
+                            >
+                              {n}
+                            </span>
+                          );
+                        })}
+                      </div>
+                      <span className="shrink-0 font-mono text-xs font-bold" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearFechaCorta(fila.fechaMostrada)}</span>
+                    </a>
                   );
                 })}
               </div>
-              <span className="shrink-0 font-mono text-xs font-bold" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearFechaCorta(fila.fechaMostrada)}</span>
-            </a>
+            </div>
           );
         })}
       </div>
