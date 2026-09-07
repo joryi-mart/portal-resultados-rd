@@ -88,7 +88,7 @@ export const COLOR_POR_POSICION_SORTEOS: Record<number, (indice: number, total: 
 // de resultados" y "Todos los sorteos de ayer". En movil se pidio un orden
 // distinto al de escritorio, asi que hay uno para cada tamano de pantalla.
 export const ORDEN_IMPORTANCIA_ESCRITORIO = ["nacional", "loteka", "leidsa", "haiti", "la-primera", "lotedom", "la-suerte", "anguila", "new-york", "real"];
-export const ORDEN_IMPORTANCIA_MOVIL = ["leidsa", "nacional", "real", "loteka", "la-primera", "lotedom", "la-suerte", "haiti", "anguila", "new-york"];
+export const ORDEN_IMPORTANCIA_MOVIL = ["nacional", "leidsa", "real", "loteka", "la-primera", "lotedom", "la-suerte", "haiti", "anguila", "new-york"];
 
 export function hoyISO() {
   // Republica Dominicana esta fijo en UTC-4 (no usa horario de verano),
