@@ -564,10 +564,10 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
           Todavía no hay resultados publicados para este día.
         </p>
       ) : (
-        <div className="mx-3 mb-3 grid grid-cols-1 items-start gap-3 sm:mx-4 sm:mb-4 sm:grid-cols-3">
+        <div className="mx-3 mb-3 columns-1 gap-3 sm:mx-4 sm:mb-4 sm:columns-3">
           {tarjetas.map(function (t, i) {
             return (
-              <div key={i} className="rounded-xl border border-[#10203A]/10 bg-white p-4">
+              <div key={i} className="mb-3 break-inside-avoid rounded-xl border border-[#10203A]/10 bg-white p-4">
                 <p className="mb-2 inline-block truncate rounded px-2 py-0.5 text-base font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{t.loteria}</p>
                 <div className="flex flex-col gap-3">
                   {t.filas.map(function (fila, j) {
