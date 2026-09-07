@@ -718,7 +718,7 @@ export function TablaResultadosDelDia(props: { loterias: Loteria[]; fechaSelecci
                   );
                 })}
               </div>
-              <span className="shrink-0 font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearFechaCorta(fila.fechaMostrada)}</span>
+              <span className="shrink-0 font-mono text-xs font-bold" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearFechaCorta(fila.fechaMostrada)}</span>
             </a>
           );
         })}
