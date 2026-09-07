@@ -680,7 +680,7 @@ export function TablaResultadosDelDia(props: { loterias: Loteria[]; fechaSelecci
   return (
     <div className="mb-8 overflow-hidden rounded-xl border border-[#10203A]/12 bg-white">
       <div className="border-b border-[#10203A]/8 p-5">
-        <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Todos los sorteos</h2>
+        <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Todos los sorteos de ayer</h2>
         <p className="mt-1 font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
           En gris, el número de ayer para lo que todavía no ha salido hoy. Se pone azul apenas se publica el número de hoy.
         </p>
