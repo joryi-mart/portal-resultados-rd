@@ -40,6 +40,24 @@ function formatearHora12(hora24: string) {
   return h + ":" + m + " " + sufijo;
 }
 
+// Algunos sorteos cambian de hora los domingos (confirmado con la fuente oficial):
+// Leidsa sortea Quiniela Pale, Pega 3 Mas, Loto Pool y Super Kino TV a las 3:55pm
+// los domingos (no 8:55pm), y Lotería Nacional sortea la Quiniela Nacional de la
+// Noche a las 6:00pm los domingos (no 9:00pm).
+const HORA_DOMINGO_SORTEOS: Record<number, string> = {
+  65: "15:55", // Quiniela Palé (Leidsa)
+  66: "15:55", // Pega 3 Más (Leidsa)
+  67: "15:55", // Loto Pool (Leidsa)
+  68: "15:55", // Super Kino TV (Leidsa)
+  63: "18:00", // Quiniela Nacional (Noche)
+};
+
+function horaSorteoEfectiva(sorteoId: number, hora24: string, fechaISO: string) {
+  const esDomingo = new Date(fechaISO + "T00:00:00").getDay() === 0;
+  if (esDomingo && HORA_DOMINGO_SORTEOS[sorteoId]) return HORA_DOMINGO_SORTEOS[sorteoId];
+  return hora24;
+}
+
 function formatearDias(diasSemana: string) {
   if (!diasSemana) return "Todos los días";
   const letras = diasSemana.split(",").map(function (l) { return l.trim(); });
@@ -181,7 +199,7 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
                         {sorteo.nombre}
                       </p>
                       <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-                        {sorteo.hora_sorteo ? formatearHora12(sorteo.hora_sorteo) : "Hora por confirmar"} · {formatearDias(sorteo.dias_semana)}
+                        {sorteo.hora_sorteo ? formatearHora12(horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, hoy)) : "Hora por confirmar"} · {formatearDias(sorteo.dias_semana)}
                       </p>
                     </div>
                     <a

@@ -52,6 +52,24 @@ function formatearHora12(hora24: string) {
   return h + ":" + m + " " + sufijo;
 }
 
+// Algunos sorteos cambian de hora los domingos (confirmado con la fuente oficial):
+// Leidsa sortea Quiniela Pale, Pega 3 Mas, Loto Pool y Super Kino TV a las 3:55pm
+// los domingos (no 8:55pm), y Lotería Nacional sortea la Quiniela Nacional de la
+// Noche a las 6:00pm los domingos (no 9:00pm).
+const HORA_DOMINGO_SORTEOS: Record<number, string> = {
+  65: "15:55", // Quiniela Palé (Leidsa)
+  66: "15:55", // Pega 3 Más (Leidsa)
+  67: "15:55", // Loto Pool (Leidsa)
+  68: "15:55", // Super Kino TV (Leidsa)
+  63: "18:00", // Quiniela Nacional (Noche)
+};
+
+function horaSorteoEfectiva(sorteoId: number, hora24: string, fechaISO: string) {
+  const esDomingo = new Date(fechaISO + "T00:00:00").getDay() === 0;
+  if (esDomingo && HORA_DOMINGO_SORTEOS[sorteoId]) return HORA_DOMINGO_SORTEOS[sorteoId];
+  return hora24;
+}
+
 function tamanoBolita(cantidad: number) {
   if (cantidad >= 6) return "h-10 w-10 text-sm";
   if (cantidad >= 5) return "h-11 w-11 text-base";
@@ -127,7 +145,7 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
       return {
         "@type": "Event",
         name: `${sorteo.nombre} - ${loteriaData.nombre} - ${params.fecha}`,
-        startDate: `${params.fecha}T${sorteo.hora_sorteo || "00:00"}:00-04:00`,
+        startDate: `${params.fecha}T${horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, params.fecha) || "00:00"}:00-04:00`,
         eventStatus: "https://schema.org/EventScheduled",
         eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
         location: { "@type": "VirtualLocation", url: `https://labankerard.com/${params.slug}/${params.fecha}` },
@@ -198,7 +216,7 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
                   <p className="mb-1 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">
                     {sorteo.nombre}
                   </p>
-                  <p className="mb-4 font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Sorteo: {formatearHora12(sorteo.hora_sorteo)}</p>
+                  <p className="mb-4 font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Sorteo: {formatearHora12(horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, params.fecha))}</p>
 
                   {numeros.length > 0 ? (
                     sorteo.nombre.toLowerCase().includes("kino") ? (
