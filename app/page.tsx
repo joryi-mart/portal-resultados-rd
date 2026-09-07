@@ -368,7 +368,7 @@ function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
   });
   // Las tarjetas se ordenan por importancia (cuanto se juegan), igual que en
   // "¿Que salio hoy?": las loterias mas apostadas van primero.
-  const ORDEN_IMPORTANCIA = ["nacional", "leidsa", "real", "loteka", "la-primera", "lotedom", "la-suerte", "anguila", "new-york", "haiti"];
+  const ORDEN_IMPORTANCIA = ["nacional", "loteka", "leidsa", "real", "la-primera", "lotedom", "la-suerte", "anguila", "new-york", "haiti"];
   const grupos = Array.from(porLoteria.values());
   grupos.forEach(function (g) {
     g.items.sort(function (a, b) { return (a.horaSorteo || "99:99").localeCompare(b.horaSorteo || "99:99"); });
@@ -535,7 +535,7 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
   // Cada tarjeta (loteria) trae sus sorteos ordenados por hora. Las tarjetas
   // en si se ordenan por importancia (cuanto se juegan), no por hora: las
   // loterias mas apostadas ocupan los primeros lugares y el resto va bajando.
-  const ORDEN_IMPORTANCIA = ["nacional", "leidsa", "real", "loteka", "la-primera", "lotedom", "la-suerte", "anguila", "new-york", "haiti"];
+  const ORDEN_IMPORTANCIA = ["nacional", "loteka", "leidsa", "real", "la-primera", "lotedom", "la-suerte", "anguila", "new-york", "haiti"];
   const tarjetas = Array.from(porLoteria.values());
   tarjetas.forEach(function (t) {
     t.filas.sort(function (a, b) { return (a.horaSorteo || "99:99").localeCompare(b.horaSorteo || "99:99"); });
@@ -564,10 +564,10 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
           Todavía no hay resultados publicados para este día.
         </p>
       ) : (
-        <div className="mx-3 mb-3 grid grid-cols-1 items-start gap-3 sm:mx-4 sm:mb-4 sm:grid-cols-3">
+        <div className="mx-3 mb-3 columns-1 gap-3 sm:mx-4 sm:mb-4 sm:columns-3">
           {tarjetas.map(function (t, i) {
             return (
-              <div key={i} className="rounded-xl border border-[#10203A]/10 bg-white p-4">
+              <div key={i} className="mb-3 break-inside-avoid rounded-xl border border-[#10203A]/10 bg-white p-4">
                 <p className="mb-2 inline-block truncate rounded px-2 py-0.5 text-base font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{t.loteria}</p>
                 <div className="flex flex-col gap-3">
                   {t.filas.map(function (fila, j) {
