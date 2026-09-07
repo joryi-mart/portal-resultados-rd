@@ -368,7 +368,7 @@ function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
   });
   // Las tarjetas se ordenan por importancia (cuanto se juegan), igual que en
   // "¿Que salio hoy?": las loterias mas apostadas van primero.
-  const ORDEN_IMPORTANCIA = ["nacional", "loteka", "leidsa", "real", "la-primera", "lotedom", "la-suerte", "anguila", "new-york", "haiti"];
+  const ORDEN_IMPORTANCIA = ["nacional", "loteka", "leidsa", "haiti", "la-primera", "lotedom", "la-suerte", "anguila", "new-york", "real"];
   const grupos = Array.from(porLoteria.values());
   grupos.forEach(function (g) {
     g.items.sort(function (a, b) { return (a.horaSorteo || "99:99").localeCompare(b.horaSorteo || "99:99"); });
@@ -535,7 +535,7 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
   // Cada tarjeta (loteria) trae sus sorteos ordenados por hora. Las tarjetas
   // en si se ordenan por importancia (cuanto se juegan), no por hora: las
   // loterias mas apostadas ocupan los primeros lugares y el resto va bajando.
-  const ORDEN_IMPORTANCIA = ["nacional", "loteka", "leidsa", "real", "la-primera", "lotedom", "la-suerte", "anguila", "new-york", "haiti"];
+  const ORDEN_IMPORTANCIA = ["nacional", "loteka", "leidsa", "haiti", "la-primera", "lotedom", "la-suerte", "anguila", "new-york", "real"];
   const tarjetas = Array.from(porLoteria.values());
   tarjetas.forEach(function (t) {
     t.filas.sort(function (a, b) { return (a.horaSorteo || "99:99").localeCompare(b.horaSorteo || "99:99"); });
