@@ -903,6 +903,8 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
           <span className="font-mono text-sm font-semibold text-[#1E4D8C]">Ver todas →</span>
         </a>
 
+        <TablaResultadosDelDia loterias={listaLoterias} fechaSeleccionada={fechaSeleccionada} />
+
         <section className="mt-8 rounded-xl border border-[#10203A]/12 bg-white p-5 sm:p-8">
           <h2 className="mb-4 font-[family-name:var(--font-display)] text-2xl font-bold text-[#10203A]">
             Guía de las Loterías Dominicanas
