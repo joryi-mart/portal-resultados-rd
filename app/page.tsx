@@ -620,6 +620,113 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
   );
 }
 
+// Vista en tabla (una fila por sorteo) de "que salio hoy": empieza mostrando
+// el resultado de ayer en gris para los sorteos que todavia no han salido
+// hoy, y cada uno se pone azul apenas se publica su numero de hoy.
+export function TablaResultadosDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string }) {
+  const loterias = props.loterias;
+  const fechaSeleccionada = props.fechaSeleccionada;
+
+  type FilaResumen = { sorteo: string; sorteoId: number; loteriaSlug: string; horaSorteo: string; numeros: string[]; esDeAyer: boolean; fechaMostrada: string };
+  const porLoteria = new Map<string, { horaMasTemprana: string; filas: FilaResumen[] }>();
+
+  for (let i = 0; i < loterias.length; i++) {
+    const sorteos = loterias[i].sorteos || [];
+    for (let j = 0; j < sorteos.length; j++) {
+      const sorteo = sorteos[j];
+      const resultados = sorteo.resultados || [];
+      const deHoy = resultados.find(function (r) { return r.fecha === fechaSeleccionada; });
+
+      let fila: FilaResumen | null = null;
+      if (deHoy) {
+        fila = { sorteo: sorteo.nombre, sorteoId: sorteo.id, loteriaSlug: loterias[i].slug, horaSorteo: sorteo.hora_sorteo, numeros: deHoy.numeros.split("-"), esDeAyer: false, fechaMostrada: deHoy.fecha };
+      } else {
+        let masReciente: Resultado | null = null;
+        for (let k = 0; k < resultados.length; k++) {
+          const r = resultados[k];
+          if (r.fecha < fechaSeleccionada && (!masReciente || r.fecha > masReciente.fecha)) masReciente = r;
+        }
+        if (masReciente) {
+          fila = { sorteo: sorteo.nombre, sorteoId: sorteo.id, loteriaSlug: loterias[i].slug, horaSorteo: sorteo.hora_sorteo, numeros: masReciente.numeros.split("-"), esDeAyer: true, fechaMostrada: masReciente.fecha };
+        }
+      }
+
+      if (!fila) continue;
+      const slug = loterias[i].slug;
+      if (!porLoteria.has(slug)) porLoteria.set(slug, { horaMasTemprana: fila.horaSorteo || "99:99", filas: [] });
+      const grupo = porLoteria.get(slug)!;
+      grupo.filas.push(fila);
+      if ((fila.horaSorteo || "99:99") < grupo.horaMasTemprana) grupo.horaMasTemprana = fila.horaSorteo || "99:99";
+    }
+  }
+
+  // Mismo orden de importancia que "¿Que salio hoy?", para que ambas vistas
+  // muestren las loterias en el mismo orden.
+  const ORDEN_IMPORTANCIA = ["nacional", "loteka", "leidsa", "haiti", "la-primera", "lotedom", "la-suerte", "anguila", "new-york", "real"];
+  const grupos = Array.from(porLoteria.entries());
+  grupos.forEach(function ([, g]) {
+    g.filas.sort(function (a, b) { return (a.horaSorteo || "99:99").localeCompare(b.horaSorteo || "99:99"); });
+  });
+  grupos.sort(function ([slugA, a], [slugB, b]) {
+    const posA = ORDEN_IMPORTANCIA.indexOf(slugA);
+    const posB = ORDEN_IMPORTANCIA.indexOf(slugB);
+    if (posA === -1 && posB === -1) return a.horaMasTemprana.localeCompare(b.horaMasTemprana);
+    if (posA === -1) return 1;
+    if (posB === -1) return -1;
+    return posA - posB;
+  });
+  const filas = grupos.flatMap(function ([, g]) { return g.filas; });
+
+  if (filas.length === 0) return null;
+
+  return (
+    <div className="mb-8 overflow-hidden rounded-xl border border-[#10203A]/12 bg-white">
+      <div className="border-b border-[#10203A]/8 p-5">
+        <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Todos los sorteos</h2>
+        <p className="mt-1 font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          En gris, el número de ayer para lo que todavía no ha salido hoy. Se pone azul apenas se publica el número de hoy.
+        </p>
+      </div>
+      <div className="flex flex-col">
+        {filas.map(function (fila, i) {
+          const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[fila.sorteoId];
+          const href = "/" + fila.loteriaSlug + "/" + fila.fechaMostrada;
+          return (
+            <a
+              key={i}
+              href={href}
+              className="flex items-center justify-between gap-3 border-t border-[#10203A]/6 px-5 py-3 first:border-t-0 hover:bg-[#FBF7EE]"
+            >
+              <span className="min-w-0 truncate text-base font-semibold text-[#10203A]">{fila.sorteo}</span>
+              <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+                {fila.numeros.map(function (n, k) {
+                  const colorEspecial = colorPorPosicion ? colorPorPosicion(k, fila.numeros.length) : null;
+                  const esPrimera = k === 0 && !colorEspecial;
+                  const estiloEspecial = !fila.esDeAyer && colorEspecial
+                    ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
+                    : !fila.esDeAyer && esPrimera
+                    ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
+                    : undefined;
+                  return (
+                    <span
+                      key={k}
+                      className={"flex h-8 w-8 items-center justify-center rounded-full font-mono text-xs font-bold " + (fila.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
+                      style={estiloEspecial}
+                    >
+                      {n}
+                    </span>
+                  );
+                })}
+              </div>
+              <span className="shrink-0 font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearFechaCorta(fila.fechaMostrada)}</span>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default async function Home(props: { searchParams: Promise<{ fecha?: string }> }) {
   const hoy = hoyISO();
   const searchParams = await props.searchParams;

@@ -7,6 +7,7 @@ import {
   COLOR_TEXTO_SECUNDARIO,
   hoyISO,
   ResumenResultados,
+  TablaResultadosDelDia,
   type Loteria,
   type UltimoResultado,
 } from "../page";
@@ -107,6 +108,8 @@ export default async function ResumenPage(props: { searchParams: Promise<{ fecha
         ) : (
           <ResumenResultados items={resumenHoy} fecha={fechaResumen} />
         )}
+
+        <TablaResultadosDelDia loterias={listaLoterias} fechaSeleccionada={fechaSeleccionada} />
       </main>
     </div>
   );
