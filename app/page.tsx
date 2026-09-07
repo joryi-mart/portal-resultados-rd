@@ -702,16 +702,17 @@ export function TablaResultadosDelDia(props: { loterias: Loteria[]; fechaSelecci
                 {fila.numeros.map(function (n, k) {
                   const colorEspecial = colorPorPosicion ? colorPorPosicion(k, fila.numeros.length) : null;
                   const esPrimera = k === 0 && !colorEspecial;
-                  const estiloEspecial = !fila.esDeAyer && colorEspecial
-                    ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
+                  const fondoEspecial = !fila.esDeAyer && colorEspecial
+                    ? colorEspecial.fondo
                     : !fila.esDeAyer && esPrimera
-                    ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
+                    ? COLOR_PRIMERA_POSICION
                     : undefined;
+                  const fondo = fondoEspecial || (fila.esDeAyer ? "#E4E8EB" : "#1E4D8C");
                   return (
                     <span
                       key={k}
-                      className={"flex h-8 w-8 items-center justify-center rounded-full font-mono text-xs font-bold " + (fila.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
-                      style={estiloEspecial}
+                      className="flex h-8 w-8 items-center justify-center rounded-full font-mono text-xs font-bold text-black"
+                      style={{ backgroundColor: fondo }}
                     >
                       {n}
                     </span>
