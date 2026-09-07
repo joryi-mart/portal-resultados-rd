@@ -584,7 +584,7 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
               return (
                 <span
                   key={k}
-                  className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (fila.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
+                  className={"flex h-11 w-11 items-center justify-center rounded-full font-mono text-base font-bold " + (fila.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
                   style={estiloEspecial}
                 >
                   {n}
