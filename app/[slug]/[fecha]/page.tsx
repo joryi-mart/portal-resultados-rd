@@ -64,7 +64,27 @@ const HORA_DOMINGO_SORTEOS: Record<number, string> = {
   63: "18:00", // Quiniela Nacional (Noche)
 };
 
+// Horario especial de Navidad y Año Nuevo (24, 25 y 31 de diciembre, 1 de enero),
+// confirmado en la página oficial de horarios festivos de loteriasdominicanas.com.
+// Nacional, Leidsa y Anguila directamente no sortean esos días (por eso no están
+// aquí: la página ya muestra "Pendiente" y es lo correcto). Los que sí sortean
+// pero a otra hora son estos:
+const HORA_FERIADO_DICIEMBRE: Record<number, { fechas: string[]; hora: string }> = {
+  70: { fechas: ["12-24", "12-31"], hora: "17:00" }, // Quiniela Loteka (no sortea 25 dic ni 1 ene)
+  72: { fechas: ["12-24", "12-31"], hora: "17:00" }, // Mega Chances
+  74: { fechas: ["12-24", "12-31"], hora: "17:00" }, // Toca 3
+  125: { fechas: ["12-24", "12-31"], hora: "17:00" }, // La Repartidera
+  79: { fechas: ["12-24", "12-25", "12-31", "01-01"], hora: "14:55" }, // Quiniela Lotedom
+  80: { fechas: ["12-24", "12-25", "12-31", "01-01"], hora: "14:55" }, // Quemaito
+  82: { fechas: ["12-24", "12-25", "12-31", "01-01"], hora: "14:55" }, // Lotedom Super Palé
+  83: { fechas: ["12-24", "12-25", "12-31", "01-01"], hora: "14:55" }, // Agarra 4
+  114: { fechas: ["12-24", "12-25", "12-31", "01-01"], hora: "21:45" }, // Florida Noche
+};
+
 function horaSorteoEfectiva(sorteoId: number, hora24: string, fechaISO: string) {
+  const mesDia = fechaISO.slice(5);
+  const feriado = HORA_FERIADO_DICIEMBRE[sorteoId];
+  if (feriado && feriado.fechas.includes(mesDia)) return feriado.hora;
   const esDomingo = new Date(fechaISO + "T00:00:00").getDay() === 0;
   if (esDomingo && HORA_DOMINGO_SORTEOS[sorteoId]) return HORA_DOMINGO_SORTEOS[sorteoId];
   return hora24;
