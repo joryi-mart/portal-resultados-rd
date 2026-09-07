@@ -140,7 +140,7 @@ export default function FutbolCliente() {
         {noticia.image ? (
           <Image
             src={noticia.image}
-            alt=""
+            alt={noticia.title}
             width={80}
             height={80}
             className="h-20 w-20 shrink-0 rounded-lg bg-[#10203A]/5 object-cover"
@@ -190,7 +190,7 @@ export default function FutbolCliente() {
           </p>
           <div className="flex items-center gap-2">
             {local.team.logo ? (
-              <Image src={local.team.logo} alt="" width={28} height={28} className="h-7 w-7 shrink-0" />
+              <Image src={local.team.logo} alt={"Logo de " + local.team.displayName} width={28} height={28} className="h-7 w-7 shrink-0" />
             ) : null}
             <span className={"text-base " + (ganoLocal ? "font-bold text-[#007A33]" : "font-semibold text-[#10203A]")}>
               {ganoLocal ? "🏆 " : ""}{local.team.displayName}
@@ -199,7 +199,7 @@ export default function FutbolCliente() {
           {terminado ? listaGoles(golesLocal) : null}
           <div className="mt-1.5 flex items-center gap-2">
             {visitante.team.logo ? (
-              <Image src={visitante.team.logo} alt="" width={28} height={28} className="h-7 w-7 shrink-0" />
+              <Image src={visitante.team.logo} alt={"Logo de " + visitante.team.displayName} width={28} height={28} className="h-7 w-7 shrink-0" />
             ) : null}
             <span className={"text-base " + (ganoVisitante ? "font-bold text-[#007A33]" : "font-semibold text-[#10203A]")}>
               {ganoVisitante ? "🏆 " : ""}{visitante.team.displayName}
@@ -329,7 +329,7 @@ export default function FutbolCliente() {
                         <tr key={e.nombre} className="border-b border-[#10203A]/6 last:border-0">
                           <td className="flex items-center gap-2 px-3 py-2 font-semibold text-[#10203A]">
                             <span className="w-5 shrink-0 text-center text-xs text-[#5C6B78]">{i + 1}</span>
-                            {e.logo ? <Image src={e.logo} alt="" width={20} height={20} className="h-5 w-5 shrink-0" /> : null}
+                            {e.logo ? <Image src={e.logo} alt={"Logo de " + e.nombre} width={20} height={20} className="h-5 w-5 shrink-0" /> : null}
                             {e.nombre}
                           </td>
                           <td className="px-3 py-2 text-center text-[#5C6B78]">{e.juegosJugados}</td>

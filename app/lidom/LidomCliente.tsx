@@ -57,12 +57,12 @@ export default function LidomCliente() {
         style={{ borderColor: color }}
       >
         {foto ? (
-          <img src={foto.url} alt="" className="h-28 w-full object-cover" />
+          <img src={foto.url} alt={"Estadio de " + equipo.nombre} className="h-28 w-full object-cover" />
         ) : (
           <div className="flex h-28 w-full items-center justify-center bg-[#10203A]/5">
             <img
               src={`https://www.mlbstatic.com/team-logos/${equipo.id}.svg`}
-              alt=""
+              alt={"Logo de " + equipo.nombre}
               className="h-14 w-14 object-contain"
               onError={function (e) { (e.target as HTMLImageElement).style.display = "none"; }}
             />
@@ -71,7 +71,7 @@ export default function LidomCliente() {
         <div className="flex items-center gap-3 p-4">
           <img
             src={`https://www.mlbstatic.com/team-logos/${equipo.id}.svg`}
-            alt=""
+            alt={"Logo de " + equipo.nombre}
             className="h-10 w-10 shrink-0 object-contain"
             onError={function (e) { (e.target as HTMLImageElement).style.display = "none"; }}
           />
@@ -103,7 +103,7 @@ export default function LidomCliente() {
         {noticia.image ? (
           <img
             src={noticia.image}
-            alt=""
+            alt={noticia.title}
             className="h-20 w-20 shrink-0 rounded-lg bg-[#10203A]/5 object-cover"
             onError={function (e) { (e.target as HTMLImageElement).style.display = "none"; }}
           />

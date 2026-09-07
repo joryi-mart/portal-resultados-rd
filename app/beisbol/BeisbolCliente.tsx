@@ -187,7 +187,7 @@ export default function BeisbolCliente() {
         <div className="mb-2 flex items-center gap-2">
           <img
             src={`https://midfield.mlbstatic.com/v1/people/${jugador.id}/spots/120`}
-            alt=""
+            alt={jugador.nombre}
             className="h-8 w-8 shrink-0 rounded-full bg-[#10203A]/5 object-cover"
             onError={function (e) {
               (e.target as HTMLImageElement).style.display = "none";
@@ -232,7 +232,7 @@ export default function BeisbolCliente() {
         {noticia.image ? (
           <img
             src={noticia.image}
-            alt=""
+            alt={noticia.title}
             className="h-20 w-20 shrink-0 rounded-lg bg-[#10203A]/5 object-cover"
             onError={function (e) {
               (e.target as HTMLImageElement).style.display = "none";
@@ -279,7 +279,7 @@ export default function BeisbolCliente() {
           <div className="flex min-w-0 items-center gap-2">
             <img
               src={`https://www.mlbstatic.com/team-logos/${juego.teams.away.team.id}.svg`}
-              alt=""
+              alt={"Logo de " + juego.teams.away.team.name}
               className="h-7 w-7 shrink-0"
             />
             <span className={"truncate text-base " + (ganoVisitante ? "font-bold text-[#007A33]" : "font-semibold text-[#10203A]")}>
@@ -292,7 +292,7 @@ export default function BeisbolCliente() {
           <div className="flex min-w-0 items-center gap-2">
             <img
               src={`https://www.mlbstatic.com/team-logos/${juego.teams.home.team.id}.svg`}
-              alt=""
+              alt={"Logo de " + juego.teams.home.team.name}
               className="h-7 w-7 shrink-0"
             />
             <span className={"truncate text-base " + (ganoLocal ? "font-bold text-[#007A33]" : "font-semibold text-[#10203A]")}>
@@ -418,7 +418,7 @@ export default function BeisbolCliente() {
                               {e.equipoId ? (
                                 <img
                                   src={`https://www.mlbstatic.com/team-logos/${e.equipoId}.svg`}
-                                  alt=""
+                                  alt={"Logo de " + e.nombre}
                                   className="h-5 w-5 shrink-0"
                                 />
                               ) : null}

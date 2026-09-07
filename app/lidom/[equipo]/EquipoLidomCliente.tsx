@@ -78,7 +78,7 @@ export default function EquipoLidomCliente(props: { equipoId: string }) {
             >
               <img
                 src={`https://www.mlbstatic.com/team-logos/${detalle.id}.svg`}
-                alt=""
+                alt={"Logo de " + detalle.nombre}
                 className="h-14 w-14 object-contain"
                 onError={function (e) { (e.target as HTMLImageElement).style.display = "none"; }}
               />

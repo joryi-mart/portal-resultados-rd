@@ -43,7 +43,7 @@ export default function VideojuegosCliente() {
         {noticia.image ? (
           <img
             src={noticia.image}
-            alt=""
+            alt={noticia.title}
             className="h-24 w-24 shrink-0 rounded-lg bg-[#10203A]/5 object-cover"
             onError={function (e) {
               (e.target as HTMLImageElement).style.display = "none";

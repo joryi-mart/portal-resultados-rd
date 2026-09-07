@@ -183,7 +183,7 @@ export default function PicheoCliente() {
             <div className="flex items-center gap-2">
               <Image
                 src={`https://www.mlbstatic.com/team-logos/${juego.teams.away.team.id}.svg`}
-                alt=""
+                alt={"Logo de " + juego.teams.away.team.name}
                 width={28}
                 height={28}
                 className="h-7 w-7 shrink-0"
@@ -200,7 +200,7 @@ export default function PicheoCliente() {
             <div className="flex items-center gap-2">
               <Image
                 src={`https://www.mlbstatic.com/team-logos/${juego.teams.home.team.id}.svg`}
-                alt=""
+                alt={"Logo de " + juego.teams.home.team.name}
                 width={28}
                 height={28}
                 className="h-7 w-7 shrink-0"
