@@ -800,13 +800,14 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
           <div className="mb-6">
             <h3 className="mb-3 inline-block rounded-lg px-3 py-1.5 font-[family-name:var(--font-display)] text-lg font-bold text-white" style={{ backgroundColor: COLOR_VERDE_RD }}>Leidsa</h3>
             <p className="mb-2 text-base leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-              Una de las loterías más jugadas del país, con varios sorteos seguidos cada noche.
+              Una de las loterías más jugadas del país, con varios sorteos seguidos cada noche. Los domingos el
+              sorteo se adelanta a las 3:55 p.m.
             </p>
             <ul className="ml-5 list-disc text-base">
-              <li>Quiniela Palé — 8:55 p.m.</li>
-              <li>Pega 3 Más — 8:55 p.m.</li>
-              <li>Loto Pool — 8:55 p.m.</li>
-              <li>Super Kino TV — 8:55 p.m.</li>
+              <li>Quiniela Palé — 8:55 p.m. (3:55 p.m. los domingos)</li>
+              <li>Pega 3 Más — 8:55 p.m. (3:55 p.m. los domingos)</li>
+              <li>Loto Pool — 8:55 p.m. (3:55 p.m. los domingos)</li>
+              <li>Super Kino TV — 8:55 p.m. (3:55 p.m. los domingos)</li>
               <li>Loto Más (miércoles y sábados) — 8:55 p.m.</li>
             </ul>
           </div>
@@ -819,7 +820,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
             <ul className="ml-5 list-disc text-base">
               <li>Gana Más — 2:30 p.m.</li>
               <li>Juega + Pega + — 2:30 p.m.</li>
-              <li>Quiniela Nacional (Noche) — 9:00 p.m., de lunes a sábado</li>
+              <li>Quiniela Nacional (Noche) — 9:00 p.m. de lunes a sábado, 6:00 p.m. los domingos</li>
             </ul>
           </div>
 
@@ -832,7 +833,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
               <li>Quiniela Loteka — 7:55 p.m.</li>
               <li>Mega Lotto (lunes y jueves) — 7:55 p.m.</li>
               <li>Mega Chances — 7:55 p.m.</li>
-              <li>El Extra — 7:55 p.m.</li>
+              <li>La Repartidera — 7:55 p.m.</li>
               <li>Toca 3 — 7:55 p.m.</li>
             </ul>
           </div>
@@ -844,19 +845,24 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
             </p>
             <ul className="ml-5 list-disc text-base">
               <li>Quiniela Real — 12:55 p.m.</li>
-              <li>Loto Real — 12:55 p.m.</li>
               <li>Tu Fecha — 12:55 p.m.</li>
-              <li>Pega 4 — 12:55 p.m.</li>
+              <li>Loto Pool Real — 12:55 p.m.</li>
+              <li>Nueva Yol Real — 12:55 p.m.</li>
+              <li>Repartidera Real — 1:00 p.m.</li>
+              <li>Loto Real (martes y viernes) — 12:55 p.m.</li>
+              <li>Chance Real — 8:00 p.m.</li>
+              <li>Súper Palé Real — 8:00 p.m.</li>
+              <li>Loto Pool Noche — 8:00 p.m.</li>
             </ul>
           </div>
 
           <div className="mb-6">
             <h3 className="mb-3 inline-block rounded-lg px-3 py-1.5 font-[family-name:var(--font-display)] text-lg font-bold text-white" style={{ backgroundColor: COLOR_VERDE_RD }}>LoteDom</h3>
             <ul className="ml-5 list-disc text-base">
-              <li>Quiniela Lotedom — 2:55 p.m.</li>
-              <li>Quemaito — 2:55 p.m.</li>
-              <li>Lotedom Super Palé — 2:55 p.m.</li>
-              <li>Agarra 4 — 2:55 p.m.</li>
+              <li>Quiniela Lotedom — 12:00 p.m.</li>
+              <li>Quemaito — 12:00 p.m.</li>
+              <li>Lotedom Super Palé — 12:00 p.m.</li>
+              <li>Agarra 4 — 12:00 p.m.</li>
             </ul>
           </div>
 
@@ -864,7 +870,12 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
             <h3 className="mb-3 inline-block rounded-lg px-3 py-1.5 font-[family-name:var(--font-display)] text-lg font-bold text-white" style={{ backgroundColor: COLOR_VERDE_RD }}>La Primera y La Suerte Dominicana</h3>
             <ul className="ml-5 list-disc text-base">
               <li>Quiniela La Primera — 12:00 p.m.</li>
+              <li>Quinielón Día — 12:00 p.m.</li>
+              <li>La Primera Noche — 8:00 p.m.</li>
+              <li>Quinielón Noche — 8:00 p.m.</li>
+              <li>Loto 5 — 8:00 p.m.</li>
               <li>Quiniela La Suerte — 12:30 p.m.</li>
+              <li>La Suerte Tarde — 6:00 p.m.</li>
             </ul>
           </div>
 
@@ -877,7 +888,10 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
             <ul className="ml-5 list-disc text-base">
               <li>New York — tarde (2:30 p.m.) y noche (10:30 p.m.)</li>
               <li>Florida — día (1:30 p.m.) y noche (10:00 p.m.)</li>
-              <li>Anguila — mediodía, tarde y noche</li>
+              <li>Anguila — 10:00 a.m., mediodía (1:00 p.m.), tarde (6:00 p.m.) y noche (9:00 p.m.)</li>
+              <li>Haití Bolet — seis sorteos al día, de 9:30 a.m. a 7:30 p.m.</li>
+              <li>Sint Maarten (King Lottery) — mediodía (12:30 p.m.) y noche (7:30 p.m.)</li>
+              <li>Loterías Americanas — New Jersey y Georgia, varios sorteos al día</li>
               <li>PowerBall — lunes, miércoles y sábado (11:00 p.m.)</li>
               <li>Mega Millions — martes y viernes (11:00 p.m.)</li>
             </ul>
