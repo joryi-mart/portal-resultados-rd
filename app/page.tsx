@@ -84,6 +84,12 @@ export const COLOR_POR_POSICION_SORTEOS: Record<number, (indice: number, total: 
   },
 };
 
+// Orden de las loterias por importancia, usado en "¿Que salio hoy?", "Resumen
+// de resultados" y "Todos los sorteos de ayer". En movil se pidio un orden
+// distinto al de escritorio, asi que hay uno para cada tamano de pantalla.
+export const ORDEN_IMPORTANCIA_ESCRITORIO = ["nacional", "loteka", "leidsa", "haiti", "la-primera", "lotedom", "la-suerte", "anguila", "new-york", "real"];
+export const ORDEN_IMPORTANCIA_MOVIL = ["leidsa", "nacional", "real", "loteka", "la-primera", "lotedom", "la-suerte", "haiti", "anguila", "new-york"];
+
 export function hoyISO() {
   // Republica Dominicana esta fijo en UTC-4 (no usa horario de verano),
   // asi que restamos 4 horas sin importar en que zona horaria corra el servidor.
@@ -366,21 +372,62 @@ export function ResumenResultados(props: { items: UltimoResultado[]; fecha: stri
     grupo.items.push(item);
     if ((item.horaSorteo || "99:99") < grupo.horaMasTemprana) grupo.horaMasTemprana = item.horaSorteo || "99:99";
   });
-  // Las tarjetas se ordenan por importancia (cuanto se juegan), igual que en
-  // "¿Que salio hoy?": las loterias mas apostadas van primero.
-  const ORDEN_IMPORTANCIA = ["nacional", "loteka", "leidsa", "haiti", "la-primera", "lotedom", "la-suerte", "anguila", "new-york", "real"];
-  const grupos = Array.from(porLoteria.values());
-  grupos.forEach(function (g) {
+  const gruposBase = Array.from(porLoteria.values());
+  gruposBase.forEach(function (g) {
     g.items.sort(function (a, b) { return (a.horaSorteo || "99:99").localeCompare(b.horaSorteo || "99:99"); });
   });
-  grupos.sort(function (a, b) {
-    const posA = ORDEN_IMPORTANCIA.indexOf(a.loteriaSlug);
-    const posB = ORDEN_IMPORTANCIA.indexOf(b.loteriaSlug);
-    if (posA === -1 && posB === -1) return a.horaMasTemprana.localeCompare(b.horaMasTemprana);
-    if (posA === -1) return 1;
-    if (posB === -1) return -1;
-    return posA - posB;
-  });
+
+  // Las tarjetas se ordenan por importancia (cuanto se juegan). En movil el
+  // orden pedido es distinto al de escritorio, asi que se ordena dos veces.
+  function ordenarPor(orden: string[]) {
+    return gruposBase.slice().sort(function (a, b) {
+      const posA = orden.indexOf(a.loteriaSlug);
+      const posB = orden.indexOf(b.loteriaSlug);
+      if (posA === -1 && posB === -1) return a.horaMasTemprana.localeCompare(b.horaMasTemprana);
+      if (posA === -1) return 1;
+      if (posB === -1) return -1;
+      return posA - posB;
+    });
+  }
+
+  function renderGrupo(g: GrupoLoteria, i: number) {
+    return (
+      <div key={i} className="rounded-xl border border-[#10203A]/10 p-4">
+        <p className="mb-2 inline-block truncate rounded px-2 py-0.5 text-base font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{g.loteria}</p>
+        <div className="flex flex-col gap-2.5">
+          {g.items.map(function (item, j) {
+            const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[item.sorteoId];
+            const numeros = item.numeros.split("-");
+            return (
+              <a key={j} href={"/" + item.loteriaSlug + "/" + item.fecha} className="flex items-center justify-between gap-2 rounded-lg -mx-1 px-1 py-1 transition hover:bg-[#FBF7EE]">
+                <p className="min-w-0 truncate font-mono text-[11px]" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{item.sorteoNombre}</p>
+                <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+                  {numeros.map(function (n, k) {
+                    const colorEspecial = colorPorPosicion ? colorPorPosicion(k, numeros.length) : null;
+                    const esPrimera = k === 0 && !colorEspecial;
+                    const estilo = colorEspecial
+                      ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
+                      : esPrimera
+                      ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
+                      : undefined;
+                    return (
+                      <span
+                        key={k}
+                        className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (estilo ? "" : esHoy ? "bg-[#1E4D8C] text-white" : "bg-[#E4E8EB] text-[#10203A]")}
+                        style={estilo}
+                      >
+                        {n}
+                      </span>
+                    );
+                  })}
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-8 overflow-hidden rounded-xl border border-[#10203A]/12 bg-white p-5">
@@ -392,45 +439,11 @@ export function ResumenResultados(props: { items: UltimoResultado[]; fecha: stri
           Ver resumen de ayer →
         </a>
       </div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {grupos.map(function (g, i) {
-          return (
-            <div key={i} className="rounded-xl border border-[#10203A]/10 p-4">
-              <p className="mb-2 inline-block truncate rounded px-2 py-0.5 text-base font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{g.loteria}</p>
-              <div className="flex flex-col gap-2.5">
-                {g.items.map(function (item, j) {
-                  const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[item.sorteoId];
-                  const numeros = item.numeros.split("-");
-                  return (
-                    <a key={j} href={"/" + item.loteriaSlug + "/" + item.fecha} className="flex items-center justify-between gap-2 rounded-lg -mx-1 px-1 py-1 transition hover:bg-[#FBF7EE]">
-                      <p className="min-w-0 truncate font-mono text-[11px]" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{item.sorteoNombre}</p>
-                      <div className="flex shrink-0 flex-wrap items-center gap-1.5">
-                        {numeros.map(function (n, k) {
-                          const colorEspecial = colorPorPosicion ? colorPorPosicion(k, numeros.length) : null;
-                          const esPrimera = k === 0 && !colorEspecial;
-                          const estilo = colorEspecial
-                            ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
-                            : esPrimera
-                            ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
-                            : undefined;
-                          return (
-                            <span
-                              key={k}
-                              className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (estilo ? "" : esHoy ? "bg-[#1E4D8C] text-white" : "bg-[#E4E8EB] text-[#10203A]")}
-                              style={estilo}
-                            >
-                              {n}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </a>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
+      <div className="grid grid-cols-1 gap-3 sm:hidden">
+        {ordenarPor(ORDEN_IMPORTANCIA_MOVIL).map(renderGrupo)}
+      </div>
+      <div className="hidden gap-3 sm:grid sm:grid-cols-2">
+        {ordenarPor(ORDEN_IMPORTANCIA_ESCRITORIO).map(renderGrupo)}
       </div>
     </div>
   );
@@ -535,19 +548,71 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
   // Cada tarjeta (loteria) trae sus sorteos ordenados por hora. Las tarjetas
   // en si se ordenan por importancia (cuanto se juegan), no por hora: las
   // loterias mas apostadas ocupan los primeros lugares y el resto va bajando.
-  const ORDEN_IMPORTANCIA = ["nacional", "loteka", "leidsa", "haiti", "la-primera", "lotedom", "la-suerte", "anguila", "new-york", "real"];
-  const tarjetas = Array.from(porLoteria.values());
-  tarjetas.forEach(function (t) {
+  // En movil el orden pedido es distinto al de escritorio, asi que hay dos.
+  const tarjetasBase = Array.from(porLoteria.values());
+  tarjetasBase.forEach(function (t) {
     t.filas.sort(function (a, b) { return (a.horaSorteo || "99:99").localeCompare(b.horaSorteo || "99:99"); });
   });
-  tarjetas.sort(function (a, b) {
-    const posA = ORDEN_IMPORTANCIA.indexOf(a.loteriaSlug);
-    const posB = ORDEN_IMPORTANCIA.indexOf(b.loteriaSlug);
-    if (posA === -1 && posB === -1) return a.horaMasTemprana.localeCompare(b.horaMasTemprana);
-    if (posA === -1) return 1;
-    if (posB === -1) return -1;
-    return posA - posB;
-  });
+  function ordenarPor(orden: string[]) {
+    return tarjetasBase.slice().sort(function (a, b) {
+      const posA = orden.indexOf(a.loteriaSlug);
+      const posB = orden.indexOf(b.loteriaSlug);
+      if (posA === -1 && posB === -1) return a.horaMasTemprana.localeCompare(b.horaMasTemprana);
+      if (posA === -1) return 1;
+      if (posB === -1) return -1;
+      return posA - posB;
+    });
+  }
+
+  function renderTarjeta(t: TarjetaLoteria, i: number) {
+    return (
+      <div key={i} className="mb-3 break-inside-avoid rounded-xl border border-[#10203A]/10 bg-white p-4">
+        <p className="mb-2 inline-block truncate rounded px-2 py-0.5 text-base font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{t.loteria}</p>
+        <div className="flex flex-col gap-3">
+          {t.filas.map(function (fila, j) {
+            const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[fila.sorteoId];
+            const href = "/" + t.loteriaSlug + "/" + fila.fechaMostrada;
+            const muchosNumeros = fila.numeros.length > 6;
+            const bolitas = fila.numeros.map(function (n, k) {
+              const colorEspecial = colorPorPosicion ? colorPorPosicion(k, fila.numeros.length) : null;
+              const esPrimera = k === 0 && !colorEspecial;
+              const estiloEspecial = !fila.esDeAyer && colorEspecial
+                ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
+                : !fila.esDeAyer && esPrimera
+                ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
+                : undefined;
+              return (
+                <span
+                  key={k}
+                  className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (fila.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
+                  style={estiloEspecial}
+                >
+                  {n}
+                </span>
+              );
+            });
+            const etiqueta = (
+              <p className="truncate text-sm font-bold text-[#10203A]">
+                {fila.sorteo}
+                {fila.esDeAyer ? <span className="font-normal" style={{ color: COLOR_TEXTO_SECUNDARIO }}> · de ayer</span> : ""}
+              </p>
+            );
+            return muchosNumeros ? (
+              <a key={j} href={href} className="block rounded-lg -mx-1 px-1 py-1 transition hover:bg-[#FBF7EE]">
+                <div className="mb-1.5">{etiqueta}</div>
+                <div className="flex flex-wrap items-center gap-1.5">{bolitas}</div>
+              </a>
+            ) : (
+              <a key={j} href={href} className="flex items-center justify-between gap-2 rounded-lg -mx-1 px-1 py-1 transition hover:bg-[#FBF7EE]">
+                <div className="min-w-0">{etiqueta}</div>
+                <div className="flex shrink-0 flex-wrap items-center gap-1.5">{bolitas}</div>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-hidden rounded-2xl bg-[#10203A]">
@@ -559,62 +624,19 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
         <p className="mt-1 text-sm text-white/70">Toca una lotería abajo para ver más resultados.</p>
       </div>
 
-      {tarjetas.length === 0 ? (
+      {tarjetasBase.length === 0 ? (
         <p className="mx-5 mb-5 rounded-xl bg-white/10 px-4 py-4 text-base text-white sm:mx-6">
           Todavía no hay resultados publicados para este día.
         </p>
       ) : (
-        <div className="mx-3 mb-3 columns-1 gap-3 sm:mx-4 sm:mb-4 sm:columns-3">
-          {tarjetas.map(function (t, i) {
-            return (
-              <div key={i} className="mb-3 break-inside-avoid rounded-xl border border-[#10203A]/10 bg-white p-4">
-                <p className="mb-2 inline-block truncate rounded px-2 py-0.5 text-base font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{t.loteria}</p>
-                <div className="flex flex-col gap-3">
-                  {t.filas.map(function (fila, j) {
-                    const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[fila.sorteoId];
-                    const href = "/" + t.loteriaSlug + "/" + fila.fechaMostrada;
-                    const muchosNumeros = fila.numeros.length > 6;
-                    const bolitas = fila.numeros.map(function (n, k) {
-                      const colorEspecial = colorPorPosicion ? colorPorPosicion(k, fila.numeros.length) : null;
-                      const esPrimera = k === 0 && !colorEspecial;
-                      const estiloEspecial = !fila.esDeAyer && colorEspecial
-                        ? { backgroundColor: colorEspecial.fondo, color: colorEspecial.texto }
-                        : !fila.esDeAyer && esPrimera
-                        ? { backgroundColor: COLOR_PRIMERA_POSICION, color: "#10203A" }
-                        : undefined;
-                      return (
-                        <span
-                          key={k}
-                          className={"flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold " + (fila.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
-                          style={estiloEspecial}
-                        >
-                          {n}
-                        </span>
-                      );
-                    });
-                    const etiqueta = (
-                      <p className="truncate text-sm font-bold text-[#10203A]">
-                        {fila.sorteo}
-                        {fila.esDeAyer ? <span className="font-normal" style={{ color: COLOR_TEXTO_SECUNDARIO }}> · de ayer</span> : ""}
-                      </p>
-                    );
-                    return muchosNumeros ? (
-                      <a key={j} href={href} className="block rounded-lg -mx-1 px-1 py-1 transition hover:bg-[#FBF7EE]">
-                        <div className="mb-1.5">{etiqueta}</div>
-                        <div className="flex flex-wrap items-center gap-1.5">{bolitas}</div>
-                      </a>
-                    ) : (
-                      <a key={j} href={href} className="flex items-center justify-between gap-2 rounded-lg -mx-1 px-1 py-1 transition hover:bg-[#FBF7EE]">
-                        <div className="min-w-0">{etiqueta}</div>
-                        <div className="flex shrink-0 flex-wrap items-center gap-1.5">{bolitas}</div>
-                      </a>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <>
+          <div className="mx-3 mb-3 columns-1 gap-3 sm:hidden">
+            {ordenarPor(ORDEN_IMPORTANCIA_MOVIL).map(renderTarjeta)}
+          </div>
+          <div className="mx-3 mb-3 hidden gap-3 sm:mx-4 sm:mb-4 sm:columns-3 sm:block">
+            {ordenarPor(ORDEN_IMPORTANCIA_ESCRITORIO).map(renderTarjeta)}
+          </div>
+        </>
       )}
     </div>
   );
@@ -661,21 +683,69 @@ export function TablaResultadosDelDia(props: { loterias: Loteria[]; fechaSelecci
   }
 
   // Mismo orden de importancia que "¿Que salio hoy?", para que ambas vistas
-  // muestren las loterias en el mismo orden.
-  const ORDEN_IMPORTANCIA = ["nacional", "loteka", "leidsa", "haiti", "la-primera", "lotedom", "la-suerte", "anguila", "new-york", "real"];
-  const grupos = Array.from(porLoteria.entries());
-  grupos.forEach(function ([, g]) {
+  // muestren las loterias en el mismo orden. En movil el orden pedido es
+  // distinto al de escritorio, asi que hay dos.
+  const gruposBase = Array.from(porLoteria.entries());
+  gruposBase.forEach(function ([, g]) {
     g.filas.sort(function (a, b) { return (a.horaSorteo || "99:99").localeCompare(b.horaSorteo || "99:99"); });
   });
-  grupos.sort(function ([slugA, a], [slugB, b]) {
-    const posA = ORDEN_IMPORTANCIA.indexOf(slugA);
-    const posB = ORDEN_IMPORTANCIA.indexOf(slugB);
-    if (posA === -1 && posB === -1) return a.horaMasTemprana.localeCompare(b.horaMasTemprana);
-    if (posA === -1) return 1;
-    if (posB === -1) return -1;
-    return posA - posB;
-  });
-  if (grupos.length === 0) return null;
+  function ordenarPor(orden: string[]) {
+    return gruposBase.slice().sort(function ([slugA, a], [slugB, b]) {
+      const posA = orden.indexOf(slugA);
+      const posB = orden.indexOf(slugB);
+      if (posA === -1 && posB === -1) return a.horaMasTemprana.localeCompare(b.horaMasTemprana);
+      if (posA === -1) return 1;
+      if (posB === -1) return -1;
+      return posA - posB;
+    });
+  }
+
+  function renderGrupo([slug, g]: (typeof gruposBase)[number], gi: number) {
+    return (
+      <div key={slug} className={gi > 0 ? "border-t-4 border-[#10203A]/10" : ""}>
+        <p className="mx-5 mt-4 inline-block rounded px-2 py-0.5 text-sm font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{g.loteriaNombre}</p>
+        <div className="flex flex-col">
+          {g.filas.map(function (fila, i) {
+            const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[fila.sorteoId];
+            const href = "/" + fila.loteriaSlug + "/" + fila.fechaMostrada;
+            return (
+              <a
+                key={i}
+                href={href}
+                className="flex items-center justify-between gap-3 border-t border-[#10203A]/6 px-5 py-3 hover:bg-[#FBF7EE]"
+              >
+                <span className="min-w-0 truncate text-base font-semibold text-[#10203A]">{fila.sorteo}</span>
+                <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+                  {fila.numeros.map(function (n, k) {
+                    const colorEspecial = colorPorPosicion ? colorPorPosicion(k, fila.numeros.length) : null;
+                    const esPrimera = k === 0 && !colorEspecial;
+                    const fondoEspecial = !fila.esDeAyer && colorEspecial
+                      ? colorEspecial.fondo
+                      : !fila.esDeAyer && esPrimera
+                      ? COLOR_PRIMERA_POSICION
+                      : undefined;
+                    const fondo = fondoEspecial || (fila.esDeAyer ? "#E4E8EB" : "#1E4D8C");
+                    return (
+                      <span
+                        key={k}
+                        className="flex h-8 w-8 items-center justify-center rounded-full font-mono text-xs font-bold text-black"
+                        style={{ backgroundColor: fondo }}
+                      >
+                        {n}
+                      </span>
+                    );
+                  })}
+                </div>
+                <span className="shrink-0 font-mono text-xs font-bold" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearFechaCorta(fila.fechaMostrada)}</span>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  if (gruposBase.length === 0) return null;
 
   return (
     <div className="mb-8 overflow-hidden rounded-xl border border-[#10203A]/12 bg-white">
@@ -685,51 +755,11 @@ export function TablaResultadosDelDia(props: { loterias: Loteria[]; fechaSelecci
           En gris, el número de ayer para lo que todavía no ha salido hoy. Se pone azul apenas se publica el número de hoy.
         </p>
       </div>
-      <div className="flex flex-col">
-        {grupos.map(function ([slug, g], gi) {
-          return (
-            <div key={slug} className={gi > 0 ? "border-t-4 border-[#10203A]/10" : ""}>
-              <p className="mx-5 mt-4 inline-block rounded px-2 py-0.5 text-sm font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{g.loteriaNombre}</p>
-              <div className="flex flex-col">
-                {g.filas.map(function (fila, i) {
-                  const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[fila.sorteoId];
-                  const href = "/" + fila.loteriaSlug + "/" + fila.fechaMostrada;
-                  return (
-                    <a
-                      key={i}
-                      href={href}
-                      className="flex items-center justify-between gap-3 border-t border-[#10203A]/6 px-5 py-3 hover:bg-[#FBF7EE]"
-                    >
-                      <span className="min-w-0 truncate text-base font-semibold text-[#10203A]">{fila.sorteo}</span>
-                      <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
-                        {fila.numeros.map(function (n, k) {
-                          const colorEspecial = colorPorPosicion ? colorPorPosicion(k, fila.numeros.length) : null;
-                          const esPrimera = k === 0 && !colorEspecial;
-                          const fondoEspecial = !fila.esDeAyer && colorEspecial
-                            ? colorEspecial.fondo
-                            : !fila.esDeAyer && esPrimera
-                            ? COLOR_PRIMERA_POSICION
-                            : undefined;
-                          const fondo = fondoEspecial || (fila.esDeAyer ? "#E4E8EB" : "#1E4D8C");
-                          return (
-                            <span
-                              key={k}
-                              className="flex h-8 w-8 items-center justify-center rounded-full font-mono text-xs font-bold text-black"
-                              style={{ backgroundColor: fondo }}
-                            >
-                              {n}
-                            </span>
-                          );
-                        })}
-                      </div>
-                      <span className="shrink-0 font-mono text-xs font-bold" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearFechaCorta(fila.fechaMostrada)}</span>
-                    </a>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
+      <div className="flex flex-col sm:hidden">
+        {ordenarPor(ORDEN_IMPORTANCIA_MOVIL).map(renderGrupo)}
+      </div>
+      <div className="hidden flex-col sm:flex">
+        {ordenarPor(ORDEN_IMPORTANCIA_ESCRITORIO).map(renderGrupo)}
       </div>
     </div>
   );
