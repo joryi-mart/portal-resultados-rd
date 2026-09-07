@@ -572,7 +572,6 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
           {t.filas.map(function (fila, j) {
             const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[fila.sorteoId];
             const href = "/" + t.loteriaSlug + "/" + fila.fechaMostrada;
-            const muchosNumeros = fila.numeros.length > 6;
             const bolitas = fila.numeros.map(function (n, k) {
               const colorEspecial = colorPorPosicion ? colorPorPosicion(k, fila.numeros.length) : null;
               const esPrimera = k === 0 && !colorEspecial;
@@ -597,15 +596,10 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
                 {fila.esDeAyer ? <span className="font-normal" style={{ color: COLOR_TEXTO_SECUNDARIO }}> · de ayer</span> : ""}
               </p>
             );
-            return muchosNumeros ? (
+            return (
               <a key={j} href={href} className="block rounded-lg -mx-1 px-1 py-1 transition hover:bg-[#FBF7EE]">
                 <div className="mb-1.5">{etiqueta}</div>
                 <div className="flex flex-wrap items-center gap-1.5">{bolitas}</div>
-              </a>
-            ) : (
-              <a key={j} href={href} className="flex items-center justify-between gap-2 rounded-lg -mx-1 px-1 py-1 transition hover:bg-[#FBF7EE]">
-                <div className="min-w-0">{etiqueta}</div>
-                <div className="flex shrink-0 flex-wrap items-center gap-1.5">{bolitas}</div>
               </a>
             );
           })}
