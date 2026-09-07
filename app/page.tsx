@@ -728,7 +728,7 @@ export function TablaResultadosDelDia(props: { loterias: Loteria[]; fechaSelecci
                     return (
                       <span
                         key={k}
-                        className="flex h-8 w-8 items-center justify-center rounded-full font-mono text-xs font-bold text-black"
+                        className="flex h-11 w-11 items-center justify-center rounded-full font-mono text-base font-bold text-black"
                         style={{ backgroundColor: fondo }}
                       >
                         {n}
