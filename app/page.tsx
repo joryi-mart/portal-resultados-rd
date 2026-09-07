@@ -52,7 +52,7 @@ type Cambio = {
   tasa_venta: number;
   fuente: string;
 };
-type UltimoResultado = {
+export type UltimoResultado = {
   loteriaNombre: string;
   loteriaSlug: string;
   sorteoId: number;
@@ -67,7 +67,7 @@ export const COLOR_AZUL = "#1E4D8C";
 export const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 const COLOR_VERDE_RD = "#007A33";
 export const COLOR_VERDE_PRESIDENTE = "#0A5C36";
-const COLOR_PRIMERA_POSICION = "#E7A63C";
+export const COLOR_PRIMERA_POSICION = "#E7A63C";
 
 // Sorteos que llevan un color de bolita distinto al azul estándar.
 // El "Loto" de Leidsa (id 69) sale solo miércoles y sábados, así que se
@@ -349,7 +349,7 @@ function PanelSuperior(props: { cambios: Cambio[]; fechaActual: string }) {
 }
 
 
-function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
+export function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
   const items = props.items;
   if (items.length === 0) return null;
   const fechaAnterior = sumarDias(props.fecha, -1);
@@ -388,7 +388,7 @@ function ResumenResultados(props: { items: UltimoResultado[]; fecha: string }) {
         <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
           Resumen de resultados de <span className="capitalize">{etiquetaFechaResumen(props.fecha)}</span>
         </h2>
-        <a href={"/?fecha=" + fechaAnterior} className="font-mono text-xs font-bold text-[#1E4D8C] hover:underline">
+        <a href={"?fecha=" + fechaAnterior} className="font-mono text-xs font-bold text-[#1E4D8C] hover:underline">
           Ver resumen de ayer →
         </a>
       </div>
@@ -770,7 +770,16 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
           <PizarronDelDia loterias={listaLoterias} fechaSeleccionada={fechaSeleccionada} fechaTitulo={fechaTitulo} />
         </div>
 
-        <ResumenResultados items={resumenHoy} fecha={fechaResumen} />
+        <a
+          href={"/resumen" + (fechaSeleccionada !== hoy ? "?fecha=" + fechaSeleccionada : "")}
+          className="mb-8 flex items-center justify-between rounded-xl border border-[#10203A]/12 bg-white px-5 py-4 shadow-[0_1px_3px_rgba(16,32,58,0.08)] transition hover:shadow-md"
+        >
+          <div>
+            <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Resumen de resultados de {etiquetaFechaResumen(fechaResumen).toLowerCase()}</p>
+            <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{resumenHoy.length} resultados publicados, agrupados por lotería</p>
+          </div>
+          <span className="font-mono text-sm font-semibold text-[#1E4D8C]">Ver resumen →</span>
+        </a>
 
         {error ? (
           <div className="mb-6 rounded-lg border border-[#E4573D]/40 bg-[#E4573D]/5 p-4 text-sm text-[#B23B26]">No pudimos cargar los datos: {error.message}</div>
