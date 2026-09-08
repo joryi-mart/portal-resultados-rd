@@ -935,6 +935,17 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
           <span className="font-mono text-sm font-semibold text-[#1E4D8C]">Ver todas →</span>
         </a>
 
+        <a
+          href="/buscador"
+          className="mb-8 flex items-center justify-between rounded-xl border border-[#10203A]/12 bg-white px-5 py-4 shadow-[0_1px_3px_rgba(16,32,58,0.08)] transition hover:shadow-md"
+        >
+          <div>
+            <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Buscador de números</p>
+            <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>¿Cuándo salió tu número por última vez?</p>
+          </div>
+          <span className="font-mono text-sm font-semibold text-[#1E4D8C]">Buscar →</span>
+        </a>
+
         <TablaResultadosDelDia loterias={listaLoterias} fechaSeleccionada={fechaSeleccionada} />
 
         <section className="mt-8 rounded-xl border border-[#10203A]/12 bg-white p-5 sm:p-8">
