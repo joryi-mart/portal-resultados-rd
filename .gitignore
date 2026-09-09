@@ -35,6 +35,9 @@ yarn-error.log*
 env.download
 app/env.download
 
+# credenciales (llaves privadas, nunca deben subirse)
+/credentials/
+
 # vercel
 .vercel
 

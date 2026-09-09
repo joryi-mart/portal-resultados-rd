@@ -177,8 +177,40 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
   const SORTEOS_DESCONTINUADOS = [73, 78, 119];
   const sorteos = (loteriaData.sorteos || []).filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id); });
 
+  // Datos estructurados (schema.org) con los resultados de hoy, para que Google
+  // pueda leer los números ganadores directamente, no solo el texto. Mismo patrón
+  // que ya usan la portada y la página de resultados por fecha.
+  const eventosParaGoogle = sorteos
+    .map(function (sorteo) {
+      const resultado = sorteo.resultados.find(function (r) { return r.fecha === hoy; });
+      if (!resultado) return null;
+      return {
+        "@type": "Event",
+        name: `${sorteo.nombre} - ${loteriaData.nombre} - ${hoy}`,
+        startDate: `${hoy}T${horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, hoy) || "00:00"}:00-04:00`,
+        eventStatus: "https://schema.org/EventScheduled",
+        eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+        location: { "@type": "VirtualLocation", url: `https://labankerard.com/${params.slug}` },
+        organizer: { "@type": "Organization", name: loteriaData.nombre },
+        additionalProperty: {
+          "@type": "PropertyValue",
+          name: "Números ganadores",
+          value: resultado.numeros,
+        },
+      };
+    })
+    .filter(Boolean);
+  const datosEstructurados =
+    eventosParaGoogle.length > 0 ? { "@context": "https://schema.org", "@graph": eventosParaGoogle } : null;
+
   return (
     <div className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
+      {datosEstructurados ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }}
+        />
+      ) : null}
       <header className="bg-[#10203A] px-6 py-8 sm:px-10">
         <div className="mx-auto max-w-3xl">
           <a href="/" className="font-mono text-sm text-[#E7A63C] hover:underline">← Ver todas las loterías</a>
