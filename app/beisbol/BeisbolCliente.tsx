@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Space_Grotesk } from "next/font/google";
+import Image from "next/image";
 import NavPildoras from "../NavPildoras";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"] });
@@ -185,9 +186,11 @@ export default function BeisbolCliente() {
         className="rounded-xl border border-[#10203A]/15 bg-white p-3 shadow-sm"
       >
         <div className="mb-2 flex items-center gap-2">
-          <img
+          <Image
             src={`https://midfield.mlbstatic.com/v1/people/${jugador.id}/spots/120`}
             alt={jugador.nombre}
+            width={32}
+            height={32}
             className="h-8 w-8 shrink-0 rounded-full bg-[#10203A]/5 object-cover"
             onError={function (e) {
               (e.target as HTMLImageElement).style.display = "none";
@@ -230,9 +233,12 @@ export default function BeisbolCliente() {
         className="flex cursor-pointer gap-3 overflow-hidden rounded-xl border border-[#10203A]/15 bg-white p-3 shadow-sm hover:shadow-md"
       >
         {noticia.image ? (
-          <img
+          <Image
             src={noticia.image}
             alt={noticia.title}
+            width={80}
+            height={80}
+            unoptimized
             className="h-20 w-20 shrink-0 rounded-lg bg-[#10203A]/5 object-cover"
             onError={function (e) {
               (e.target as HTMLImageElement).style.display = "none";
@@ -277,9 +283,12 @@ export default function BeisbolCliente() {
         </p>
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
-            <img
+            <Image
               src={`https://www.mlbstatic.com/team-logos/${juego.teams.away.team.id}.svg`}
               alt={"Logo de " + juego.teams.away.team.name}
+              width={28}
+              height={28}
+              unoptimized
               className="h-7 w-7 shrink-0"
             />
             <span className={"truncate text-base " + (ganoVisitante ? "font-bold text-[#007A33]" : "font-semibold text-[#10203A]")}>
@@ -290,9 +299,12 @@ export default function BeisbolCliente() {
         </div>
         <div className="mt-1.5 flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
-            <img
+            <Image
               src={`https://www.mlbstatic.com/team-logos/${juego.teams.home.team.id}.svg`}
               alt={"Logo de " + juego.teams.home.team.name}
+              width={28}
+              height={28}
+              unoptimized
               className="h-7 w-7 shrink-0"
             />
             <span className={"truncate text-base " + (ganoLocal ? "font-bold text-[#007A33]" : "font-semibold text-[#10203A]")}>
@@ -349,9 +361,11 @@ export default function BeisbolCliente() {
           <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#1E4D8C]/10 font-mono text-xs font-bold text-[#1E4D8C]">
             {iniciales(jugador.nombre)}
           </div>
-          <img
+          <Image
             src={`https://midfield.mlbstatic.com/v1/people/${jugador.id}/spots/120`}
             alt={jugador.nombre}
+            width={48}
+            height={48}
             className="absolute inset-0 h-12 w-12 rounded-full object-cover"
             onError={function (e) {
               (e.target as HTMLImageElement).style.display = "none";
@@ -416,9 +430,12 @@ export default function BeisbolCliente() {
                           <td className="px-3 py-2 font-semibold text-[#10203A]">
                             <div className="flex items-center gap-2">
                               {e.equipoId ? (
-                                <img
+                                <Image
                                   src={`https://www.mlbstatic.com/team-logos/${e.equipoId}.svg`}
                                   alt={"Logo de " + e.nombre}
+                                  width={20}
+                                  height={20}
+                                  unoptimized
                                   className="h-5 w-5 shrink-0"
                                 />
                               ) : null}

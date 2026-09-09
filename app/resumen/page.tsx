@@ -85,8 +85,35 @@ export default async function ResumenPage(props: { searchParams: Promise<{ fecha
     : (ultimosResultados[0]?.fecha || fechaSeleccionada);
   const resumenHoy = ultimosResultados.filter(function (r) { return r.fecha === fechaResumen; });
 
+  // Datos estructurados (schema.org) con los resultados mostrados en este resumen,
+  // mismo patrón que ya usan la portada y las páginas de cada lotería.
+  const eventosParaGoogle = resumenHoy.map(function (r) {
+    return {
+      "@type": "Event",
+      name: `${r.sorteoNombre} - ${r.loteriaNombre} - ${r.fecha}`,
+      startDate: `${r.fecha}T${r.horaSorteo || "00:00"}:00-04:00`,
+      eventStatus: "https://schema.org/EventScheduled",
+      eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+      location: { "@type": "VirtualLocation", url: `https://labankerard.com/${r.loteriaSlug}/${r.fecha}` },
+      organizer: { "@type": "Organization", name: r.loteriaNombre },
+      additionalProperty: {
+        "@type": "PropertyValue",
+        name: "Números ganadores",
+        value: r.numeros,
+      },
+    };
+  });
+  const datosEstructurados =
+    eventosParaGoogle.length > 0 ? { "@context": "https://schema.org", "@graph": eventosParaGoogle } : null;
+
   return (
     <div className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
+      {datosEstructurados ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }}
+        />
+      ) : null}
       <NavPildoras
         loterias={listaLoterias.map(function (l: Loteria) {
           return { nombre: l.nombre, slug: l.slug };

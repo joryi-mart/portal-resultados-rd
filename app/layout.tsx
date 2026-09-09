@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Script from "next/script";
 import "./globals.css";
 
@@ -80,7 +81,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <div className="sticky top-0 z-50 border-b border-white/10 bg-[#10203A] px-4 py-2 shadow-md sm:px-8">
           <a href="/" className="mx-auto flex max-w-7xl items-center gap-2">
-            <img src="/logo-icon.svg" alt="" className="h-6 w-6" />
+            <Image src="/logo-icon.svg" alt="" width={24} height={24} className="h-6 w-6" priority />
             <span className="text-base font-bold leading-none text-[#FBF7EE]">
               La Bankera<span className="text-[#E7A63C]">RD</span>
             </span>

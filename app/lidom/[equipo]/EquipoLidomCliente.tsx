@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Space_Grotesk } from "next/font/google";
+import Image from "next/image";
 import NavPildoras from "../../NavPildoras";
 import { HISTORIAS_LIDOM } from "../datos";
 
@@ -58,11 +59,15 @@ export default function EquipoLidomCliente(props: { equipoId: string }) {
           <>
             {HISTORIAS_LIDOM[String(detalle.id)]?.foto && (
               <div className="mb-4">
-                <img
-                  src={HISTORIAS_LIDOM[String(detalle.id)].foto!.url}
-                  alt={"Estadio de " + detalle.nombre}
-                  className="h-52 w-full rounded-xl object-cover sm:h-72"
-                />
+                <div className="relative h-52 w-full sm:h-72">
+                  <Image
+                    src={HISTORIAS_LIDOM[String(detalle.id)].foto!.url}
+                    alt={"Estadio de " + detalle.nombre}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 640px"
+                    className="rounded-xl object-cover"
+                  />
+                </div>
                 <p className="mt-1.5 text-right text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
                   Foto: {HISTORIAS_LIDOM[String(detalle.id)].foto!.autor} / Wikimedia Commons ({HISTORIAS_LIDOM[String(detalle.id)].foto!.licencia})
                 </p>
@@ -76,9 +81,12 @@ export default function EquipoLidomCliente(props: { equipoId: string }) {
                 borderLeft: `6px solid ${HISTORIAS_LIDOM[String(detalle.id)]?.color || "#10203A"}`,
               }}
             >
-              <img
+              <Image
                 src={`https://www.mlbstatic.com/team-logos/${detalle.id}.svg`}
                 alt={"Logo de " + detalle.nombre}
+                width={56}
+                height={56}
+                unoptimized
                 className="h-14 w-14 object-contain"
                 onError={function (e) { (e.target as HTMLImageElement).style.display = "none"; }}
               />

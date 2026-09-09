@@ -1,4 +1,5 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
+import Image from "next/image";
 import NavPildoras from "../NavPildoras";
 import { CIUDADES } from "./datos";
 
@@ -49,11 +50,13 @@ export default function TurismoPage() {
           href={"/turismo/" + destacado.slug}
           className="group mb-10 block overflow-hidden rounded-2xl border border-[#10203A]/15 bg-white shadow-md transition hover:shadow-xl sm:flex"
         >
-          <div className="h-56 w-full overflow-hidden sm:h-auto sm:w-2/5">
-            <img
+          <div className="relative h-56 w-full overflow-hidden sm:h-auto sm:w-2/5">
+            <Image
               src={destacado.foto.url}
               alt={destacado.nombre}
-              className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+              fill
+              sizes="(max-width: 640px) 100vw, 40vw"
+              className="object-cover transition duration-300 group-hover:scale-105"
             />
           </div>
           <div className="flex flex-1 flex-col justify-center p-6 sm:p-8">
@@ -72,11 +75,13 @@ export default function TurismoPage() {
                 href={"/turismo/" + c.slug}
                 className="group block overflow-hidden rounded-xl border border-[#10203A]/15 bg-white transition hover:border-[#007A33]/40 hover:shadow-lg"
               >
-                <div className="h-48 w-full overflow-hidden">
-                  <img
+                <div className="relative h-48 w-full overflow-hidden">
+                  <Image
                     src={c.foto.url}
                     alt={c.nombre}
-                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition duration-300 group-hover:scale-105"
                   />
                 </div>
                 <div className="p-5">

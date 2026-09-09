@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import NavPildoras from "../NavPildoras";
 
 type Noticia = {
@@ -41,9 +42,12 @@ export default function VideojuegosCliente() {
         className="flex cursor-pointer gap-3 overflow-hidden rounded-xl border border-[#10203A]/15 bg-white p-3 shadow-sm hover:shadow-md"
       >
         {noticia.image ? (
-          <img
+          <Image
             src={noticia.image}
             alt={noticia.title}
+            width={96}
+            height={96}
+            unoptimized
             className="h-24 w-24 shrink-0 rounded-lg bg-[#10203A]/5 object-cover"
             onError={function (e) {
               (e.target as HTMLImageElement).style.display = "none";

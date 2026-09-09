@@ -1,4 +1,5 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
+import Image from "next/image";
 
 export const metadata = {
   title: "La Bankera RD | Resultados de Loterías Dominicanas en Vivo",
@@ -868,18 +869,24 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
       ) : null}
       <header className="relative overflow-hidden bg-[#10203A] px-6 py-5 sm:px-10 sm:py-6">
         <div className="pointer-events-none absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "radial-gradient(#FBF7EE 1px, transparent 1px)", backgroundSize: "18px 18px" }} />
-        <img
+        <Image
           src="/tambora.png"
           alt=""
+          width={144}
+          height={144}
+          priority
           className="pointer-events-none absolute right-3 -top-1 h-16 w-16 object-contain sm:-top-1 sm:h-28 sm:w-28 lg:right-11 lg:h-36 lg:w-36"
           style={{ transform: "rotate(-30deg)", filter: "drop-shadow(0 0 1.5px #9AA5AF) drop-shadow(0 0 1.5px #9AA5AF) drop-shadow(0 4px 8px rgba(0,0,0,0.35))" }}
         />
         <div className="relative mx-auto max-w-7xl">
           <div className="mb-3 flex flex-col gap-3 border-b border-white/10 pb-3 sm:flex-row sm:items-center sm:justify-between">
             <a href="/" className="flex shrink-0 items-center gap-2.5">
-              <img
+              <Image
                 src="/logo-icon.svg"
                 alt=""
+                width={40}
+                height={40}
+                priority
                 className="h-9 w-9 sm:h-10 sm:w-10"
               />
               <span className="font-[family-name:var(--font-display)] text-xl font-bold leading-none text-[#FBF7EE] sm:text-2xl">

@@ -60,6 +60,33 @@ export default async function LoteriasPage(props: { searchParams: Promise<{ fech
   const loteriasDominicanas = listaLoterias.filter(function (l) { return !SLUGS_AMERICAS.includes(l.slug); });
   const loteriasAmericas = listaLoterias.filter(function (l) { return SLUGS_AMERICAS.includes(l.slug); });
 
+  // Datos estructurados (schema.org) con los resultados de la fecha seleccionada,
+  // mismo patrón que ya usan la portada y las páginas de cada lotería.
+  const eventosParaGoogle = listaLoterias.flatMap(function (loteria) {
+    return (loteria.sorteos || [])
+      .map(function (sorteo) {
+        const resultado = sorteo.resultados.find(function (r) { return r.fecha === fechaSeleccionada; });
+        if (!resultado) return null;
+        return {
+          "@type": "Event",
+          name: `${sorteo.nombre} - ${loteria.nombre} - ${fechaSeleccionada}`,
+          startDate: `${fechaSeleccionada}T${sorteo.hora_sorteo || "00:00"}:00-04:00`,
+          eventStatus: "https://schema.org/EventScheduled",
+          eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+          location: { "@type": "VirtualLocation", url: `https://labankerard.com/${loteria.slug}/${fechaSeleccionada}` },
+          organizer: { "@type": "Organization", name: loteria.nombre },
+          additionalProperty: {
+            "@type": "PropertyValue",
+            name: "Números ganadores",
+            value: resultado.numeros,
+          },
+        };
+      })
+      .filter(Boolean);
+  });
+  const datosEstructurados =
+    eventosParaGoogle.length > 0 ? { "@context": "https://schema.org", "@graph": eventosParaGoogle } : null;
+
   function renderTarjetaLoteria(loteria: Loteria) {
     const sorteos = loteria.sorteos || [];
     return (
@@ -87,6 +114,12 @@ export default async function LoteriasPage(props: { searchParams: Promise<{ fech
 
   return (
     <div className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
+      {datosEstructurados ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }}
+        />
+      ) : null}
       <NavPildoras
         loterias={listaLoterias.map(function (l: Loteria) {
           return { nombre: l.nombre, slug: l.slug };
@@ -113,12 +146,12 @@ export default async function LoteriasPage(props: { searchParams: Promise<{ fech
         ) : null}
 
         <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
-          {loteriasDominicanas.map(renderTarjetaLoteria)}
+          {loteriasDominicanas.map(function (loteria) { return renderTarjetaLoteria(loteria); })}
         </div>
 
         {loteriasAmericas.length > 0 && (
           <>
-            <div className="mb-6 mt-10 flex items-baseline justify-between">
+            <div className="mb-6 mt-0 flex items-baseline justify-between">
               <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">🌎 Loterías Américas</h2>
               <span className="font-mono text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{loteriasAmericas.length} activas</span>
             </div>
@@ -126,7 +159,7 @@ export default async function LoteriasPage(props: { searchParams: Promise<{ fech
               Loterías que se juegan fuera de República Dominicana, pero muy seguidas aquí: Haití, Anguila, Sint Maarten y Estados Unidos.
             </p>
             <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
-              {loteriasAmericas.map(renderTarjetaLoteria)}
+              {loteriasAmericas.map(function (loteria) { return renderTarjetaLoteria(loteria); })}
             </div>
           </>
         )}

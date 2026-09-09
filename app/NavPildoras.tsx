@@ -40,6 +40,22 @@ function IconoFutbol() {
     </svg>
   );
 }
+function IconoCine() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="5" width="18" height="14" rx="1.5" />
+      <path d="M7 5v14M17 5v14M3 9h4M17 9h4M3 15h4M17 15h4" />
+    </svg>
+  );
+}
+function IconoFarandula() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3Z" />
+      <path d="M6 11a6 6 0 0 0 12 0M12 18v3M9 21h6" />
+    </svg>
+  );
+}
 function IconoVariedades() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -201,10 +217,8 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
   ];
 
   const itemsVariedades: ItemMenu[] = [
-    { etiqueta: "🎬 Cine", href: "/cine" },
     { etiqueta: "📺 Series", href: "/series" },
     { etiqueta: "🎮 Videojuegos", href: "/videojuegos" },
-    { etiqueta: "🎤 Farándula y Dembow", href: "/farandula" },
     { etiqueta: "🏝️ Turismo", href: "/turismo" },
     { etiqueta: "⛽ Precio del combustible", href: "/precios-combustibles" },
     { etiqueta: "📍 Códigos postales", href: "/codigos-postales" },
@@ -295,8 +309,24 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
           })}
         </PillCategoria>
 
-        <PillCategoria
+        <a
           href="/cine"
+          className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-[#007A33] py-2.5 px-5 text-base font-bold text-white hover:bg-[#00994A]"
+        >
+          <IconoCine />
+          Cine
+        </a>
+
+        <a
+          href="/farandula"
+          className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-[#007A33] py-2.5 px-5 text-base font-bold text-white hover:bg-[#00994A]"
+        >
+          <IconoFarandula />
+          Farándula
+        </a>
+
+        <PillCategoria
+          href="/turismo"
           icono={<IconoVariedades />}
           etiqueta="TiempoLibre"
           activo={menuAbierto === "variedades"}

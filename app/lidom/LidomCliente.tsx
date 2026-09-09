@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Space_Grotesk } from "next/font/google";
+import Image from "next/image";
 import NavPildoras from "../NavPildoras";
 import { HISTORIAS_LIDOM } from "./datos";
 
@@ -57,21 +58,29 @@ export default function LidomCliente() {
         style={{ borderColor: color }}
       >
         {foto ? (
-          <img src={foto.url} alt={"Estadio de " + equipo.nombre} className="h-28 w-full object-cover" />
+          <div className="relative h-28 w-full">
+            <Image src={foto.url} alt={"Estadio de " + equipo.nombre} fill sizes="(max-width: 640px) 50vw, 25vw" className="object-cover" />
+          </div>
         ) : (
           <div className="flex h-28 w-full items-center justify-center bg-[#10203A]/5">
-            <img
+            <Image
               src={`https://www.mlbstatic.com/team-logos/${equipo.id}.svg`}
               alt={"Logo de " + equipo.nombre}
+              width={56}
+              height={56}
+              unoptimized
               className="h-14 w-14 object-contain"
               onError={function (e) { (e.target as HTMLImageElement).style.display = "none"; }}
             />
           </div>
         )}
         <div className="flex items-center gap-3 p-4">
-          <img
+          <Image
             src={`https://www.mlbstatic.com/team-logos/${equipo.id}.svg`}
             alt={"Logo de " + equipo.nombre}
+            width={40}
+            height={40}
+            unoptimized
             className="h-10 w-10 shrink-0 object-contain"
             onError={function (e) { (e.target as HTMLImageElement).style.display = "none"; }}
           />
@@ -101,9 +110,12 @@ export default function LidomCliente() {
         className="flex cursor-pointer gap-3 overflow-hidden rounded-xl border border-[#10203A]/15 bg-white p-3 shadow-sm hover:shadow-md"
       >
         {noticia.image ? (
-          <img
+          <Image
             src={noticia.image}
             alt={noticia.title}
+            width={80}
+            height={80}
+            unoptimized
             className="h-20 w-20 shrink-0 rounded-lg bg-[#10203A]/5 object-cover"
             onError={function (e) { (e.target as HTMLImageElement).style.display = "none"; }}
           />

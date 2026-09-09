@@ -1,4 +1,5 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import NavPildoras from "../../NavPildoras";
 import { CIUDADES } from "../datos";
@@ -161,7 +162,7 @@ export default async function CiudadTurismoPage(props: { params: Promise<{ ciuda
 
       <div className="relative mx-auto max-w-5xl px-4 sm:px-8">
         <div className="relative h-72 w-full overflow-hidden rounded-2xl sm:h-[420px]">
-          <img src={ciudad.foto.url} alt={ciudad.nombre} className="h-full w-full object-cover" />
+          <Image src={ciudad.foto.url} alt={ciudad.nombre} fill priority sizes="(max-width: 640px) 100vw, 1024px" className="object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
           <a
             href="/turismo"
@@ -189,7 +190,9 @@ export default async function CiudadTurismoPage(props: { params: Promise<{ ciuda
             {ciudad.galeria.map(function (g, i) {
               return (
                 <figure key={i}>
-                  <img src={g.url} alt={g.alt} className="h-52 w-full rounded-xl object-cover sm:h-64" />
+                  <div className="relative h-52 w-full sm:h-64">
+                    <Image src={g.url} alt={g.alt} fill sizes="(max-width: 640px) 100vw, 50vw" className="rounded-xl object-cover" />
+                  </div>
                   <figcaption className="mt-1.5 text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
                     {g.alt} · Foto: {g.autor} / Wikimedia Commons ({g.licencia})
                   </figcaption>
