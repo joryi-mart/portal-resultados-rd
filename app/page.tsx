@@ -859,6 +859,22 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
   const datosEstructurados =
     eventosParaGoogle.length > 0 ? { "@context": "https://schema.org", "@graph": eventosParaGoogle } : null;
 
+  // Mensaje listo para compartir por WhatsApp: unos pocos resultados destacados
+  // (para dar un adelanto) más el link, así la gente igual entra al sitio a ver
+  // el resto en vez de que el mensaje ya traiga todo.
+  const LOTERIAS_DESTACADAS_WHATSAPP = ["nacional", "leidsa", "real", "loteka"];
+  const destacadosWhatsapp = LOTERIAS_DESTACADAS_WHATSAPP
+    .map(function (slug) { return resumenHoy.find(function (r) { return r.loteriaSlug === slug; }); })
+    .filter(function (r): r is UltimoResultado { return !!r; });
+  const lineasWhatsapp = destacadosWhatsapp
+    .map(function (r) { return `${r.loteriaNombre} (${r.sorteoNombre}): ${r.numeros}`; })
+    .join("\n");
+  const mensajeWhatsapp =
+    `🎯 Resultados de hoy ${fechaTitulo} — La Bankera RD\n\n` +
+    (lineasWhatsapp ? lineasWhatsapp + "\n\n" : "") +
+    `Ver todos los resultados 👉 https://labankerard.com`;
+  const linkWhatsapp = "https://wa.me/?text=" + encodeURIComponent(mensajeWhatsapp);
+
   return (
     <div id="top" className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
       {datosEstructurados ? (
@@ -925,6 +941,19 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
             <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{resumenHoy.length} resultados publicados, agrupados por lotería</p>
           </div>
           <span className="font-mono text-sm font-semibold text-[#1E4D8C]">Ver resumen →</span>
+        </a>
+
+        <a
+          href={linkWhatsapp}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mb-8 flex items-center justify-between rounded-xl border border-[#10203A]/12 bg-white px-5 py-4 shadow-[0_1px_3px_rgba(16,32,58,0.08)] transition hover:shadow-md"
+        >
+          <div>
+            <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Compartir resultados de hoy por WhatsApp</p>
+            <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Abre WhatsApp con el mensaje ya escrito, listo para enviar</p>
+          </div>
+          <span className="font-mono text-sm font-semibold text-[#007A33]">Compartir →</span>
         </a>
 
         {error ? (
