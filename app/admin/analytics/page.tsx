@@ -49,12 +49,33 @@ export default async function AdminAnalytics(props: { searchParams: Promise<{ er
     );
   }
 
-  const [usuarios7Dias, enVivo, paginas, paises] = await Promise.all([
-    usuariosActivos7Dias(),
-    usuariosEnVivo(),
-    paginasMasVisitadas(),
-    visitantesPorPais(),
-  ]);
+  let usuarios7Dias = 0;
+  let enVivo = 0;
+  let paginas: { ruta: string; vistas: number }[] = [];
+  let paises: { pais: string; usuarios: number }[] = [];
+  let errorCarga: string | null = null;
+
+  try {
+    [usuarios7Dias, enVivo, paginas, paises] = await Promise.all([
+      usuariosActivos7Dias(),
+      usuariosEnVivo(),
+      paginasMasVisitadas(),
+      visitantesPorPais(),
+    ]);
+  } catch (error) {
+    errorCarga = error instanceof Error ? error.message : String(error);
+  }
+
+  if (errorCarga) {
+    return (
+      <div className="min-h-screen bg-[#FBF7EE] px-4 py-10">
+        <div className="mx-auto max-w-2xl rounded-xl border border-[#E4573D]/40 bg-[#E4573D]/5 p-6">
+          <h1 className="mb-2 text-xl font-bold text-[#B23B26]">No se pudo cargar Analytics</h1>
+          <pre className="whitespace-pre-wrap break-words font-mono text-xs text-[#B23B26]">{errorCarga}</pre>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FBF7EE] px-4 py-10">
