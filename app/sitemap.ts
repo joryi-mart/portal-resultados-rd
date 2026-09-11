@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { supabase } from "@/lib/supabase";
+import { slugSorteo } from "@/lib/slug";
 import { CIUDADES } from "./turismo/datos";
 
 const SITIO = "https://labankerard.com";
@@ -7,7 +8,7 @@ const SITIO = "https://labankerard.com";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { data: loterias } = await supabase
     .from("loterias")
-    .select("slug")
+    .select("slug, sorteos ( nombre )")
     .eq("activa", true);
 
   const paginasLoterias: MetadataRoute.Sitemap = (loterias || []).map(function (l) {
@@ -17,6 +18,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 0.8,
     };
+  });
+
+  const paginasSorteos: MetadataRoute.Sitemap = (loterias || []).flatMap(function (l) {
+    return (l.sorteos || []).map(function (s: { nombre: string }) {
+      return {
+        url: `${SITIO}/${l.slug}/sorteo/${slugSorteo(s.nombre)}`,
+        lastModified: new Date(),
+        changeFrequency: "daily" as const,
+        priority: 0.6,
+      };
+    });
   });
 
   const paginasHistorial: MetadataRoute.Sitemap = (loterias || []).map(function (l) {
@@ -152,5 +164,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
-  return [...paginasFijas, ...paginasLoterias, ...paginasHistorial, ...paginasTurismo, ...paginasLidom];
+  return [...paginasFijas, ...paginasLoterias, ...paginasSorteos, ...paginasHistorial, ...paginasTurismo, ...paginasLidom];
 }

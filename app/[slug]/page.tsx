@@ -1,5 +1,6 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
 import { supabase } from "@/lib/supabase";
+import { slugSorteo } from "@/lib/slug";
 import { notFound } from "next/navigation";
 import NavPildoras from "../NavPildoras";
 
@@ -145,8 +146,8 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
   const { data: loteria } = await supabase.from("loterias").select("nombre").eq("slug", params.slug).maybeSingle();
   if (!loteria) return { title: "Lotería no encontrada" };
 
-  const titulo = `Resultados de ${loteria.nombre} en Vivo`;
-  const descripcion = `Consulta los números ganadores de todos los sorteos de ${loteria.nombre} en República Dominicana, actualizados en vivo.`;
+  const titulo = `Resultados de ${loteria.nombre} Hoy en Vivo`;
+  const descripcion = `Consulta en directo los números ganadores y la quiniela de ${loteria.nombre} de hoy en República Dominicana, actualizados al instante.`;
 
   return {
     title: titulo,
@@ -247,9 +248,12 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
                 <div key={sorteo.id} className="rounded-xl border border-[#10203A]/15 bg-white p-5">
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <div>
-                      <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">
+                      <a
+                        href={"/" + params.slug + "/sorteo/" + slugSorteo(sorteo.nombre)}
+                        className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A] hover:underline"
+                      >
                         {sorteo.nombre}
-                      </p>
+                      </a>
                       <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
                         {sorteo.hora_sorteo ? formatearHora12(horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, hoy)) : "Hora por confirmar"} · {formatearDias(sorteo.dias_semana)}
                       </p>
