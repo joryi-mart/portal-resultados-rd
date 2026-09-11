@@ -250,7 +250,8 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
                     <div>
                       <a
                         href={"/" + params.slug + "/sorteo/" + slugSorteo(sorteo.nombre)}
-                        className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A] hover:underline"
+                        className="font-[family-name:var(--font-display)] text-lg font-bold hover:underline"
+                        style={{ color: COLOR_AZUL }}
                       >
                         {sorteo.nombre}
                       </a>
