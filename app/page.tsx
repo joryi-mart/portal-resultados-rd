@@ -934,7 +934,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
                 priority
                 className="h-9 w-9 sm:h-10 sm:w-10"
               />
-              <span className="font-[family-name:var(--font-display)] text-xl font-bold leading-none text-[#FBF7EE] sm:text-2xl">
+              <span className="font-[family-name:var(--font-display)] text-2xl font-bold leading-none text-[#FBF7EE] sm:text-2xl">
                 La Bankera<span className="text-[#E7A63C]">RD</span>
               </span>
               <Image
@@ -943,7 +943,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
                 width={64}
                 height={64}
                 priority
-                className="h-8 w-8 object-contain sm:hidden"
+                className="h-11 w-11 object-contain sm:hidden"
                 style={{ transform: "rotate(-30deg)", filter: "drop-shadow(0 0 1.5px #9AA5AF) drop-shadow(0 2px 4px rgba(0,0,0,0.35))" }}
               />
             </a>
