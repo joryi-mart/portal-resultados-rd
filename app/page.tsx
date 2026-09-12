@@ -291,7 +291,7 @@ export function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string; l
 
 function ChipCambio(props: { nombre: string; compra: number; venta: number }) {
   return (
-    <div className="flex items-center gap-1.5 rounded-lg bg-white/8 px-2 py-1 sm:gap-3 sm:px-3 sm:py-1.5">
+    <div className="flex shrink-0 items-center gap-1.5 rounded-lg bg-white/8 px-2 py-1 sm:gap-3 sm:px-3 sm:py-1.5">
       <span className="font-mono text-xs font-bold text-[#FBF7EE] sm:text-sm">{props.nombre}</span>
       <div className="flex items-baseline gap-1 font-mono text-xs sm:text-sm">
         <span className="hidden text-[10px] uppercase text-white/50 sm:inline">Compra</span>
@@ -320,8 +320,8 @@ function PanelSuperior(props: { cambios: Cambio[]; fechaActual: string }) {
   return (
     <div className="border-t border-white/10 pt-4">
       <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3">
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-          <RelojDigital />
+        <div className="flex flex-nowrap items-center gap-x-2 overflow-x-auto sm:flex-wrap sm:gap-x-5 sm:gap-y-2 sm:overflow-visible">
+          <div className="shrink-0"><RelojDigital /></div>
           {(dolar || euro) ? (
             <>
               <span className="hidden font-[family-name:var(--font-display)] text-xs font-bold uppercase tracking-wide text-[#E7A63C] sm:inline">
