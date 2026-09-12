@@ -291,14 +291,14 @@ export function FilaSorteo(props: { sorteo: Sorteo; fechaSeleccionada: string; l
 
 function ChipCambio(props: { nombre: string; compra: number; venta: number }) {
   return (
-    <div className="flex items-center gap-3 rounded-lg bg-white/8 px-3 py-1.5">
-      <span className="font-mono text-sm font-bold text-[#FBF7EE]">{props.nombre}</span>
-      <div className="flex items-baseline gap-1 font-mono text-sm">
-        <span className="text-[10px] uppercase text-white/50">Compra</span>
+    <div className="flex items-center gap-1.5 rounded-lg bg-white/8 px-2 py-1 sm:gap-3 sm:px-3 sm:py-1.5">
+      <span className="font-mono text-xs font-bold text-[#FBF7EE] sm:text-sm">{props.nombre}</span>
+      <div className="flex items-baseline gap-1 font-mono text-xs sm:text-sm">
+        <span className="hidden text-[10px] uppercase text-white/50 sm:inline">Compra</span>
         <span className="font-bold text-[#8FD19E]">{props.compra.toFixed(2)}</span>
       </div>
-      <div className="flex items-baseline gap-1 font-mono text-sm">
-        <span className="text-[10px] uppercase text-white/50">Venta</span>
+      <div className="flex items-baseline gap-1 font-mono text-xs sm:text-sm">
+        <span className="hidden text-[10px] uppercase text-white/50 sm:inline">Venta</span>
         <span className="font-bold text-[#E7A63C]">{props.venta.toFixed(2)}</span>
       </div>
     </div>
@@ -324,7 +324,7 @@ function PanelSuperior(props: { cambios: Cambio[]; fechaActual: string }) {
           <RelojDigital />
           {(dolar || euro) ? (
             <>
-              <span className="font-[family-name:var(--font-display)] text-xs font-bold uppercase tracking-wide text-[#E7A63C]">
+              <span className="hidden font-[family-name:var(--font-display)] text-xs font-bold uppercase tracking-wide text-[#E7A63C] sm:inline">
                 Cambio hoy
               </span>
               {dolar ? (
@@ -337,7 +337,23 @@ function PanelSuperior(props: { cambios: Cambio[]; fechaActual: string }) {
           ) : null}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Celular: flechitas compactas junto al selector de fecha, todo en una fila. */}
+        <div className="flex items-center gap-1.5 sm:hidden">
+          <a href={"/?fecha=" + ayer} aria-label="Día anterior" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white font-mono text-sm font-bold text-[#10203A]">‹</a>
+          <form method="GET" className="flex min-w-0 flex-1 items-center gap-1.5">
+            <input type="date" name="fecha" defaultValue={fechaActual} max={hoy} className="h-9 w-full min-w-0 rounded-lg border border-white/15 bg-white px-2 font-mono text-xs text-[#10203A]" />
+            <button type="submit" aria-label="Ver" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-mono text-sm font-bold text-white" style={{ backgroundColor: COLOR_VERDE_RD }}>✓</button>
+          </form>
+          {noHayManana ? null : (
+            <a href={"/?fecha=" + manana} aria-label="Día siguiente" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white font-mono text-sm font-bold text-[#10203A]">›</a>
+          )}
+          {esHoy ? null : (
+            <a href="/" aria-label="Volver a hoy" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/15 text-sm text-[#E7A63C]">⟲</a>
+          )}
+        </div>
+
+        {/* Computadora: version completa, sin tocar. */}
+        <div className="hidden flex-wrap items-center gap-2 sm:flex">
           <a href={"/?fecha=" + ayer} className="rounded-lg border border-white/15 bg-white px-3 py-2 text-center font-mono text-sm font-semibold text-[#10203A] hover:bg-[#FBF7EE]">← Anterior</a>
           {noHayManana ? null : (
             <a href={"/?fecha=" + manana} className="rounded-lg border border-white/15 bg-white px-3 py-2 text-center font-mono text-sm font-semibold text-[#10203A] hover:bg-[#FBF7EE]">Siguiente →</a>
