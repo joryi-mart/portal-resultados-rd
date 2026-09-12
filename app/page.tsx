@@ -305,6 +305,31 @@ function ChipCambio(props: { nombre: string; compra: number; venta: number }) {
   );
 }
 
+function NavegacionFechaMovil(props: { fechaActual: string }) {
+  const fechaActual = props.fechaActual;
+  const hoy = hoyISO();
+  const esHoy = fechaActual === hoy;
+  const ayer = sumarDias(fechaActual, -1);
+  const manana = sumarDias(fechaActual, 1);
+  const noHayManana = manana > hoy;
+
+  return (
+    <div className="mx-5 mb-3 flex items-center gap-1.5 sm:hidden">
+      <a href={"/?fecha=" + ayer} aria-label="Día anterior" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white font-mono text-sm font-bold text-[#10203A]">‹</a>
+      <form method="GET" className="flex min-w-0 flex-1 items-center gap-1.5">
+        <input type="date" name="fecha" defaultValue={fechaActual} max={hoy} className="h-9 w-full min-w-0 rounded-lg border border-white/15 bg-white px-2 font-mono text-xs text-[#10203A]" />
+        <button type="submit" aria-label="Ver" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-mono text-sm font-bold text-white" style={{ backgroundColor: COLOR_VERDE_RD }}>✓</button>
+      </form>
+      {noHayManana ? null : (
+        <a href={"/?fecha=" + manana} aria-label="Día siguiente" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white font-mono text-sm font-bold text-[#10203A]">›</a>
+      )}
+      {esHoy ? null : (
+        <a href="/" aria-label="Volver a hoy" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/15 text-sm text-[#E7A63C]">⟲</a>
+      )}
+    </div>
+  );
+}
+
 function PanelSuperior(props: { cambios: Cambio[]; fechaActual: string }) {
   const cambios = props.cambios;
   const fechaActual = props.fechaActual;
@@ -337,22 +362,8 @@ function PanelSuperior(props: { cambios: Cambio[]; fechaActual: string }) {
           ) : null}
         </div>
 
-        {/* Celular: flechitas compactas junto al selector de fecha, todo en una fila. */}
-        <div className="flex items-center gap-1.5 sm:hidden">
-          <a href={"/?fecha=" + ayer} aria-label="Día anterior" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white font-mono text-sm font-bold text-[#10203A]">‹</a>
-          <form method="GET" className="flex min-w-0 flex-1 items-center gap-1.5">
-            <input type="date" name="fecha" defaultValue={fechaActual} max={hoy} className="h-9 w-full min-w-0 rounded-lg border border-white/15 bg-white px-2 font-mono text-xs text-[#10203A]" />
-            <button type="submit" aria-label="Ver" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-mono text-sm font-bold text-white" style={{ backgroundColor: COLOR_VERDE_RD }}>✓</button>
-          </form>
-          {noHayManana ? null : (
-            <a href={"/?fecha=" + manana} aria-label="Día siguiente" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white font-mono text-sm font-bold text-[#10203A]">›</a>
-          )}
-          {esHoy ? null : (
-            <a href="/" aria-label="Volver a hoy" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/15 text-sm text-[#E7A63C]">⟲</a>
-          )}
-        </div>
-
-        {/* Computadora: version completa, sin tocar. */}
+        {/* Computadora: version completa, sin tocar. En celular este control de
+            fecha vive mas abajo, dentro de "¿Que salio hoy?" (ver NavegacionFechaMovil). */}
         <div className="hidden flex-wrap items-center gap-2 sm:flex">
           <a href={"/?fecha=" + ayer} className="rounded-lg border border-white/15 bg-white px-3 py-2 text-center font-mono text-sm font-semibold text-[#10203A] hover:bg-[#FBF7EE]">← Anterior</a>
           {noHayManana ? null : (
@@ -634,6 +645,8 @@ function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: string;
         </h2>
         <p className="mt-1 text-sm text-white/70">Toca una lotería abajo para ver más resultados.</p>
       </div>
+
+      <NavegacionFechaMovil fechaActual={fechaSeleccionada} />
 
       {tarjetasBase.length === 0 ? (
         <p className="mx-5 mb-5 rounded-xl bg-white/10 px-4 py-4 text-base text-white sm:mx-6">
