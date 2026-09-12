@@ -226,7 +226,7 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
   ];
 
   return (
-    <div className={display.className + " relative z-40 mb-8"}>
+    <div className={display.className + " relative z-40 mb-3 sm:mb-8"}>
       <div className="flex gap-3 overflow-x-auto px-4 pb-1 sm:flex-wrap sm:justify-center sm:overflow-visible sm:pb-0">
         <PillCategoria
           href="/"

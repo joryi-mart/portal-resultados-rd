@@ -21,7 +21,7 @@ export default function RelojDigital() {
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
-        hour12: true,
+        hour12: false,
       });
       setHora(texto);
     }
@@ -33,7 +33,7 @@ export default function RelojDigital() {
   if (!hora) return null;
 
   return (
-    <div className="flex items-center gap-2 rounded-full border border-[#10203A]/15 bg-white px-3 py-1.5 font-mono text-sm font-semibold text-[#10203A]">
+    <div className="flex items-center gap-1.5 rounded-full border border-[#10203A]/15 bg-white px-2 py-1 font-mono text-xs font-semibold text-[#10203A] sm:gap-2 sm:px-3 sm:py-1.5 sm:text-sm">
       <IconoReloj />
       {hora}
     </div>
