@@ -920,7 +920,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
           width={144}
           height={144}
           priority
-          className="pointer-events-none absolute right-3 -top-1 h-16 w-16 object-contain sm:-top-1 sm:h-28 sm:w-28 lg:right-11 lg:h-36 lg:w-36"
+          className="pointer-events-none absolute right-3 -top-1 hidden h-28 w-28 object-contain sm:block lg:right-11 lg:h-36 lg:w-36"
           style={{ transform: "rotate(-30deg)", filter: "drop-shadow(0 0 1.5px #9AA5AF) drop-shadow(0 0 1.5px #9AA5AF) drop-shadow(0 4px 8px rgba(0,0,0,0.35))" }}
         />
         <div className="relative mx-auto max-w-7xl">
@@ -937,6 +937,15 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
               <span className="font-[family-name:var(--font-display)] text-xl font-bold leading-none text-[#FBF7EE] sm:text-2xl">
                 La Bankera<span className="text-[#E7A63C]">RD</span>
               </span>
+              <Image
+                src="/tambora.png"
+                alt=""
+                width={64}
+                height={64}
+                priority
+                className="h-8 w-8 object-contain sm:hidden"
+                style={{ transform: "rotate(-30deg)", filter: "drop-shadow(0 0 1.5px #9AA5AF) drop-shadow(0 2px 4px rgba(0,0,0,0.35))" }}
+              />
             </a>
             <div className="hidden items-center gap-2 self-start rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#E7A63C] sm:flex sm:self-auto">
               <span className="h-2 w-2 animate-pulse rounded-full bg-[#E4573D]" />
