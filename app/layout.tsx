@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import "./globals.css";
 import GoogleAnalytics from "./GoogleAnalytics";
+import RegistrarServiceWorker from "./RegistrarServiceWorker";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://labankerard.com"),
@@ -34,6 +35,14 @@ export const metadata: Metadata = {
   verification: {
     google: "apU7UVQ3xQ4OMuAYP_tnxutKp5PFpskn8X6PuS_BT3M",
   },
+  appleWebApp: {
+    title: "La Bankera RD",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export const viewport = {
+  themeColor: "#10203A",
 };
 
 const datosEstructurados = {
@@ -64,6 +73,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }}
         />
         <GoogleAnalytics />
+        <RegistrarServiceWorker />
       </head>
       <body className="min-h-full flex flex-col">
         <div className="sticky top-0 z-50 border-b border-white/10 bg-[#10203A] px-4 py-2 shadow-md sm:px-8">

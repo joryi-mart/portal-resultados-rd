@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sin conexión — La Bankera RD</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: #FBF7EE;
+      color: #10203A;
+      font-family: system-ui, sans-serif;
+      text-align: center;
+      padding: 24px;
+    }
+    h1 { font-size: 22px; margin: 0; }
+    p { color: #5C6B78; margin: 0; max-width: 320px; }
+    button {
+      margin-top: 8px;
+      background: #1E4D8C;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>📡 Sin conexión</h1>
+  <p>No pudimos cargar los resultados porque no hay internet en este momento. Revisa tu conexión e intenta de nuevo.</p>
+  <button onclick="location.reload()">Reintentar</button>
+</body>
+</html>
