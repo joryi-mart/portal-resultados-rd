@@ -938,7 +938,7 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
                 La Bankera<span className="text-[#E7A63C]">RD</span>
               </span>
             </a>
-            <div className="flex items-center gap-2 self-start rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#E7A63C] sm:self-auto">
+            <div className="hidden items-center gap-2 self-start rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#E7A63C] sm:flex sm:self-auto">
               <span className="h-2 w-2 animate-pulse rounded-full bg-[#E4573D]" />
               {fechaSeleccionada === hoy ? "En vivo" : "Consultando"} · {fechaTitulo}
             </div>
