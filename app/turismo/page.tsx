@@ -35,7 +35,7 @@ export default function TurismoPage() {
     <div className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
       <NavPildoras />
       <header className="bg-[#10203A] px-6 py-10 sm:px-10">
-        <div className="mx-auto max-w-5xl">
+        <div className="mx-auto max-w-7xl">
           <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold text-[#FBF7EE] sm:text-4xl">
             Turismo en República Dominicana
           </h1>
@@ -45,7 +45,7 @@ export default function TurismoPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-6 py-10 sm:px-10">
+      <main className="mx-auto max-w-7xl px-6 py-10 sm:px-10">
         <a
           href="/"
           className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
@@ -74,7 +74,7 @@ export default function TurismoPage() {
           </div>
         </a>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {CIUDADES.map(function (c) {
             return (
               <a
