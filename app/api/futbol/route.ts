@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCache, setCache } from "@/lib/cache";
+import { obtenerNoticiasFutbol } from "@/lib/noticiasDeportes";
 
 const LIGAS_VALIDAS = ["esp.1", "eng.1", "uefa.champions"];
 
@@ -45,29 +46,6 @@ async function obtenerEquipos(liga: string) {
 
   setCache(claveCache, equipos, 24 * 60 * 60 * 1000);
   return equipos;
-}
-
-async function obtenerNoticias(liga: string) {
-  const claveCache = "futbol-noticias-" + liga;
-  const cacheado = getCache(claveCache);
-  if (cacheado) return cacheado;
-
-  const res = await fetch(
-    `https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/news?lang=es`
-  );
-  if (!res.ok) throw new Error(`Error Fútbol API (noticias): ${res.status}`);
-  const data = await res.json();
-
-  const noticias = (data.articles || []).map((a: any) => ({
-    id: String(a.dataSourceIdentifier || a.headline),
-    title: a.headline,
-    url: a.links?.web?.href || "",
-    image: a.images?.[0]?.url || "",
-    published: a.published,
-  }));
-
-  setCache(claveCache, noticias, 15 * 60 * 1000);
-  return noticias;
 }
 
 function extraerGoleadoresPorJuego(juegos: any[]) {
@@ -152,7 +130,7 @@ export async function GET(request: Request) {
     const [calendario, equipos, noticias, posiciones] = await Promise.all([
       obtenerCalendario(liga, fecha),
       obtenerEquipos(liga),
-      obtenerNoticias(liga),
+      obtenerNoticiasFutbol(liga),
       obtenerPosiciones(liga),
     ]);
 

@@ -1,4 +1,8 @@
 import NBACliente from "./NBACliente";
+import NoticiasDeporte from "../NoticiasDeporte";
+import { obtenerNoticiasBaloncesto } from "@/lib/noticiasDeportes";
+
+export const revalidate = 900;
 
 export const metadata = {
   title: "NBA Hoy: Resultados, Marcadores y Jugadores Dominicanos",
@@ -13,6 +17,18 @@ export const metadata = {
   alternates: { canonical: "https://labankerard.com/nba" },
 };
 
-export default function NBAPage() {
-  return <NBACliente />;
+export default async function NBAPage() {
+  let noticias: any[] = [];
+  try {
+    noticias = await obtenerNoticiasBaloncesto();
+  } catch {
+    noticias = [];
+  }
+
+  return (
+    <>
+      <NBACliente />
+      <NoticiasDeporte titulo="Baloncesto y NBA" noticias={noticias} />
+    </>
+  );
 }

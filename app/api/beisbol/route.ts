@@ -1,35 +1,11 @@
 import { NextResponse } from "next/server";
 import { getCache, setCache } from "@/lib/cache";
-
-const PALABRAS_DOMINICANAS = [
-  "lidom",
-  "dominicano",
-  "dominicana",
-  "república dominicana",
-  "quisqueya",
-  "quisqueyano",
-  "quisqueyana",
-  "licey",
-  "águilas cibaeñas",
-  "aguilas cibaenas",
-  "gigantes del cibao",
-  "toros del este",
-  "estrellas orientales",
-  "leones del escogido",
-  "santo domingo",
-  "san pedro de macorís",
-  "las estrellas",
-  "criollo",
-  "peloteros dominicanos",
-  "as dominicano",
-];
+import {
+  obtenerNoticiasMLB,
+  obtenerNoticiasDominicanosDeporte,
+} from "@/lib/noticiasDeportes";
 
 const TEMPORADA_ACTUAL = new Date().getFullYear();
-
-function esNoticiaDominicanosEnMLB(articulo: any) {
-  const texto = `${articulo.title || ""} ${articulo.description || ""}`.toLowerCase();
-  return PALABRAS_DOMINICANAS.some((palabra) => texto.includes(palabra));
-}
 
 async function obtenerCalendarioMLB(fecha: string | null) {
   const claveCache = "mlb-schedule-" + (fecha || "hoy");
@@ -45,60 +21,6 @@ async function obtenerCalendarioMLB(fecha: string | null) {
 
   setCache(claveCache, data, 5 * 60 * 1000);
   return data;
-}
-
-async function obtenerNoticiasMLB() {
-  const cacheado = getCache("noticias-mlb");
-  if (cacheado) return cacheado;
-
-  const apiKey = process.env.CURRENTS_API_KEY;
-  if (!apiKey) throw new Error("Falta la clave CURRENTS_API_KEY en .env.local");
-
-  const query = encodeURIComponent(
-    'MLB OR "Grandes Ligas" OR "béisbol" OR "beisbol" OR "Serie Mundial"'
-  );
-  const url = `https://api.currentsapi.services/v1/search?keywords=${query}&language=es`;
-
-  const res = await fetch(url, {
-    headers: {
-      Authorization: apiKey,
-    },
-  });
-  if (!res.ok) throw new Error(`Error Currents API: ${res.status}`);
-  const data = await res.json();
-
-  const resultado = { ...data, news: data.news || [] };
-
-  setCache("noticias-mlb", resultado, 15 * 60 * 1000);
-  return resultado;
-}
-
-async function obtenerNoticiasDominicanosDeporte() {
-  const cacheado = getCache("noticias-dominicanos-deporte");
-  if (cacheado) return cacheado;
-
-  const apiKey = process.env.CURRENTS_API_KEY;
-  if (!apiKey) throw new Error("Falta la clave CURRENTS_API_KEY en .env.local");
-
-  // Noticias de atletas dominicanos en deportes fuera del beisbol/MLB
-  // (atletismo, boxeo, etc.), para complementar el desempeño de peloteros.
-  const query = encodeURIComponent(
-    '"Marileidy Paulino" OR "atletismo dominicano" OR "boxeo dominicano" OR "atleta dominicano" OR "atleta dominicana" OR "deporte dominicano"'
-  );
-  const url = `https://api.currentsapi.services/v1/search?keywords=${query}&language=es`;
-
-  const res = await fetch(url, {
-    headers: {
-      Authorization: apiKey,
-    },
-  });
-  if (!res.ok) throw new Error(`Error Currents API (dominicanos deporte): ${res.status}`);
-  const data = await res.json();
-
-  const resultado = { ...data, news: data.news || [] };
-
-  setCache("noticias-dominicanos-deporte", resultado, 30 * 60 * 1000);
-  return resultado;
 }
 
 async function obtenerEquiposMLB() {

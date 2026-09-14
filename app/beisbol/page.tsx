@@ -1,4 +1,8 @@
 import BeisbolCliente from "./BeisbolCliente";
+import NoticiasDeporte from "../NoticiasDeporte";
+import { obtenerNoticiasMLB } from "@/lib/noticiasDeportes";
+
+export const revalidate = 900;
 
 export const metadata = {
   title: "Béisbol y MLB Hoy: Resultados, Marcadores y Dominicanos en las Grandes Ligas",
@@ -13,6 +17,19 @@ export const metadata = {
   alternates: { canonical: "https://labankerard.com/beisbol" },
 };
 
-export default function BeisbolPage() {
-  return <BeisbolCliente />;
+export default async function BeisbolPage() {
+  let noticias: any[] = [];
+  try {
+    const resultado = await obtenerNoticiasMLB();
+    noticias = resultado.news || [];
+  } catch {
+    noticias = [];
+  }
+
+  return (
+    <>
+      <BeisbolCliente />
+      <NoticiasDeporte titulo="Béisbol y MLB" noticias={noticias} />
+    </>
+  );
 }

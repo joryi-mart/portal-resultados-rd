@@ -1,4 +1,8 @@
 import FutbolCliente from "./FutbolCliente";
+import NoticiasDeporte from "../NoticiasDeporte";
+import { obtenerNoticiasFutbol } from "@/lib/noticiasDeportes";
+
+export const revalidate = 900;
 
 export const metadata = {
   title: "Fútbol Hoy: Resultados de LaLiga, Premier League y Champions League",
@@ -13,6 +17,18 @@ export const metadata = {
   alternates: { canonical: "https://labankerard.com/futbol" },
 };
 
-export default function FutbolPage() {
-  return <FutbolCliente />;
+export default async function FutbolPage() {
+  let noticias: any[] = [];
+  try {
+    noticias = await obtenerNoticiasFutbol("esp.1");
+  } catch {
+    noticias = [];
+  }
+
+  return (
+    <>
+      <FutbolCliente />
+      <NoticiasDeporte titulo="Fútbol" noticias={noticias} />
+    </>
+  );
 }

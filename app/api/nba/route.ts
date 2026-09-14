@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCache, setCache } from "@/lib/cache";
+import { obtenerNoticiasBaloncesto } from "@/lib/noticiasDeportes";
 
 function fechaAFormatoESPN(fecha: string | null) {
   if (!fecha) return null;
@@ -42,28 +43,6 @@ async function obtenerEquiposNBA() {
 
   setCache("nba-equipos", equipos, 24 * 60 * 60 * 1000);
   return equipos;
-}
-
-async function obtenerNoticiasNBA() {
-  const cacheado = getCache("noticias-nba");
-  if (cacheado) return cacheado;
-
-  const res = await fetch(
-    "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/news?lang=es"
-  );
-  if (!res.ok) throw new Error(`Error NBA API (noticias): ${res.status}`);
-  const data = await res.json();
-
-  const noticias = (data.articles || []).map((a: any) => ({
-    id: String(a.dataSourceIdentifier || a.headline),
-    title: a.headline,
-    url: a.links?.web?.href || "",
-    image: a.images?.[0]?.url || "",
-    published: a.published,
-  }));
-
-  setCache("noticias-nba", noticias, 15 * 60 * 1000);
-  return noticias;
 }
 
 function extraerDestacadosPorJuego(juegos: any[]) {
@@ -265,7 +244,7 @@ export async function GET(request: Request) {
     const [nba, equipos, noticiasNBA, posicionesNBA] = await Promise.all([
       obtenerCalendarioNBA(fecha),
       obtenerEquiposNBA(),
-      obtenerNoticiasNBA(),
+      obtenerNoticiasBaloncesto(),
       obtenerPosicionesNBA(),
     ]);
 
