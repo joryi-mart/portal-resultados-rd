@@ -1,6 +1,25 @@
 import BeisbolCliente from "./BeisbolCliente";
 import NoticiasDeporte from "../NoticiasDeporte";
+import PreguntasFrecuentes from "../PreguntasFrecuentes";
 import { obtenerNoticiasMLB } from "@/lib/noticiasDeportes";
+
+const PREGUNTAS_BEISBOL = [
+  {
+    pregunta: "¿Cómo sé qué pasó ayer en la MLB?",
+    respuesta:
+      "Usa el botón \"Ayer\" arriba para ver los resultados del día anterior, con el marcador final y el pícher ganador de cada juego.",
+  },
+  {
+    pregunta: "¿Dónde veo el picheo del día?",
+    respuesta:
+      "Toca \"Ver picheo del día\" para consultar los lanzadores probables de cada juego de hoy en la MLB.",
+  },
+  {
+    pregunta: "¿Cómo van los peloteros dominicanos en las Grandes Ligas?",
+    respuesta:
+      "Más abajo en esta página puedes ver el desempeño reciente de los jugadores dominicanos activos en la MLB.",
+  },
+];
 
 export const revalidate = 900;
 
@@ -30,6 +49,7 @@ export default async function BeisbolPage() {
     <>
       <BeisbolCliente />
       <NoticiasDeporte titulo="Béisbol y MLB" noticias={noticias} />
+      <PreguntasFrecuentes preguntas={PREGUNTAS_BEISBOL} />
     </>
   );
 }

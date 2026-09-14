@@ -1,6 +1,23 @@
 import NBACliente from "./NBACliente";
 import NoticiasDeporte from "../NoticiasDeporte";
+import PreguntasFrecuentes from "../PreguntasFrecuentes";
 import { obtenerNoticiasBaloncesto } from "@/lib/noticiasDeportes";
+
+const PREGUNTAS_NBA = [
+  {
+    pregunta: "¿Cómo veo los juegos de ayer?",
+    respuesta:
+      "Usa el botón \"Ayer\" arriba para consultar los resultados y el máximo anotador de cada partido.",
+  },
+  {
+    pregunta: "¿Hay jugadores dominicanos en la NBA?",
+    respuesta: "Sí, más abajo en esta página puedes ver su desempeño reciente en la liga.",
+  },
+  {
+    pregunta: "¿Dónde está la tabla de posiciones?",
+    respuesta: "Más abajo en esta página, con las posiciones actualizadas de la NBA.",
+  },
+];
 
 export const revalidate = 900;
 
@@ -29,6 +46,7 @@ export default async function NBAPage() {
     <>
       <NBACliente />
       <NoticiasDeporte titulo="Baloncesto y NBA" noticias={noticias} />
+      <PreguntasFrecuentes preguntas={PREGUNTAS_NBA} />
     </>
   );
 }

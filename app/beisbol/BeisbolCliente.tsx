@@ -468,7 +468,7 @@ export default function BeisbolCliente() {
       <NavPildoras />
       <div className="px-4 py-8 sm:px-8">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-[#10203A]">⚾ Béisbol y MLB</h1>
+        <h1 className="text-2xl font-bold text-[#10203A]">Béisbol y MLB</h1>
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={irAyer}
@@ -492,6 +492,19 @@ export default function BeisbolCliente() {
           </button>
         </div>
       </div>
+
+      <p className="mb-4 max-w-3xl text-sm text-[#5C6B78]">
+        Consulta los resultados en vivo de la MLB y del béisbol dominicano: marcadores del día,
+        pícher ganador de cada juego y el rendimiento de los peloteros dominicanos en las Grandes
+        Ligas.
+      </p>
+
+      <a
+        href="/"
+        className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
+      >
+        🎱 ¿Ya viste los resultados de la lotería de hoy? Consulta Nacional, Leidsa, Real y más.
+      </a>
 
       {fechaSeleccionada ? (
         <p className="mb-4 -mt-3 font-mono text-xs text-[#5C6B78]">

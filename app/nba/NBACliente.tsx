@@ -363,7 +363,7 @@ export default function NBACliente() {
       <NavPildoras />
       <div className="px-4 py-8 sm:px-8">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-[#10203A]">🏀 NBA</h1>
+        <h1 className="text-2xl font-bold text-[#10203A]">NBA</h1>
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={irAyer}
@@ -381,6 +381,18 @@ export default function NBACliente() {
           ) : null}
         </div>
       </div>
+
+      <p className="mb-4 max-w-3xl text-sm text-[#5C6B78]">
+        Consulta los resultados en vivo de la NBA: marcadores de hoy y de ayer, máximo anotador de
+        cada partido, tabla de posiciones y los jugadores dominicanos en la liga.
+      </p>
+
+      <a
+        href="/"
+        className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
+      >
+        🎱 ¿Ya viste los resultados de la lotería de hoy? Consulta Nacional, Leidsa, Real y más.
+      </a>
 
       {fechaSeleccionada ? (
         <p className="mb-4 -mt-3 font-mono text-xs text-[#5C6B78]">

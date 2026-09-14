@@ -220,7 +220,7 @@ export default function FutbolCliente() {
       <NavPildoras />
       <div className="px-4 py-8 sm:px-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold text-[#10203A]">⚽ Fútbol</h1>
+          <h1 className="text-2xl font-bold text-[#10203A]">Fútbol</h1>
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={irAyer}
@@ -238,6 +238,18 @@ export default function FutbolCliente() {
             ) : null}
           </div>
         </div>
+
+        <p className="mb-4 max-w-3xl text-sm text-[#5C6B78]">
+          Sigue los resultados en vivo de LaLiga, la Premier League y la Champions League:
+          marcadores del día, goleadores de cada partido y tabla de posiciones actualizada.
+        </p>
+
+        <a
+          href="/"
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
+        >
+          🎱 ¿Ya viste los resultados de la lotería de hoy? Consulta Nacional, Leidsa, Real y más.
+        </a>
 
         <div className="mb-6 flex flex-wrap gap-2">
           {LIGAS.map(function (l) {
