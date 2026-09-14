@@ -57,12 +57,12 @@ export default function TurismoPage() {
           href={"/turismo/" + destacado.slug}
           className="group mb-10 block overflow-hidden rounded-2xl border border-[#10203A]/15 bg-white shadow-md transition hover:shadow-xl sm:flex"
         >
-          <div className="relative h-56 w-full overflow-hidden sm:h-auto sm:w-2/5">
+          <div className="relative h-[28rem] w-full overflow-hidden sm:h-auto sm:w-1/2">
             <Image
               src={destacado.foto.url}
               alt={destacado.nombre}
               fill
-              sizes="(max-width: 640px) 100vw, 40vw"
+              sizes="(max-width: 640px) 100vw, 50vw"
               className="object-cover transition duration-300 group-hover:scale-105"
             />
           </div>
@@ -74,7 +74,7 @@ export default function TurismoPage() {
           </div>
         </a>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {CIUDADES.map(function (c) {
             return (
               <a
@@ -82,7 +82,7 @@ export default function TurismoPage() {
                 href={"/turismo/" + c.slug}
                 className="group block overflow-hidden rounded-xl border border-[#10203A]/15 bg-white transition hover:border-[#007A33]/40 hover:shadow-lg"
               >
-                <div className="relative h-48 w-full overflow-hidden">
+                <div className="relative h-96 w-full overflow-hidden">
                   <Image
                     src={c.foto.url}
                     alt={c.nombre}
