@@ -47,6 +47,13 @@ export default function TurismoPage() {
 
       <main className="mx-auto max-w-5xl px-6 py-10 sm:px-10">
         <a
+          href="/"
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
+        >
+          🎱 ¿Ya viste los resultados de la lotería de hoy? Consulta Nacional, Leidsa, Real y más.
+        </a>
+
+        <a
           href={"/turismo/" + destacado.slug}
           className="group mb-10 block overflow-hidden rounded-2xl border border-[#10203A]/15 bg-white shadow-md transition hover:shadow-xl sm:flex"
         >

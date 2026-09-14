@@ -102,9 +102,16 @@ export default function CineCliente() {
       <div className="px-4 py-8 sm:px-8">
         <h1 className="mb-2 text-2xl font-bold text-[#10203A]">🎬 Cine</h1>
 
-        <p className="mb-6 rounded-lg bg-[#1E4D8C]/5 p-3 text-xs text-[#5C6B78]">
+        <p className="mb-4 rounded-lg bg-[#1E4D8C]/5 p-3 text-xs text-[#5C6B78]">
           Afiches, sinopsis y calificación de películas en cartelera, próximos estrenos y populares. Todavía no tenemos horarios ni salas específicas de cines dominicanos — esa información no tiene una fuente gratis disponible por ahora.
         </p>
+
+        <a
+          href="/"
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
+        >
+          🎱 ¿Ya viste los resultados de la lotería de hoy? Consulta Nacional, Leidsa, Real y más.
+        </a>
 
         {cargando && (
           <p className="font-mono text-sm text-[#5C6B78]">Cargando películas...</p>

@@ -80,6 +80,13 @@ export default function DiasFeriadosPage() {
       </header>
 
       <main className="mx-auto max-w-3xl px-6 py-10 sm:px-10">
+        <a
+          href="/"
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
+        >
+          🎱 ¿Ya viste los resultados de la lotería de hoy? Consulta Nacional, Leidsa, Real y más.
+        </a>
+
         {proximo ? (
           <div className="mb-8 rounded-xl p-5" style={{ backgroundColor: COLOR_VERDE_RD }}>
             <p className="font-mono text-xs font-bold uppercase tracking-wide text-white/70">Próximo feriado</p>

@@ -33,6 +33,13 @@ export default function Buscador() {
           </a>.
         </p>
 
+        <a
+          href="/"
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
+        >
+          🎱 ¿Ya viste los resultados de la lotería de hoy? Consulta Nacional, Leidsa, Real y más.
+        </a>
+
         <input
           type="text"
           value={busqueda}

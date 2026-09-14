@@ -69,9 +69,16 @@ export default function SeriesCliente() {
       <NavPildoras />
       <div className="px-4 py-8 sm:px-8">
         <h1 className="mb-2 text-2xl font-bold text-[#10203A]">📺 Series Más Vistas</h1>
-        <p className="mb-6 rounded-lg bg-[#1E4D8C]/5 p-3 text-xs text-[#5C6B78]">
+        <p className="mb-4 rounded-lg bg-[#1E4D8C]/5 p-3 text-xs text-[#5C6B78]">
           Las series más populares y comentadas del momento en Netflix, HBO, Prime Video y Disney+.
         </p>
+
+        <a
+          href="/"
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
+        >
+          🎱 ¿Ya viste los resultados de la lotería de hoy? Consulta Nacional, Leidsa, Real y más.
+        </a>
 
         {cargando && (
           <p className="font-mono text-sm text-[#5C6B78]">Cargando noticias...</p>

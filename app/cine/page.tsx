@@ -1,4 +1,5 @@
 import CineCliente from "./CineCliente";
+import PreguntasFrecuentes from "../PreguntasFrecuentes";
 
 export const metadata = {
   title: "Cartelera de Cine: Estrenos y Películas Populares",
@@ -13,6 +14,23 @@ export const metadata = {
   alternates: { canonical: "https://labankerard.com/cine" },
 };
 
+const PREGUNTAS_CINE = [
+  {
+    pregunta: "¿Tienen horarios de cines dominicanos?",
+    respuesta:
+      "Todavía no — por ahora esta página muestra afiches, sinopsis y calificación de películas en cartelera, próximos estrenos y populares.",
+  },
+  {
+    pregunta: "¿Con qué frecuencia se actualiza la cartelera?",
+    respuesta: "Se actualiza automáticamente varias veces al día.",
+  },
+];
+
 export default function CinePage() {
-  return <CineCliente />;
+  return (
+    <>
+      <CineCliente />
+      <PreguntasFrecuentes preguntas={PREGUNTAS_CINE} />
+    </>
+  );
 }
