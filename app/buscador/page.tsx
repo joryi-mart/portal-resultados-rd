@@ -19,7 +19,7 @@ export async function generateMetadata(props: { searchParams: Promise<{ numero?:
 
   if (esNumeroValido) {
     const numeroFormateado = String(parseInt(numero, 10)).padStart(2, "0");
-    const titulo = `¿Cuándo Salió el ${numeroFormateado}? Última Vez en la Lotería — La Bankera RD`;
+    const titulo = `¿Cuándo Salió el ${numeroFormateado}? Última Vez en la Lotería`;
     const descripcion = `Consulta cuándo fue la última vez que salió el número ${numeroFormateado} en Leidsa, Nacional, Real y otras loterías dominicanas, con la fecha exacta y la posición.`;
     return {
       title: titulo,
