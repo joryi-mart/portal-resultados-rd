@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import NavPildoras from "../NavPildoras";
+import PreguntasFrecuentes from "../PreguntasFrecuentes";
 import {
   display,
   body,
@@ -11,17 +12,35 @@ import {
   type Loteria,
 } from "../page";
 
-export const metadata = {
-  title: "Buscador de Números — ¿Cuándo Salió Tu Número?",
-  description: "Busca un número y descubre cuándo fue la última vez que salió, en qué lotería y en qué posición, en República Dominicana.",
-  openGraph: {
-    title: "Buscador de Números de Lotería",
-    description: "Busca un número y descubre cuándo fue la última vez que salió, en qué lotería y en qué posición.",
-    locale: "es_DO",
-    type: "website",
-  },
-  alternates: { canonical: "https://labankerard.com/buscador" },
-};
+export async function generateMetadata(props: { searchParams: Promise<{ numero?: string }> }) {
+  const searchParams = await props.searchParams;
+  const numero = (searchParams.numero || "").trim();
+  const esNumeroValido = numero !== "" && !Number.isNaN(parseInt(numero, 10));
+
+  if (esNumeroValido) {
+    const numeroFormateado = String(parseInt(numero, 10)).padStart(2, "0");
+    const titulo = `¿Cuándo Salió el ${numeroFormateado}? Última Vez en la Lotería — La Bankera RD`;
+    const descripcion = `Consulta cuándo fue la última vez que salió el número ${numeroFormateado} en Leidsa, Nacional, Real y otras loterías dominicanas, con la fecha exacta y la posición.`;
+    return {
+      title: titulo,
+      description: descripcion,
+      openGraph: { title: titulo, description: descripcion, locale: "es_DO", type: "website" },
+      alternates: { canonical: `https://labankerard.com/buscador?numero=${numero}` },
+    };
+  }
+
+  return {
+    title: "Buscador de Números — ¿Cuándo Salió Tu Número?",
+    description: "Busca un número y descubre cuándo fue la última vez que salió, en qué lotería y en qué posición, en República Dominicana.",
+    openGraph: {
+      title: "Buscador de Números de Lotería",
+      description: "Busca un número y descubre cuándo fue la última vez que salió, en qué lotería y en qué posición.",
+      locale: "es_DO",
+      type: "website",
+    },
+    alternates: { canonical: "https://labankerard.com/buscador" },
+  };
+}
 
 export const revalidate = 3600;
 
@@ -198,14 +217,53 @@ export default async function BuscadorPage(props: { searchParams: Promise<{ nume
         ) : null}
 
         {numeroTexto === "" ? (
-          <div className="rounded-xl border border-dashed border-[#10203A]/20 bg-white/60 p-6 text-center">
-            <p className="text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Escribe un número arriba para empezar a buscar.</p>
+          <div>
+            <div className="rounded-xl border border-dashed border-[#10203A]/20 bg-white/60 p-6 text-center">
+              <p className="text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Escribe un número arriba, o toca uno de la lista.</p>
+            </div>
+
+            <p className="mb-3 mt-8 font-mono text-xs font-bold uppercase tracking-wide" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+              O elige un número
+            </p>
+            <div className="grid grid-cols-5 gap-2 sm:grid-cols-8 md:grid-cols-10">
+              {Array.from({ length: 100 }).map(function (_, n) {
+                return (
+                  <a
+                    key={n}
+                    href={"/buscador?numero=" + n}
+                    className="flex items-center justify-center rounded-lg border border-[#10203A]/10 bg-white py-2 font-mono text-sm font-bold text-[#10203A] hover:border-[#1E4D8C]/40 hover:bg-[#1E4D8C]/5"
+                  >
+                    {String(n).padStart(2, "0")}
+                  </a>
+                );
+              })}
+            </div>
           </div>
         ) : null}
 
         <p className="mt-10 text-xs leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
           Estamos guardando el historial de resultados desde el 31 de agosto de 2026, así que este buscador todavía cubre pocas semanas. Cada día que pasa se vuelve más completo.
         </p>
+
+        <PreguntasFrecuentes
+          preguntas={[
+            {
+              pregunta: "¿Cómo funciona el buscador de números?",
+              respuesta:
+                "Escribe cualquier número del 0 al 99 y te mostramos la última vez que salió en cada lotería dominicana, con la fecha exacta y en qué posición del sorteo.",
+            },
+            {
+              pregunta: "¿Desde cuándo tienen historial guardado?",
+              respuesta:
+                "Guardamos resultados desde el 31 de agosto de 2026. Todavía es poco tiempo, pero se va completando cada día.",
+            },
+            {
+              pregunta: "¿Esto sirve para predecir el próximo número ganador?",
+              respuesta:
+                "No. Cada sorteo es independiente y aleatorio — este buscador solo muestra el historial de cuándo salió cada número, no predice resultados futuros.",
+            },
+          ]}
+        />
       </main>
     </div>
   );
