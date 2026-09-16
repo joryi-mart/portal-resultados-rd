@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { slugSorteo } from "@/lib/slug";
 import { notFound } from "next/navigation";
 import NavPildoras from "../NavPildoras";
+import PreguntasFrecuentes from "../PreguntasFrecuentes";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
@@ -232,6 +233,13 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
       <main className="mx-auto max-w-3xl px-6 py-10 sm:px-10">
         <NavPildoras />
 
+        <a
+          href="/buscador"
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
+        >
+          🔎 ¿Buscas un número en especial? Consulta cuándo fue la última vez que salió.
+        </a>
+
         {sorteos.length === 0 ? (
           <p className="text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Todavía no hay productos registrados para esta lotería.</p>
         ) : (
@@ -330,6 +338,24 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
           </div>
         )}
       </main>
+
+      <PreguntasFrecuentes
+        preguntas={[
+          {
+            pregunta: `¿Cómo veo resultados anteriores de ${loteriaData.nombre}?`,
+            respuesta: `Toca "Ver historial" junto a cada sorteo, o entra a cualquier sorteo específico para ver sus últimos resultados.`,
+          },
+          {
+            pregunta: "¿Qué significan los números 'calientes' y 'fríos'?",
+            respuesta:
+              "Los calientes son los que más veces han salido en el historial guardado, y los fríos los que menos. Es solo información histórica, cada sorteo es independiente y aleatorio.",
+          },
+          {
+            pregunta: "¿Puedo buscar cuándo salió un número específico?",
+            respuesta: "Sí, usa el buscador de números arriba en esta página para consultarlo al instante.",
+          },
+        ]}
+      />
 
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">
         <a href="/" className="font-mono text-sm text-[#1E4D8C] hover:underline">← Ver todas las loterías</a>
