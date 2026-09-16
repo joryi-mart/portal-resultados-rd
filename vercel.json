@@ -1,0 +1,5 @@
+{
+  "crons": [
+    { "path": "/api/publicar-facebook", "schedule": "30 2 * * *" }
+  ]
+}
