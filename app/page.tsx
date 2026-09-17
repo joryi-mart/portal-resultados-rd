@@ -1,6 +1,8 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
 import Image from "next/image";
 
+export const revalidate = 60;
+
 export const metadata = {
   title: "La Bankera RD | Resultados de Loterías Dominicanas en Vivo",
   description: "Consulta los resultados de Leidsa, Lotería Nacional, Loteka, Lotería Real y más loterías dominicanas e internacionales, actualizados en vivo. Tipo de cambio del dólar y euro incluido.",
