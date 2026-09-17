@@ -10,11 +10,6 @@ function hoyISO() {
   return ahoraRD.toISOString().slice(0, 10);
 }
 
-function esDeHoyRD(fechaISOConHora: string, hoy: string) {
-  const fechaRD = new Date(new Date(fechaISOConHora).getTime() - 4 * 60 * 60 * 1000);
-  return fechaRD.toISOString().slice(0, 10) === hoy;
-}
-
 type ResultadoFila = { numeros: string; fecha: string; creado_en: string };
 type SorteoFila = { id: number; nombre: string; resultados: ResultadoFila[] };
 type LoteriaFila = { id: number; nombre: string; slug: string; sorteos: SorteoFila[] };
@@ -25,34 +20,9 @@ type ResultadoDeHoy = {
   creadoEn: string;
 };
 
-// Encabezado unico por loteria, para encontrar y editar la publicacion de hoy
-// en vez de crear una nueva cada vez que sale un sorteo.
-function encabezado(loteriaNombre: string) {
-  return `🎱 ${loteriaNombre} — Resultados de hoy`;
-}
-
 function construirMensaje(loteriaNombre: string, loteriaSlug: string, resultados: ResultadoDeHoy[]) {
   const lineas = resultados.map(function (r) { return `${r.sorteoNombre}: ${r.numeros}`; }).join("\n");
-  return `${encabezado(loteriaNombre)}\n\n${lineas}\n\nVe más resultados en https://labankerard.com/${loteriaSlug}`;
-}
-
-async function buscarPublicacionDeHoy(hoy: string, loteriaNombre: string) {
-  const pageId = process.env.FACEBOOK_PAGE_ID;
-  const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
-  const res = await fetch(
-    `https://graph.facebook.com/v19.0/${pageId}/feed?fields=id,message,created_time&limit=25&access_token=${token}`
-  );
-  if (!res.ok) return null;
-  const data = await res.json();
-  const posts = (data.data || []) as { id: string; message?: string; created_time?: string }[];
-  const encontrada = posts.find(function (p) {
-    return (
-      p.created_time &&
-      esDeHoyRD(p.created_time, hoy) &&
-      (p.message || "").startsWith(encabezado(loteriaNombre))
-    );
-  });
-  return encontrada || null;
+  return `🎱 ${loteriaNombre} — Resultados de hoy\n\n${lineas}\n\nVe más resultados en https://labankerard.com/${loteriaSlug}`;
 }
 
 async function crearPublicacion(mensaje: string) {
@@ -101,6 +71,13 @@ export async function GET(request: Request) {
 
     if (error) throw new Error(error.message);
 
+    const { data: publicacionesHoy, error: errorPublicaciones } = await supabase
+      .from("publicaciones_facebook")
+      .select("loteria_slug, post_id, mensaje")
+      .eq("fecha", hoy);
+
+    if (errorPublicaciones) throw new Error(errorPublicaciones.message);
+
     const listaLoterias = ((loterias || []) as unknown as LoteriaFila[]).map(function (l) {
       return { ...l, sorteos: (l.sorteos || []).filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id); }) };
     });
@@ -126,13 +103,23 @@ export async function GET(request: Request) {
       resultadosDeHoy.sort(function (a, b) { return new Date(a.creadoEn).getTime() - new Date(b.creadoEn).getTime(); });
       const mensajeNuevo = construirMensaje(loteria.nombre, loteria.slug, resultadosDeHoy);
 
-      const publicacionExistente = await buscarPublicacionDeHoy(hoy, loteria.nombre);
+      const publicacionExistente = (publicacionesHoy || []).find(function (p) { return p.loteria_slug === loteria.slug; });
 
       if (!publicacionExistente) {
-        await crearPublicacion(mensajeNuevo);
+        const idPublicacion = await crearPublicacion(mensajeNuevo);
+        const { error: errorInsert } = await supabase
+          .from("publicaciones_facebook")
+          .insert({ loteria_slug: loteria.slug, fecha: hoy, post_id: idPublicacion, mensaje: mensajeNuevo });
+        if (errorInsert) throw new Error(errorInsert.message);
         resumen.creadas.push(loteria.nombre);
-      } else if (publicacionExistente.message !== mensajeNuevo) {
-        await editarPublicacion(publicacionExistente.id, mensajeNuevo);
+      } else if (publicacionExistente.mensaje !== mensajeNuevo) {
+        await editarPublicacion(publicacionExistente.post_id, mensajeNuevo);
+        const { error: errorUpdate } = await supabase
+          .from("publicaciones_facebook")
+          .update({ mensaje: mensajeNuevo })
+          .eq("loteria_slug", loteria.slug)
+          .eq("fecha", hoy);
+        if (errorUpdate) throw new Error(errorUpdate.message);
         resumen.editadas.push(loteria.nombre);
       } else {
         resumen.sinCambios.push(loteria.nombre);
