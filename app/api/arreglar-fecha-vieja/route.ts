@@ -41,7 +41,7 @@ export async function GET(request: Request) {
     const res = await fetch(`https://graph.facebook.com/v19.0/${c.postId}`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ caption: c.mensaje, access_token: token || "" }),
+      body: new URLSearchParams({ message: c.mensaje, access_token: token || "" }),
     });
     const data = await res.json();
     resultados.push({ slug: c.slug, ok: res.ok, detalle: res.ok ? undefined : JSON.stringify(data) });
