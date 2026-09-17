@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
-  const postId = "122104148499476013";
+  const postId = "1315560834976047_122104148499476013";
 
   const resDelete = await fetch(`https://graph.facebook.com/v19.0/${postId}?access_token=${token}`, { method: "DELETE" });
   const dataDelete = await resDelete.json().catch(function () { return null; });
