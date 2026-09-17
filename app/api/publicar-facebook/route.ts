@@ -1,8 +1,16 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { generarImagenResultados } from "@/lib/imagenPublicacion";
 
 const LOTERIAS_DESTACADAS = ["nacional", "leidsa", "real", "loteka"];
 const SORTEOS_DESCONTINUADOS = [73, 78, 119];
+
+const HASHTAG_LOTERIA: Record<string, string> = {
+  nacional: "#LoteriaNacional",
+  leidsa: "#Leidsa",
+  real: "#LoteriaReal",
+  loteka: "#Loteka",
+};
 
 function hoyISO() {
   // Republica Dominicana esta fijo en UTC-4 (no usa horario de verano).
@@ -20,30 +28,41 @@ type ResultadoDeHoy = {
   creadoEn: string;
 };
 
-function construirMensaje(loteriaNombre: string, loteriaSlug: string, resultados: ResultadoDeHoy[]) {
+function construirCaption(loteriaNombre: string, loteriaSlug: string, resultados: ResultadoDeHoy[]) {
   const lineas = resultados.map(function (r) { return `${r.sorteoNombre}: ${r.numeros}`; }).join("\n");
-  return `🎱 ${loteriaNombre} — Resultados de hoy\n\n${lineas}\n\nVe más resultados en https://labankerard.com/${loteriaSlug}`;
+  const hashtag = HASHTAG_LOTERIA[loteriaSlug] || "";
+  return (
+    `🎱 ${loteriaNombre} — Resultados de hoy\n\n${lineas}\n\n` +
+    `Ve más resultados en https://labankerard.com/${loteriaSlug}\n\n` +
+    `#LoteriaDominicana #ResultadosHoy ${hashtag}`.trim()
+  );
 }
 
-async function crearPublicacion(mensaje: string) {
+async function crearPublicacion(caption: string, imagen: Buffer) {
   const pageId = process.env.FACEBOOK_PAGE_ID;
   const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
-  const res = await fetch(`https://graph.facebook.com/v19.0/${pageId}/feed`, {
+
+  const formData = new FormData();
+  formData.append("source", new Blob([new Uint8Array(imagen)], { type: "image/png" }), "resultado.png");
+  formData.append("caption", caption);
+  formData.append("published", "true");
+  formData.append("access_token", token || "");
+
+  const res = await fetch(`https://graph.facebook.com/v19.0/${pageId}/photos`, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ message: mensaje, access_token: token || "" }),
+    body: formData,
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || "Error creando la publicacion en Facebook");
   return data.id as string;
 }
 
-async function editarPublicacion(idPublicacion: string, mensaje: string) {
+async function editarPublicacion(idFoto: string, caption: string) {
   const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
-  const res = await fetch(`https://graph.facebook.com/v19.0/${idPublicacion}`, {
+  const res = await fetch(`https://graph.facebook.com/v19.0/${idFoto}`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ message: mensaje, access_token: token || "" }),
+    body: new URLSearchParams({ caption, access_token: token || "" }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || "Error editando la publicacion en Facebook");
@@ -101,22 +120,23 @@ export async function GET(request: Request) {
       if (resultadosDeHoy.length === 0) continue;
 
       resultadosDeHoy.sort(function (a, b) { return new Date(a.creadoEn).getTime() - new Date(b.creadoEn).getTime(); });
-      const mensajeNuevo = construirMensaje(loteria.nombre, loteria.slug, resultadosDeHoy);
+      const captionNueva = construirCaption(loteria.nombre, loteria.slug, resultadosDeHoy);
 
       const publicacionExistente = (publicacionesHoy || []).find(function (p) { return p.loteria_slug === loteria.slug; });
 
       if (!publicacionExistente) {
-        const idPublicacion = await crearPublicacion(mensajeNuevo);
+        const imagen = await generarImagenResultados(loteria.nombre, resultadosDeHoy);
+        const idPublicacion = await crearPublicacion(captionNueva, imagen);
         const { error: errorInsert } = await supabase
           .from("publicaciones_facebook")
-          .insert({ loteria_slug: loteria.slug, fecha: hoy, post_id: idPublicacion, mensaje: mensajeNuevo });
+          .insert({ loteria_slug: loteria.slug, fecha: hoy, post_id: idPublicacion, mensaje: captionNueva });
         if (errorInsert) throw new Error(errorInsert.message);
         resumen.creadas.push(loteria.nombre);
-      } else if (publicacionExistente.mensaje !== mensajeNuevo) {
-        await editarPublicacion(publicacionExistente.post_id, mensajeNuevo);
+      } else if (publicacionExistente.mensaje !== captionNueva) {
+        await editarPublicacion(publicacionExistente.post_id, captionNueva);
         const { error: errorUpdate } = await supabase
           .from("publicaciones_facebook")
-          .update({ mensaje: mensajeNuevo })
+          .update({ mensaje: captionNueva })
           .eq("loteria_slug", loteria.slug)
           .eq("fecha", hoy);
         if (errorUpdate) throw new Error(errorUpdate.message);
