@@ -15,6 +15,7 @@ export const metadata = {
 import { supabase } from "@/lib/supabase";
 import NavPildoras from "./NavPildoras";
 import RelojDigital from "./RelojDigital";
+import NotificacionesPush from "./NotificacionesPush";
 
 export const display = Space_Grotesk({
   subsets: ["latin"],
@@ -993,6 +994,8 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
           </div>
           <span className="font-mono text-sm font-semibold text-[#007A33]">Compartir →</span>
         </a>
+
+        <NotificacionesPush />
 
         {error ? (
           <div className="mb-6 rounded-lg border border-[#E4573D]/40 bg-[#E4573D]/5 p-4 text-sm text-[#B23B26]">No pudimos cargar los datos: {error.message}</div>

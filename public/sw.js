@@ -27,3 +27,32 @@ self.addEventListener("fetch", function (event) {
     })
   );
 });
+
+self.addEventListener("push", function (event) {
+  if (!event.data) return;
+  const datos = event.data.json();
+  event.waitUntil(
+    self.registration.showNotification(datos.titulo || "La Bankera RD", {
+      body: datos.cuerpo || "",
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
+      data: { url: datos.url || "/" },
+    })
+  );
+});
+
+self.addEventListener("notificationclick", function (event) {
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || "/";
+  event.waitUntil(
+    clients.matchAll({ type: "window" }).then(function (listaClientes) {
+      for (const cliente of listaClientes) {
+        if (cliente.url.includes(self.location.origin) && "focus" in cliente) {
+          cliente.navigate(url);
+          return cliente.focus();
+        }
+      }
+      return clients.openWindow(url);
+    })
+  );
+});

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { generarImagenResultados } from "@/lib/imagenPublicacion";
+import { enviarNotificacionATodos } from "@/lib/pushNotificaciones";
 
 const LOTERIAS_DESTACADAS = ["nacional", "leidsa", "real", "loteka"];
 const SORTEOS_DESCONTINUADOS = [73, 78, 119];
@@ -132,6 +133,13 @@ export async function GET(request: Request) {
 
       const publicacionExistente = (publicacionesHoy || []).find(function (p) { return p.loteria_slug === loteria.slug; });
 
+      // Resultados que no estaban en la publicacion anterior, para avisar
+      // solo de lo nuevo por notificacion push (no de todo el mensaje otra vez).
+      const lineasAnteriores = new Set((publicacionExistente?.mensaje || "").split("\n").map(function (l: string) { return l.trim(); }));
+      const resultadosNuevos = resultadosDeHoy.filter(function (r) {
+        return !lineasAnteriores.has(`${r.sorteoNombre}: ${r.numeros}`);
+      });
+
       if (!publicacionExistente) {
         const imagen = await generarImagenResultados(loteria.nombre, fechaTitulo(hoy), resultadosDeHoy);
         const idPublicacion = await crearPublicacion(captionNueva, imagen);
@@ -151,6 +159,18 @@ export async function GET(request: Request) {
         resumen.editadas.push(loteria.nombre);
       } else {
         resumen.sinCambios.push(loteria.nombre);
+      }
+
+      for (const r of resultadosNuevos) {
+        try {
+          await enviarNotificacionATodos({
+            titulo: `🎱 ${loteria.nombre}`,
+            cuerpo: `${r.sorteoNombre}: ${r.numeros}`,
+            url: `/${loteria.slug}`,
+          });
+        } catch {
+          // No dejar que un error al notificar arruine la publicacion en Facebook.
+        }
       }
     }
 
