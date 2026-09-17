@@ -79,7 +79,7 @@ export async function generarImagenResultados(loteriaNombre: string, fechaTexto:
     ),
     {
       width: 1080,
-      height: 300 + resultados.length * 108 + 260,
+      height: 240 + resultados.length * 104 + 160,
       fonts: [
         { name: "Manrope", data: fuenteRegular, weight: 400, style: "normal" },
         { name: "Manrope", data: fuenteExtraBold, weight: 800, style: "normal" },
