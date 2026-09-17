@@ -18,6 +18,14 @@ function hoyISO() {
   return ahoraRD.toISOString().slice(0, 10);
 }
 
+function fechaTitulo(fechaISO: string) {
+  return new Date(fechaISO + "T00:00:00").toLocaleDateString("es-DO", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+}
+
 type ResultadoFila = { numeros: string; fecha: string; creado_en: string };
 type SorteoFila = { id: number; nombre: string; resultados: ResultadoFila[] };
 type LoteriaFila = { id: number; nombre: string; slug: string; sorteos: SorteoFila[] };
@@ -28,11 +36,11 @@ type ResultadoDeHoy = {
   creadoEn: string;
 };
 
-function construirCaption(loteriaNombre: string, loteriaSlug: string, resultados: ResultadoDeHoy[]) {
+function construirCaption(loteriaNombre: string, loteriaSlug: string, fecha: string, resultados: ResultadoDeHoy[]) {
   const lineas = resultados.map(function (r) { return `${r.sorteoNombre}: ${r.numeros}`; }).join("\n");
   const hashtag = HASHTAG_LOTERIA[loteriaSlug] || "";
   return (
-    `🎱 ${loteriaNombre} — Resultados de hoy\n\n${lineas}\n\n` +
+    `🎱 ${loteriaNombre} — Resultados del ${fechaTitulo(fecha)}\n\n${lineas}\n\n` +
     `Ve más resultados en https://labankerard.com/${loteriaSlug}\n\n` +
     `#LoteriaDominicana #ResultadosHoy ${hashtag}`.trim()
   );
@@ -120,12 +128,12 @@ export async function GET(request: Request) {
       if (resultadosDeHoy.length === 0) continue;
 
       resultadosDeHoy.sort(function (a, b) { return new Date(a.creadoEn).getTime() - new Date(b.creadoEn).getTime(); });
-      const captionNueva = construirCaption(loteria.nombre, loteria.slug, resultadosDeHoy);
+      const captionNueva = construirCaption(loteria.nombre, loteria.slug, hoy, resultadosDeHoy);
 
       const publicacionExistente = (publicacionesHoy || []).find(function (p) { return p.loteria_slug === loteria.slug; });
 
       if (!publicacionExistente) {
-        const imagen = await generarImagenResultados(loteria.nombre, resultadosDeHoy);
+        const imagen = await generarImagenResultados(loteria.nombre, fechaTitulo(hoy), resultadosDeHoy);
         const idPublicacion = await crearPublicacion(captionNueva, imagen);
         const { error: errorInsert } = await supabase
           .from("publicaciones_facebook")
