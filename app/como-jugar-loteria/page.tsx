@@ -73,7 +73,7 @@ export default function ComoJugarLoteriaPage() {
           🎱 ¿Ya viste los resultados de la lotería de hoy? Consulta Nacional, Leidsa, Real y más.
         </a>
 
-        <p className="mb-6 text-base leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+        <p className="mb-6 text-base leading-relaxed">
           En la mayoría de las loterías dominicanas (Lotería Nacional, Real, Loteka, La Primera, y la Quiniela Palé
           de Leidsa) cada sorteo saca <strong>tres números de dos cifras</strong>, del 00 al 99, que corresponden al
           primer, segundo y tercer premio. Por ejemplo, si el resultado del día es <strong>05-23-47</strong>, el 05
@@ -85,7 +85,7 @@ export default function ComoJugarLoteriaPage() {
           <h2 className="mb-2 font-[family-name:var(--font-display)] text-xl font-bold" style={{ color: COLOR_AZUL }}>
             Quiniela
           </h2>
-          <p className="text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          <p className="text-sm leading-relaxed">
             Es la forma más simple: apuestas a <strong>un solo número</strong> de dos dígitos (del 00 al 99). Ganas
             si ese número coincide con cualquiera de los tres premios del sorteo (primero, segundo o tercero) —
             aunque el pago cambia según en cuál posición caiga.
@@ -96,7 +96,7 @@ export default function ComoJugarLoteriaPage() {
           <h2 className="mb-2 font-[family-name:var(--font-display)] text-xl font-bold" style={{ color: COLOR_AZUL }}>
             Palé
           </h2>
-          <p className="text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          <p className="text-sm leading-relaxed">
             Apuestas a una <strong>combinación de dos números</strong>. Ganas si esos dos números coinciden con dos
             de los tres premios del sorteo, sin importar el orden en que salieron.
           </p>
@@ -106,14 +106,14 @@ export default function ComoJugarLoteriaPage() {
           <h2 className="mb-2 font-[family-name:var(--font-display)] text-xl font-bold" style={{ color: COLOR_AZUL }}>
             Tripleta
           </h2>
-          <p className="text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          <p className="text-sm leading-relaxed">
             Apuestas a una <strong>combinación de tres números</strong>. Ganas solo si los tres coinciden con los
             tres premios del sorteo (sin importar el orden, en la tripleta tradicional). Hay 161,700 combinaciones
             posibles entre el 00 y el 99, por eso es la más difícil de acertar de las tres — y la que paga más.
           </p>
         </div>
 
-        <p className="mb-8 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+        <p className="mb-8 text-sm leading-relaxed">
           Cada lotería y cada banca puede tener sus propias reglas de pago, así que lo importante de esta guía es
           entender la <strong>mecánica</strong> — cuántos números escoges y cómo se gana — no cuánto se paga, ya que
           eso varía. Algunos juegos, como el <strong>Pega 3 Más</strong> de Leidsa, tienen además una variante

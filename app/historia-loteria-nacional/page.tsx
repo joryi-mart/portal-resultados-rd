@@ -78,7 +78,7 @@ export default function HistoriaLoteriaNacionalPage() {
           🎱 Ve los resultados de hoy de la Lotería Nacional
         </a>
 
-        <p className="mb-8 text-base leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+        <p className="mb-8 text-base leading-relaxed">
           La Lotería Nacional es la más antigua de República Dominicana. Nació el <strong>24 de octubre de 1882</strong>,
           cuando el sacerdote dominicano <strong>Francisco Xavier Billini</strong> la fundó bajo el nombre de "La
           Lotería del Padre Billini" — no como negocio, sino como una forma de recaudar dinero para ayudar a
@@ -99,19 +99,19 @@ export default function HistoriaLoteriaNacionalPage() {
                 >
                   {item.año}
                 </div>
-                <p className="text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{item.texto}</p>
+                <p className="text-sm leading-relaxed">{item.texto}</p>
               </div>
             );
           })}
         </div>
 
-        <p className="mb-8 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+        <p className="mb-8 text-sm leading-relaxed">
           Más de 140 años después de su fundación, la Lotería Nacional se transmite en vivo por televisión y sigue
           siendo una de las loterías más jugadas del país, con sorteos de tarde (Gana Más y Juega + Pega +) y de
           noche (Quiniela Nacional).
         </p>
 
-        <p className="mb-8 text-xs italic" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+        <p className="mb-8 text-xs italic">
           Fuente: sitio oficial de la Lotería Nacional Dominicana (loterianacional.gob.do).
         </p>
 

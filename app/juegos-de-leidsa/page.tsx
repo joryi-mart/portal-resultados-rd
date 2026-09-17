@@ -100,7 +100,7 @@ export default function JuegosDeLeidsaPage() {
           🎱 Ve los resultados de hoy de Leidsa
         </a>
 
-        <p className="mb-8 text-base leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+        <p className="mb-8 text-base leading-relaxed">
           <strong>Leidsa</strong> (Lotería Electrónica Internacional Dominicana, S.A.) es una empresa privada que
           empezó a operar el 1 de noviembre de 1997, y fue la primera en traer a República Dominicana el concepto de{" "}
           <strong>lotería electrónica</strong>: terminales conectadas en tiempo real a un sistema central, en vez
@@ -115,13 +115,13 @@ export default function JuegosDeLeidsaPage() {
                 <h2 className="mb-2 font-[family-name:var(--font-display)] text-xl font-bold" style={{ color: COLOR_AZUL }}>
                   {j.nombre}
                 </h2>
-                <p className="text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{j.texto}</p>
+                <p className="text-sm leading-relaxed">{j.texto}</p>
               </div>
             );
           })}
         </div>
 
-        <p className="mb-8 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+        <p className="mb-8 text-sm leading-relaxed">
           Si no conoces la mecánica básica de quiniela, palé y tripleta, te recomendamos primero leer nuestra{" "}
           <a href="/como-jugar-loteria" className="underline" style={{ color: COLOR_AZUL }}>
             guía de cómo jugar
