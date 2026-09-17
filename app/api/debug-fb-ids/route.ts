@@ -49,10 +49,11 @@ export async function GET(request: Request) {
     });
   }
 
-  const resultados: { id: string; ok: boolean }[] = [];
+  const resultados: { id: string; ok: boolean; detalle?: string }[] = [];
   for (const p of aBorrar) {
     const resDelete = await fetch(`https://graph.facebook.com/v19.0/${p.id}?access_token=${token}`, { method: "DELETE" });
-    resultados.push({ id: p.id, ok: resDelete.ok });
+    const dataDelete = await resDelete.json().catch(function () { return null; });
+    resultados.push({ id: p.id, ok: resDelete.ok, detalle: dataDelete ? JSON.stringify(dataDelete) : undefined });
   }
 
   return NextResponse.json({ modo: "borrado_real", borradas: resultados });
