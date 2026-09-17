@@ -43,6 +43,9 @@ export async function GET(request: Request) {
       totalEncontradas: todos.length,
       correctasQueSeQuedan: [...idsCorrectos],
       duplicadasQueSeBorrarian: aBorrar.map(function (p) { return p.id; }),
+      debugIdsExplicitos: idsExplicitos,
+      debugListaExplicita: listaExplicita ? [...listaExplicita] : null,
+      debugTodosIds: todos.map(function (p) { return p.id; }),
     });
   }
 
