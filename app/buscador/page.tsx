@@ -1,16 +1,14 @@
 import { supabase } from "@/lib/supabase";
 import NavPildoras from "../NavPildoras";
 import PreguntasFrecuentes from "../PreguntasFrecuentes";
+import { display, body, mono } from "../page";
 import {
-  display,
-  body,
-  mono,
   COLOR_TEXTO_SECUNDARIO,
   COLOR_VERDE_PRESIDENTE,
   COLOR_AZUL,
   hoyISO,
   type Loteria,
-} from "../page";
+} from "../componentesResultados";
 
 export async function generateMetadata(props: { searchParams: Promise<{ numero?: string }> }) {
   const searchParams = await props.searchParams;

@@ -1,16 +1,14 @@
 import { supabase } from "@/lib/supabase";
 import NavPildoras from "../NavPildoras";
+import { display, body, mono } from "../page";
 import {
-  display,
-  body,
-  mono,
   COLOR_TEXTO_SECUNDARIO,
   hoyISO,
   ResumenResultados,
   TablaResultadosDelDia,
   type Loteria,
   type UltimoResultado,
-} from "../page";
+} from "../componentesResultados";
 
 export const metadata = {
   title: "Resumen de Resultados de Loterías Dominicanas",

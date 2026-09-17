@@ -1,9 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import NavPildoras from "../NavPildoras";
+import { display, body, mono } from "../page";
 import {
-  display,
-  body,
-  mono,
   COLOR_AZUL,
   COLOR_TEXTO_SECUNDARIO,
   COLOR_VERDE_PRESIDENTE,
@@ -11,7 +9,7 @@ import {
   FilaSorteo,
   TablaHorarios,
   type Loteria,
-} from "../page";
+} from "../componentesResultados";
 
 export const metadata = {
   title: "Todas las Loterías Dominicanas y Américas",
