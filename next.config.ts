@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  outputFileTracingIncludes: {
+    "/api/publicar-facebook": ["./lib/fuentes/**"],
+    "/api/debug-imagen": ["./lib/fuentes/**"],
+  },
   images: {
     remotePatterns: [
       {
