@@ -12,6 +12,7 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const confirmar = url.searchParams.get("confirmar") === "si";
+  const idsExplicitos = url.searchParams.get("ids");
 
   const resPosts = await fetch(
     `https://graph.facebook.com/v19.0/${pageId}/posts?fields=id,created_time&limit=25&access_token=${token}`
@@ -27,10 +28,14 @@ export async function GET(request: Request) {
   const ahoraRD = new Date(Date.now() - 4 * 60 * 60 * 1000);
   const hoyRD = ahoraRD.toISOString().slice(0, 10);
 
-  const aBorrar = todos.filter(function (p) {
-    const fechaRD = new Date(new Date(p.created_time).getTime() - 4 * 60 * 60 * 1000).toISOString().slice(0, 10);
-    return fechaRD === hoyRD && !idsCorrectos.has(p.id);
-  });
+  const listaExplicita = idsExplicitos ? new Set(idsExplicitos.split(",")) : null;
+
+  const aBorrar = listaExplicita
+    ? todos.filter(function (p) { return listaExplicita.has(p.id) && !idsCorrectos.has(p.id); })
+    : todos.filter(function (p) {
+        const fechaRD = new Date(new Date(p.created_time).getTime() - 4 * 60 * 60 * 1000).toISOString().slice(0, 10);
+        return fechaRD === hoyRD && !idsCorrectos.has(p.id);
+      });
 
   if (!confirmar) {
     return NextResponse.json({
