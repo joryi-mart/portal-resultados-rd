@@ -1,0 +1,15 @@
+name: Publicar resultados en Facebook
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar al endpoint de publicacion
+        run: |
+          curl -sf -X GET "https://labankerard.com/api/publicar-facebook" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
