@@ -235,10 +235,26 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
 
         <a
           href="/buscador"
-          className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
+          className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
         >
           🔎 ¿Buscas un número en especial? Consulta cuándo fue la última vez que salió.
         </a>
+
+        <div className="mb-6 flex flex-wrap gap-2">
+          <a href="/como-jugar-loteria" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
+            ¿Cómo jugar quiniela, palé y tripleta?
+          </a>
+          {params.slug === "leidsa" ? (
+            <a href="/juegos-de-leidsa" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
+              · ¿Cómo funcionan los juegos de Leidsa?
+            </a>
+          ) : null}
+          {params.slug === "nacional" ? (
+            <a href="/historia-loteria-nacional" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
+              · Historia de la Lotería Nacional
+            </a>
+          ) : null}
+        </div>
 
         {sorteos.length === 0 ? (
           <p className="text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Todavía no hay productos registrados para esta lotería.</p>
