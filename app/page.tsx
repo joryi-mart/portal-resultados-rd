@@ -967,6 +967,8 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
       />
 
       <main className="mx-auto max-w-7xl px-4 pb-6 pt-3 sm:px-8 sm:pt-4 lg:px-12">
+        <NotificacionesPush />
+
         <div className="mb-8">
           <PizarronDelDia loterias={listaLoterias} fechaSeleccionada={fechaSeleccionada} fechaTitulo={fechaTitulo} />
         </div>
@@ -994,8 +996,6 @@ export default async function Home(props: { searchParams: Promise<{ fecha?: stri
           </div>
           <span className="font-mono text-sm font-semibold text-[#007A33]">Compartir →</span>
         </a>
-
-        <NotificacionesPush />
 
         {error ? (
           <div className="mb-6 rounded-lg border border-[#E4573D]/40 bg-[#E4573D]/5 p-4 text-sm text-[#B23B26]">No pudimos cargar los datos: {error.message}</div>
