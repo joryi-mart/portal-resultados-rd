@@ -110,67 +110,74 @@ export async function GET(request: Request) {
       return { ...l, sorteos: (l.sorteos || []).filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id); }) };
     });
 
-    const resumen: { creadas: string[]; editadas: string[]; sinCambios: string[] } = {
+    const resumen: { creadas: string[]; editadas: string[]; sinCambios: string[]; fallidas: { loteria: string; error: string }[] } = {
       creadas: [],
       editadas: [],
       sinCambios: [],
+      fallidas: [],
     };
 
     for (const loteria of listaLoterias) {
-      const resultadosDeHoy: ResultadoDeHoy[] = [];
-      (loteria.sorteos || []).forEach(function (sorteo) {
-        (sorteo.resultados || []).forEach(function (r) {
-          if (r.fecha === hoy && r.creado_en) {
-            resultadosDeHoy.push({ sorteoNombre: sorteo.nombre, numeros: r.numeros, creadoEn: r.creado_en });
-          }
-        });
-      });
-
-      if (resultadosDeHoy.length === 0) continue;
-
-      resultadosDeHoy.sort(function (a, b) { return new Date(a.creadoEn).getTime() - new Date(b.creadoEn).getTime(); });
-      const captionNueva = construirCaption(loteria.nombre, loteria.slug, hoy, resultadosDeHoy);
-
-      const publicacionExistente = (publicacionesHoy || []).find(function (p) { return p.loteria_slug === loteria.slug; });
-
-      // Resultados que no estaban en la publicacion anterior, para avisar
-      // solo de lo nuevo por notificacion push (no de todo el mensaje otra vez).
-      const lineasAnteriores = new Set((publicacionExistente?.mensaje || "").split("\n").map(function (l: string) { return l.trim(); }));
-      const resultadosNuevos = resultadosDeHoy.filter(function (r) {
-        return !lineasAnteriores.has(`${r.sorteoNombre}: ${r.numeros}`);
-      });
-
-      if (!publicacionExistente) {
-        const imagen = await generarImagenResultados(loteria.nombre, fechaTitulo(hoy), resultadosDeHoy);
-        const idPublicacion = await crearPublicacion(captionNueva, imagen);
-        const { error: errorInsert } = await supabase
-          .from("publicaciones_facebook")
-          .insert({ loteria_slug: loteria.slug, fecha: hoy, post_id: idPublicacion, mensaje: captionNueva });
-        if (errorInsert) throw new Error(errorInsert.message);
-        resumen.creadas.push(loteria.nombre);
-      } else if (publicacionExistente.mensaje !== captionNueva) {
-        await editarPublicacion(publicacionExistente.post_id, captionNueva);
-        const { error: errorUpdate } = await supabase
-          .from("publicaciones_facebook")
-          .update({ mensaje: captionNueva })
-          .eq("loteria_slug", loteria.slug)
-          .eq("fecha", hoy);
-        if (errorUpdate) throw new Error(errorUpdate.message);
-        resumen.editadas.push(loteria.nombre);
-      } else {
-        resumen.sinCambios.push(loteria.nombre);
-      }
-
-      for (const r of resultadosNuevos) {
-        try {
-          await enviarNotificacionATodos({
-            titulo: `🎱 ${loteria.nombre}`,
-            cuerpo: `${r.sorteoNombre}: ${r.numeros}`,
-            url: `/${loteria.slug}`,
+      // Cada loteria se procesa por separado: si una falla (ej. un problema
+      // puntual de Facebook), las demas se siguen publicando igual.
+      try {
+        const resultadosDeHoy: ResultadoDeHoy[] = [];
+        (loteria.sorteos || []).forEach(function (sorteo) {
+          (sorteo.resultados || []).forEach(function (r) {
+            if (r.fecha === hoy && r.creado_en) {
+              resultadosDeHoy.push({ sorteoNombre: sorteo.nombre, numeros: r.numeros, creadoEn: r.creado_en });
+            }
           });
-        } catch {
-          // No dejar que un error al notificar arruine la publicacion en Facebook.
+        });
+
+        if (resultadosDeHoy.length === 0) continue;
+
+        resultadosDeHoy.sort(function (a, b) { return new Date(a.creadoEn).getTime() - new Date(b.creadoEn).getTime(); });
+        const captionNueva = construirCaption(loteria.nombre, loteria.slug, hoy, resultadosDeHoy);
+
+        const publicacionExistente = (publicacionesHoy || []).find(function (p) { return p.loteria_slug === loteria.slug; });
+
+        // Resultados que no estaban en la publicacion anterior, para avisar
+        // solo de lo nuevo por notificacion push (no de todo el mensaje otra vez).
+        const lineasAnteriores = new Set((publicacionExistente?.mensaje || "").split("\n").map(function (l: string) { return l.trim(); }));
+        const resultadosNuevos = resultadosDeHoy.filter(function (r) {
+          return !lineasAnteriores.has(`${r.sorteoNombre}: ${r.numeros}`);
+        });
+
+        if (!publicacionExistente) {
+          const imagen = await generarImagenResultados(loteria.nombre, fechaTitulo(hoy), resultadosDeHoy);
+          const idPublicacion = await crearPublicacion(captionNueva, imagen);
+          const { error: errorInsert } = await supabase
+            .from("publicaciones_facebook")
+            .insert({ loteria_slug: loteria.slug, fecha: hoy, post_id: idPublicacion, mensaje: captionNueva });
+          if (errorInsert) throw new Error(errorInsert.message);
+          resumen.creadas.push(loteria.nombre);
+        } else if (publicacionExistente.mensaje !== captionNueva) {
+          await editarPublicacion(publicacionExistente.post_id, captionNueva);
+          const { error: errorUpdate } = await supabase
+            .from("publicaciones_facebook")
+            .update({ mensaje: captionNueva })
+            .eq("loteria_slug", loteria.slug)
+            .eq("fecha", hoy);
+          if (errorUpdate) throw new Error(errorUpdate.message);
+          resumen.editadas.push(loteria.nombre);
+        } else {
+          resumen.sinCambios.push(loteria.nombre);
         }
+
+        for (const r of resultadosNuevos) {
+          try {
+            await enviarNotificacionATodos({
+              titulo: `🎱 ${loteria.nombre}`,
+              cuerpo: `${r.sorteoNombre}: ${r.numeros}`,
+              url: `/${loteria.slug}`,
+            });
+          } catch {
+            // No dejar que un error al notificar arruine la publicacion en Facebook.
+          }
+        }
+      } catch (errorLoteria: any) {
+        resumen.fallidas.push({ loteria: loteria.nombre, error: errorLoteria.message });
       }
     }
 
