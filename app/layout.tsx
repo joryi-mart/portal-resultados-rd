@@ -76,6 +76,11 @@ export default function RootLayout({
         <RegistrarServiceWorker />
       </head>
       <body className="min-h-full flex flex-col">
+        <div className="bg-[#E7A63C] px-4 py-2 text-center sm:px-8">
+          <p className="font-mono text-sm font-extrabold uppercase tracking-wide text-[#10203A] sm:text-base">
+            Página informativa no oficial de lotería
+          </p>
+        </div>
         <div className="sticky top-0 z-50 border-b border-white/10 bg-[#10203A] px-4 py-2 shadow-md sm:px-8">
           <a href="/" className="mx-auto flex max-w-7xl items-center gap-2">
             <Image src="/logo-icon.svg" alt="" width={24} height={24} className="h-6 w-6" priority />
