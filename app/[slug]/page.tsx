@@ -254,6 +254,11 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
               · Historia de la Lotería Nacional
             </a>
           ) : null}
+          {params.slug === "real" ? (
+            <a href="/juegos-de-loteria-real" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
+              · ¿Cómo funcionan los juegos de Lotería Real?
+            </a>
+          ) : null}
         </div>
 
         {sorteos.length === 0 ? (
