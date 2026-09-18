@@ -153,14 +153,27 @@ export async function GET(request: Request) {
           if (errorInsert) throw new Error(errorInsert.message);
           resumen.creadas.push(loteria.nombre);
         } else if (publicacionExistente.mensaje !== captionNueva) {
-          await editarPublicacion(publicacionExistente.post_id, captionNueva);
+          // Facebook a veces no deja editar una publicacion ya hecha (permiso
+          // "pages_manage_posts" en nivel basico). Si falla la edicion, en vez
+          // de perder el resultado nuevo, se crea una publicacion nueva con
+          // todo el detalle actualizado y esa pasa a ser la que se seguira
+          // editando (o reemplazando) de aqui en adelante para esta loteria.
+          let idPublicacionFinal = publicacionExistente.post_id;
+          let seCreoNueva = false;
+          try {
+            await editarPublicacion(publicacionExistente.post_id, captionNueva);
+          } catch {
+            const imagen = await generarImagenResultados(loteria.nombre, fechaTitulo(hoy), resultadosDeHoy);
+            idPublicacionFinal = await crearPublicacion(captionNueva, imagen);
+            seCreoNueva = true;
+          }
           const { error: errorUpdate } = await supabase
             .from("publicaciones_facebook")
-            .update({ mensaje: captionNueva })
+            .update({ mensaje: captionNueva, post_id: idPublicacionFinal })
             .eq("loteria_slug", loteria.slug)
             .eq("fecha", hoy);
           if (errorUpdate) throw new Error(errorUpdate.message);
-          resumen.editadas.push(loteria.nombre);
+          resumen[seCreoNueva ? "creadas" : "editadas"].push(loteria.nombre);
         } else {
           resumen.sinCambios.push(loteria.nombre);
         }
