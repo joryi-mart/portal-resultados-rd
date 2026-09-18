@@ -5,10 +5,10 @@ import { Suspense } from "react";
 export const revalidate = 60;
 
 export const metadata = {
-  title: "La Bankera RD | Resultados de Loterías Dominicanas en Vivo",
+  title: "La Bankera RD 🇩🇴 | Resultados de Loterías Dominicanas en Vivo",
   description: "Consulta los resultados de Leidsa, Lotería Nacional, Loteka, Lotería Real y más loterías dominicanas e internacionales, actualizados en vivo. Tipo de cambio del dólar y euro incluido.",
   openGraph: {
-    title: "La Bankera RD | Resultados de Loterías Dominicanas en Vivo",
+    title: "La Bankera RD 🇩🇴 | Resultados de Loterías Dominicanas en Vivo",
     description: "Consulta los resultados de las principales loterías dominicanas e internacionales, actualizados en vivo.",
     siteName: "La Bankera RD",
     locale: "es_DO",
@@ -179,7 +179,7 @@ export default async function Home() {
                 className="h-9 w-9 sm:h-10 sm:w-10"
               />
               <span className="font-[family-name:var(--font-display)] text-2xl font-bold leading-none text-[#FBF7EE] sm:text-2xl">
-                La Bankera<span className="text-[#E7A63C]">RD</span>
+                La Bankera<span className="text-[#E7A63C]">RD</span> 🇩🇴
               </span>
               <Image
                 src="/tambora.png"
