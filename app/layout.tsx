@@ -7,8 +7,8 @@ import RegistrarServiceWorker from "./RegistrarServiceWorker";
 export const metadata: Metadata = {
   metadataBase: new URL("https://labankerard.com"),
   title: {
-    default: "La Bankera RD 🇩🇴 | Resultados de Loterías Dominicanas en Vivo",
-    template: "%s | La Bankera RD 🇩🇴",
+    default: "La Bankera RD | Resultados de Loterías Dominicanas en Vivo",
+    template: "%s | La Bankera RD",
   },
   description:
     "Resultados en vivo de las loterías dominicanas: Nacional, Leidsa, Loteka, Real, Lotedom, La Primera y más. Además, Béisbol/MLB, NBA, Fútbol y Cine en un solo lugar.",
@@ -80,8 +80,9 @@ export default function RootLayout({
           <a href="/" className="mx-auto flex max-w-7xl items-center gap-2">
             <Image src="/logo-icon.svg" alt="" width={24} height={24} className="h-6 w-6" priority />
             <span className="text-base font-bold leading-none text-[#FBF7EE]">
-              La Bankera<span className="text-[#E7A63C]">RD</span> 🇩🇴
+              La Bankera<span className="text-[#E7A63C]">RD</span>
             </span>
+            <Image src="/bandera-rd.svg" alt="Bandera de República Dominicana" width={24} height={16} className="h-4 w-6" />
           </a>
         </div>
         {children}
