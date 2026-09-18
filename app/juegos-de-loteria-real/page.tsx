@@ -99,6 +99,9 @@ export default function JuegosDeLoteriaRealPage() {
           <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold text-[#FBF7EE] sm:text-4xl">
             ¿Cómo funcionan los juegos de Lotería Real?
           </h1>
+          <p className="mt-2 font-mono text-sm font-extrabold uppercase tracking-wide text-[#E7A63C] sm:text-base">
+            Página informativa no oficial de lotería
+          </p>
           <p className="mt-2 font-mono text-sm text-[#D5DEEA]">
             Quiniela Real, Tu Fecha, Loto Pool, Nueva Yol Real, Loto Real, Chance Real y Súper Palé Real, explicados uno por uno.
           </p>
