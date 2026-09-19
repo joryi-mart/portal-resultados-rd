@@ -192,6 +192,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     },
     {
+      url: `${SITIO}/juegos-de-la-loteria-nacional`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.6,
+    },
+    {
+      url: `${SITIO}/que-es-anguila-lottery`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.5,
+    },
+    {
+      url: `${SITIO}/que-es-king-lottery-sint-maarten`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.5,
+    },
+    {
       url: `${SITIO}/que-es-haiti-bolet`,
       lastModified: new Date(),
       changeFrequency: "yearly",

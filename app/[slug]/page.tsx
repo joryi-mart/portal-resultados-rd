@@ -279,6 +279,21 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
               · ¿Cómo funcionan los juegos de La Suerte Dominicana?
             </a>
           ) : null}
+          {params.slug === "nacional" ? (
+            <a href="/juegos-de-la-loteria-nacional" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
+              · ¿Cómo funcionan los juegos de la Lotería Nacional?
+            </a>
+          ) : null}
+          {params.slug === "anguila" ? (
+            <a href="/que-es-anguila-lottery" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
+              · Lotería de Anguila: horarios y cómo funciona
+            </a>
+          ) : null}
+          {params.slug === "sxm" ? (
+            <a href="/que-es-king-lottery-sint-maarten" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
+              · King Lottery (Sint Maarten): cómo funciona
+            </a>
+          ) : null}
           {params.slug === "haiti" ? (
             <a href="/que-es-haiti-bolet" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
               · ¿Qué es el Haití Bolet?
