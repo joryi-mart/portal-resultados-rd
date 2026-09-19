@@ -259,6 +259,19 @@ export default async function Home() {
           <ResultadosPortada loterias={listaLoterias} ultimosResultados={ultimosResultados} hoy={hoy} />
         </Suspense>
 
+        <a
+          href="https://www.facebook.com/profile.php?id=1315560834976047"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mb-8 flex items-center justify-between rounded-xl border border-[#10203A]/12 bg-white px-5 py-4 shadow-[0_1px_3px_rgba(16,32,58,0.08)] transition hover:shadow-md"
+        >
+          <div>
+            <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Síguenos en Facebook</p>
+            <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Recibe los resultados de cada sorteo directo en tu muro</p>
+          </div>
+          <span className="font-mono text-sm font-semibold text-[#1877F2]">Seguir →</span>
+        </a>
+
         {error ? (
           <div className="mb-6 rounded-lg border border-[#E4573D]/40 bg-[#E4573D]/5 p-4 text-sm text-[#B23B26]">No pudimos cargar los datos: {error.message}</div>
         ) : null}
