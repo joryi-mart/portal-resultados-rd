@@ -279,6 +279,11 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
               · ¿Cómo funcionan los juegos de La Suerte Dominicana?
             </a>
           ) : null}
+          {params.slug === "haiti" ? (
+            <a href="/que-es-haiti-bolet" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
+              · ¿Qué es el Haití Bolet?
+            </a>
+          ) : null}
           {["new-york", "florida", "loterias-americanas"].includes(params.slug) ? (
             <a href="/guia-loterias-americanas" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
               · ¿Cómo funcionan las loterías americanas?

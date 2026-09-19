@@ -192,6 +192,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     },
     {
+      url: `${SITIO}/que-es-haiti-bolet`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.5,
+    },
+    {
       url: `${SITIO}/guia-loterias-americanas`,
       lastModified: new Date(),
       changeFrequency: "yearly",
