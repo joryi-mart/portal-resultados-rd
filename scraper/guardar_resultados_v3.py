@@ -70,6 +70,10 @@ MAPEO_SORTEOS = {
     ("anguila", "Anguila Mediodia"): 126,
     ("anguila", "Anguila Tarde"): 127,
     ("anguila", "Anguila Noche"): 128,
+    # La fuente renombro estos sorteos (antes "Mediodia"/"Tarde"). El de las
+    # 9:00 PM no se mapea aqui porque lo cubre guardar_anguila_extra.py.
+    ("anguila", "Anguila 1:00 PM"): 126,
+    ("anguila", "Anguila 6:00 PM"): 127,
     ("haiti", "Haiti Bolet 9:30 AM"): 129,
     ("haiti", "Haiti Bolet 10:30 AM"): 130,
     ("haiti", "Haiti Bolet 11:30 AM"): 131,
