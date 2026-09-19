@@ -39,6 +39,12 @@ export default function GuiaJuegos(props: {
   encabezadoJuegos?: string;
   juegos: JuegoGuia[];
   preguntas: PreguntaGuia[];
+  aviso?: string;
+  notaFinal?: string;
+  icono?: string;
+  mostrarComoJugar?: boolean;
+  guiasRelacionadas?: { href: string; titulo: string }[];
+  tituloGuias?: string;
 }) {
   const datosEstructurados = {
     "@context": "https://schema.org",
@@ -59,7 +65,7 @@ export default function GuiaJuegos(props: {
             {props.titulo}
           </h1>
           <p className="mt-2 font-mono text-sm font-extrabold uppercase tracking-wide text-[#E7A63C] sm:text-base">
-            Página informativa no oficial de lotería
+            {props.aviso ?? "Página informativa no oficial de lotería"}
           </p>
           <p className="mt-2 font-mono text-sm text-[#D5DEEA]">{props.subtitulo}</p>
         </div>
@@ -74,7 +80,7 @@ export default function GuiaJuegos(props: {
                 href={b.href}
                 className="inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
               >
-                🎱 {b.texto}
+                {props.icono ?? "🎱"} {b.texto}
               </a>
             );
           })}
@@ -98,25 +104,27 @@ export default function GuiaJuegos(props: {
           })}
         </div>
 
-        <p className="mb-8 text-sm leading-relaxed">
-          Si no conoces la mecánica básica de quiniela, palé y tripleta, te recomendamos leer primero nuestra{" "}
-          <a href="/como-jugar-loteria" className="underline" style={{ color: COLOR_AZUL }}>
-            guía de cómo jugar
-          </a>
-          .
-        </p>
+        {props.mostrarComoJugar === false ? null : (
+          <p className="mb-8 text-sm leading-relaxed">
+            Si no conoces la mecánica básica de quiniela, palé y tripleta, te recomendamos leer primero nuestra{" "}
+            <a href="/como-jugar-loteria" className="underline" style={{ color: COLOR_AZUL }}>
+              guía de cómo jugar
+            </a>
+            .
+          </p>
+        )}
 
         <PreguntasFrecuentes preguntas={props.preguntas} />
 
         <p className="mt-8 rounded-xl border border-[#10203A]/12 bg-white p-4 text-xs leading-relaxed">
-          Esta guía es informativa y no oficial. Las reglas, horarios y premios los define cada lotería y pueden cambiar:
-          confirma siempre en tu banca o en los canales oficiales de la lotería antes de jugar.
+          {props.notaFinal ??
+            "Esta guía es informativa y no oficial. Las reglas, horarios y premios los define cada lotería y pueden cambiar: confirma siempre en tu banca o en los canales oficiales de la lotería antes de jugar."}
         </p>
 
         <section className="mt-8">
-          <h2 className="mb-3 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Más guías</h2>
+          <h2 className="mb-3 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">{props.tituloGuias ?? "Más guías"}</h2>
           <ul className="flex flex-col gap-1.5 text-sm">
-            {GUIAS.filter(function (g) { return g.href !== props.hrefActual; }).map(function (g) {
+            {(props.guiasRelacionadas ?? GUIAS).filter(function (g) { return g.href !== props.hrefActual; }).map(function (g) {
               return (
                 <li key={g.href}>
                   <a href={g.href} className="underline" style={{ color: COLOR_AZUL }}>
