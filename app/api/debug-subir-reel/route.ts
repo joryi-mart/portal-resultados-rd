@@ -50,3 +50,13 @@ export async function POST(request: Request) {
   salida.paso3_publicar = await r3.json();
   return Response.json(salida, { status: r3.ok ? 200 : 500 });
 }
+
+export async function GET(request: Request) {
+  if (request.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`) {
+    return Response.json({ error: "No autorizado" }, { status: 401 });
+  }
+  const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN || "";
+  const id = new URL(request.url).searchParams.get("video") || "";
+  const res = await fetch(`https://graph.facebook.com/v19.0/${id}?fields=status,scheduled_publish_time,created_time&access_token=${token}`);
+  return Response.json(await res.json());
+}
