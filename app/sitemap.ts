@@ -210,6 +210,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     },
     {
+      url: `${SITIO}/como-funciona-la-nba`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.5,
+    },
+    {
+      url: `${SITIO}/como-funcionan-los-torneos-de-futbol`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.5,
+    },
+    {
+      url: `${SITIO}/como-leer-calificaciones-de-peliculas`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.5,
+    },
+    {
+      url: `${SITIO}/clasificacion-de-videojuegos-esrb`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.5,
+    },
+    {
       url: `${SITIO}/reglas-basicas-del-beisbol`,
       lastModified: new Date(),
       changeFrequency: "yearly",

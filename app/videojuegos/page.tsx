@@ -1,6 +1,7 @@
 import VideojuegosCliente from "./VideojuegosCliente";
 import NoticiasDeporte from "../NoticiasDeporte";
 import PreguntasFrecuentes from "../PreguntasFrecuentes";
+import EnlacesGuias from "../EnlacesGuias";
 import { obtenerNoticiasVideojuegos } from "@/lib/noticiasEntretenimiento";
 
 export const revalidate = 900;
@@ -43,6 +44,7 @@ export default async function VideojuegosPage() {
       <VideojuegosCliente />
       <NoticiasDeporte titulo="Videojuegos" noticias={noticias} />
       <PreguntasFrecuentes preguntas={PREGUNTAS_VIDEOJUEGOS} />
+      <EnlacesGuias titulo="Guías de videojuegos" enlaces={[{ href: "/clasificacion-de-videojuegos-esrb", texto: "Qué significan las clasificaciones de los videojuegos (ESRB)" }]} />
     </>
   );
 }

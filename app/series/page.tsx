@@ -1,6 +1,7 @@
 import SeriesCliente from "./SeriesCliente";
 import NoticiasDeporte from "../NoticiasDeporte";
 import PreguntasFrecuentes from "../PreguntasFrecuentes";
+import EnlacesGuias from "../EnlacesGuias";
 import { obtenerNoticiasSeries } from "@/lib/noticiasEntretenimiento";
 
 export const revalidate = 900;
@@ -43,6 +44,7 @@ export default async function SeriesPage() {
       <SeriesCliente />
       <NoticiasDeporte titulo="Series" noticias={noticias} />
       <PreguntasFrecuentes preguntas={PREGUNTAS_SERIES} />
+      <EnlacesGuias titulo="Guías de series y cine" enlaces={[{ href: "/como-leer-calificaciones-de-peliculas", texto: "Cómo leer las calificaciones de películas y series" }]} />
     </>
   );
 }

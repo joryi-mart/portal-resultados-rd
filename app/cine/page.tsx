@@ -1,5 +1,6 @@
 import CineCliente from "./CineCliente";
 import PreguntasFrecuentes from "../PreguntasFrecuentes";
+import EnlacesGuias from "../EnlacesGuias";
 
 export const metadata = {
   title: "Cartelera de Cine: Estrenos y Películas Populares",
@@ -31,6 +32,7 @@ export default function CinePage() {
     <>
       <CineCliente />
       <PreguntasFrecuentes preguntas={PREGUNTAS_CINE} />
+      <EnlacesGuias titulo="Guías de cine" enlaces={[{ href: "/como-leer-calificaciones-de-peliculas", texto: "Cómo leer las calificaciones de películas y series" }]} />
     </>
   );
 }

@@ -1,6 +1,7 @@
 import NBACliente from "./NBACliente";
 import NoticiasDeporte from "../NoticiasDeporte";
 import PreguntasFrecuentes from "../PreguntasFrecuentes";
+import EnlacesGuias from "../EnlacesGuias";
 import { obtenerNoticiasBaloncesto } from "@/lib/noticiasDeportes";
 
 const PREGUNTAS_NBA = [
@@ -47,6 +48,7 @@ export default async function NBAPage() {
       <NBACliente />
       <NoticiasDeporte titulo="Baloncesto y NBA" noticias={noticias} />
       <PreguntasFrecuentes preguntas={PREGUNTAS_NBA} />
+      <EnlacesGuias titulo="Guías de baloncesto" enlaces={[{ href: "/como-funciona-la-nba", texto: "Cómo funciona la NBA" }]} />
     </>
   );
 }
