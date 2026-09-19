@@ -259,6 +259,31 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
               · ¿Cómo funcionan los juegos de Lotería Real?
             </a>
           ) : null}
+          {params.slug === "loteka" ? (
+            <a href="/juegos-de-loteka" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
+              · ¿Cómo funcionan los juegos de Loteka?
+            </a>
+          ) : null}
+          {params.slug === "la-primera" ? (
+            <a href="/juegos-de-la-primera" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
+              · ¿Cómo funcionan los juegos de La Primera?
+            </a>
+          ) : null}
+          {params.slug === "lotedom" ? (
+            <a href="/juegos-de-lotedom" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
+              · ¿Cómo funcionan los juegos de LoteDom?
+            </a>
+          ) : null}
+          {params.slug === "la-suerte" ? (
+            <a href="/juegos-de-la-suerte-dominicana" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
+              · ¿Cómo funcionan los juegos de La Suerte Dominicana?
+            </a>
+          ) : null}
+          {["leidsa", "real", "lotedom"].includes(params.slug) ? (
+            <a href="/que-es-el-super-pale" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
+              · ¿Qué es el Súper Palé?
+            </a>
+          ) : null}
         </div>
 
         {sorteos.length === 0 ? (
