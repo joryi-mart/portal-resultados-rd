@@ -112,7 +112,7 @@ export async function generarImagenResultados(loteriaNombre: string, fechaTexto:
                           background: "#2E6DA4",
                           fontSize: "28px",
                           fontWeight: 800,
-                          color: "#F6D983",
+                          color: "#FFFFFF",
                         }}
                       >
                         {n}
