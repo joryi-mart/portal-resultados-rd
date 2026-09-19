@@ -27,6 +27,9 @@ export default function LidomPage() {
             <a href="/equipos-de-la-lidom" className="underline" style={{ color: "#1E4D8C" }}>
               Los 6 equipos de la LIDOM
             </a>
+            <a href="/reglas-basicas-del-beisbol" className="underline" style={{ color: "#1E4D8C" }}>
+              Reglas básicas del béisbol
+            </a>
           </div>
         </div>
       </div>

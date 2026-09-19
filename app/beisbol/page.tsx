@@ -50,6 +50,22 @@ export default async function BeisbolPage() {
       <BeisbolCliente />
       <NoticiasDeporte titulo="Béisbol y MLB" noticias={noticias} />
       <PreguntasFrecuentes preguntas={PREGUNTAS_BEISBOL} />
+      <div className="bg-[#FBF7EE] px-4 pb-10 sm:px-8">
+        <div className="mx-auto max-w-6xl border-t border-[#10203A]/10 pt-6">
+          <p className="mb-2 text-sm font-bold text-[#10203A]">Guías de béisbol</p>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+            <a href="/reglas-basicas-del-beisbol" className="underline" style={{ color: "#1E4D8C" }}>
+              Reglas básicas del béisbol
+            </a>
+            <a href="/como-funciona-la-lidom" className="underline" style={{ color: "#1E4D8C" }}>
+              Cómo funciona la LIDOM
+            </a>
+            <a href="/equipos-de-la-lidom" className="underline" style={{ color: "#1E4D8C" }}>
+              Los 6 equipos de la LIDOM
+            </a>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
