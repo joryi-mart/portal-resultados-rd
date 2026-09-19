@@ -18,6 +18,8 @@ const GUIAS = [
   { href: "/juegos-de-la-primera", titulo: "Cómo funcionan los juegos de La Primera" },
   { href: "/juegos-de-lotedom", titulo: "Cómo funcionan los juegos de LoteDom" },
   { href: "/juegos-de-la-suerte-dominicana", titulo: "Cómo funcionan los juegos de La Suerte Dominicana" },
+  { href: "/guia-loterias-americanas", titulo: "Loterías americanas: New York, Florida, New Jersey y Georgia" },
+  { href: "/como-jugar-powerball", titulo: "Cómo jugar Powerball y en qué se diferencia de Mega Millions" },
 ];
 
 export type JuegoGuia = { nombre: string; texto: string };

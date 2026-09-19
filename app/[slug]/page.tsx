@@ -279,6 +279,16 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
               · ¿Cómo funcionan los juegos de La Suerte Dominicana?
             </a>
           ) : null}
+          {["new-york", "florida", "loterias-americanas"].includes(params.slug) ? (
+            <a href="/guia-loterias-americanas" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
+              · ¿Cómo funcionan las loterías americanas?
+            </a>
+          ) : null}
+          {["powerball", "mega-millions"].includes(params.slug) ? (
+            <a href="/como-jugar-powerball" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
+              · Cómo jugar Powerball y Mega Millions
+            </a>
+          ) : null}
           {["leidsa", "real", "lotedom"].includes(params.slug) ? (
             <a href="/que-es-el-super-pale" className="font-mono text-xs underline" style={{ color: COLOR_AZUL }}>
               · ¿Qué es el Súper Palé?
