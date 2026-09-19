@@ -111,12 +111,38 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
     return { title: "Fecha no válida" };
   }
 
-  const { data: loteria } = await supabase.from("loterias").select("nombre").eq("slug", params.slug).maybeSingle();
-  if (!loteria) return { title: "Lotería no encontrada" };
+  const { data: loteriaCompleta } = await supabase
+    .from("loterias")
+    .select("nombre, sorteos ( id, nombre, resultados ( numeros, fecha ) )")
+    .eq("slug", params.slug)
+    .maybeSingle();
+  if (!loteriaCompleta) return { title: "Lotería no encontrada" };
+  const loteria = loteriaCompleta as unknown as {
+    nombre: string;
+    sorteos: { id: number; nombre: string; resultados: { numeros: string; fecha: string }[] }[];
+  };
 
   const fechaLarga = formatearFechaLarga(params.fecha);
-  const titulo = `Resultados de ${loteria.nombre} hoy ${fechaLarga}`;
-  const descripcion = `Consulta los números ganadores de ${loteria.nombre} del ${fechaLarga} en República Dominicana. Resultado oficial actualizado en La Bankera RD.`;
+  const esHoy = params.fecha === hoyISO();
+  const titulo = esHoy
+    ? `Resultados de ${loteria.nombre} hoy ${fechaLarga}`
+    : `Resultados de ${loteria.nombre} del ${fechaLarga}`;
+
+  // Los numeros van en la descripcion para que se vean directo en Google.
+  // Se omiten los sorteos con muchos numeros (ej. Super Kino TV, 20) para
+  // que la descripcion no se corte.
+  const lineasNumeros = (loteria.sorteos || [])
+    .filter(function (s) { return ![73, 78, 119].includes(s.id); })
+    .map(function (s) {
+      const r = (s.resultados || []).find(function (x) { return x.fecha === params.fecha; });
+      return r && r.numeros.split("-").length <= 8 ? `${s.nombre}: ${r.numeros}` : null;
+    })
+    .filter(function (l): l is string { return !!l; })
+    .slice(0, 3);
+
+  const descripcion = lineasNumeros.length > 0
+    ? `Números ganadores de ${loteria.nombre} del ${fechaLarga}: ${lineasNumeros.join(" · ")}. Información no oficial de La Bankera RD.`
+    : `Consulta los números ganadores de ${loteria.nombre} del ${fechaLarga} en República Dominicana. Información no oficial de La Bankera RD.`;
 
   return {
     title: titulo,
