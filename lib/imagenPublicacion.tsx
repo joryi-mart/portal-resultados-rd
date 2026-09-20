@@ -23,21 +23,33 @@ const ANCHO_IMAGEN = 1080;
 const PADDING_LATERAL = 80;
 const PADDING_FILA_LATERAL = 32;
 const ANCHO_CHIPS = ANCHO_IMAGEN - PADDING_LATERAL * 2 - PADDING_FILA_LATERAL * 2;
-const ANCHO_CHIP = 64;
-const ESPACIO_CHIP = 12;
-const CHIPS_POR_LINEA = Math.max(1, Math.floor((ANCHO_CHIPS + ESPACIO_CHIP) / (ANCHO_CHIP + ESPACIO_CHIP)));
+const ESPACIO_CHIP = 14;
 
-const ALTO_ETIQUETA = 50; // nombre del sorteo + espacio antes de las bolitas
-const ALTO_LINEA_CHIPS = 64;
-const ESPACIO_ENTRE_LINEAS_CHIPS = 10;
-const PADDING_FILA_VERTICAL = 44; // 22px arriba y abajo
-const ESPACIO_ENTRE_FILAS = 16;
-const ALTO_CABECERA = 240; // logo + nombre de loteria + fecha
-const ALTO_PIE = 100;
+// Las bolitas son grandes y de alto contraste (blancas con numero azul oscuro)
+// para que se lean bien en el celular. Solo se achican cuando un sorteo trae
+// muchos numeros (ej. Super Kino TV con 20), para que quepan en 2 lineas.
+function tamanoChip(cantidadNumeros: number) {
+  if (cantidadNumeros <= 6) return 118;
+  if (cantidadNumeros <= 8) return 84;
+  if (cantidadNumeros <= 12) return 80;
+  return 72;
+}
+
+function chipsPorLinea(ancho: number) {
+  return Math.max(1, Math.floor((ANCHO_CHIPS + ESPACIO_CHIP) / (ancho + ESPACIO_CHIP)));
+}
+
+const ALTO_ETIQUETA = 62; // nombre del sorteo + espacio antes de las bolitas
+const ESPACIO_ENTRE_LINEAS_CHIPS = 12;
+const PADDING_FILA_VERTICAL = 52; // 26px arriba y abajo
+const ESPACIO_ENTRE_FILAS = 20;
+const ALTO_CABECERA = 345; // logo + nombre de loteria + fecha
+const ALTO_PIE = 155;
 
 function alturaFila(cantidadNumeros: number) {
-  const lineas = Math.max(1, Math.ceil(cantidadNumeros / CHIPS_POR_LINEA));
-  return PADDING_FILA_VERTICAL + ALTO_ETIQUETA + lineas * ALTO_LINEA_CHIPS + (lineas - 1) * ESPACIO_ENTRE_LINEAS_CHIPS;
+  const ancho = tamanoChip(cantidadNumeros);
+  const lineas = Math.max(1, Math.ceil(cantidadNumeros / chipsPorLinea(ancho)));
+  return PADDING_FILA_VERTICAL + ALTO_ETIQUETA + lineas * ancho + (lineas - 1) * ESPACIO_ENTRE_LINEAS_CHIPS;
 }
 
 export async function generarImagenResultados(loteriaNombre: string, fechaTexto: string, resultados: Resultado[]) {
@@ -73,16 +85,17 @@ export async function generarImagenResultados(loteriaNombre: string, fechaTexto:
           </div>
         </div>
 
-        <div style={{ display: "flex", fontSize: "56px", fontWeight: 800, color: "#FBF7EE", marginTop: "48px" }}>
+        <div style={{ display: "flex", fontSize: "72px", fontWeight: 800, color: "#FFFFFF", marginTop: "48px" }}>
           {loteriaNombre}
         </div>
-        <div style={{ display: "flex", fontSize: "28px", color: "#9AB0CC", marginTop: "8px" }}>
+        <div style={{ display: "flex", fontSize: "34px", color: "#C9D6E8", marginTop: "8px" }}>
           {fechaTexto}
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: `${ESPACIO_ENTRE_FILAS}px`, marginTop: "36px" }}>
           {resultados.map(function (r, i) {
             const numeros = r.numeros.split("-");
+            const ancho = tamanoChip(numeros.length);
             return (
               <div
                 key={i}
@@ -90,12 +103,12 @@ export async function generarImagenResultados(loteriaNombre: string, fechaTexto:
                   display: "flex",
                   flexDirection: "column",
                   gap: "12px",
-                  background: "rgba(255,255,255,0.06)",
-                  borderRadius: "14px",
-                  padding: "22px 32px",
+                  background: "rgba(255,255,255,0.09)",
+                  borderRadius: "18px",
+                  padding: "26px 32px",
                 }}
               >
-                <div style={{ display: "flex", fontSize: "30px", color: "#D5DEEA" }}>{r.sorteoNombre}</div>
+                <div style={{ display: "flex", fontSize: "38px", fontWeight: 800, color: "#F2C065" }}>{r.sorteoNombre}</div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: `${ESPACIO_CHIP}px` }}>
                   {numeros.map(function (n, ni) {
                     return (
@@ -105,14 +118,15 @@ export async function generarImagenResultados(loteriaNombre: string, fechaTexto:
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          minWidth: `${ANCHO_CHIP}px`,
-                          height: `${ANCHO_CHIP}px`,
-                          padding: "0 8px",
+                          minWidth: `${ancho}px`,
+                          height: `${ancho}px`,
+                          padding: "0 6px",
                           borderRadius: "999px",
-                          background: "#2E6DA4",
-                          fontSize: "28px",
+                          background: "#FFFFFF",
+                          border: `${Math.round(ancho / 16)}px solid #E7A63C`,
+                          fontSize: `${Math.round(ancho * 0.5)}px`,
                           fontWeight: 800,
-                          color: "#FFFFFF",
+                          color: "#0A1830",
                         }}
                       >
                         {n}
@@ -125,7 +139,7 @@ export async function generarImagenResultados(loteriaNombre: string, fechaTexto:
           })}
         </div>
 
-        <div style={{ display: "flex", fontSize: "26px", color: "#D5DEEA", marginTop: "56px" }}>
+        <div style={{ display: "flex", fontSize: "32px", fontWeight: 800, color: "#F2C065", marginTop: "56px" }}>
           labankerard.com
         </div>
       </div>
