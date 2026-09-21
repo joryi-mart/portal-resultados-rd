@@ -204,7 +204,7 @@ export default async function Home() {
             </a>
             <Suspense
               fallback={
-                <div className="hidden items-center gap-2 self-start rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#E7A63C] sm:flex sm:self-auto">
+                <div className="hidden items-center gap-2 self-start rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#E7A63C] sm:mr-24 sm:flex sm:self-auto lg:mr-40">
                   <span className="h-2 w-2 animate-pulse rounded-full bg-[#E4573D]" />
                   En vivo · {fechaTitulo}
                 </div>
