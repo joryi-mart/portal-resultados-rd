@@ -38,7 +38,7 @@ export const display = Space_Grotesk({
 });
 export const body = Manrope({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "800"],
   variable: "--font-body",
 });
 export const mono = IBM_Plex_Mono({
@@ -112,6 +112,18 @@ export default async function Home() {
   ultimosResultados.sort(function (a, b) { return new Date(b.creadoEn).getTime() - new Date(a.creadoEn).getTime(); });
 
   const fechaTitulo = formatearFechaTitulo(hoy);
+
+  // Hora del ultimo resultado publicado hoy (hora de RD), para que se vea que
+  // los datos estan frescos. creado_en viene en UTC sin zona horaria explicita.
+  let horaUltimoResultado = "";
+  if (ultimosResultados.length > 0) {
+    const bruto = ultimosResultados[0].creadoEn;
+    const ultimo = new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(bruto) ? bruto : bruto + "Z");
+    const diaRD = new Date(ultimo.getTime() - 4 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    if (!isNaN(ultimo.getTime()) && diaRD === hoy) {
+      horaUltimoResultado = ultimo.toLocaleTimeString("es-DO", { timeZone: "America/Santo_Domingo", hour: "numeric", minute: "2-digit", hour12: true });
+    }
+  }
 
   // Datos estructurados (schema.org) con los resultados de hoy, para que Google
   // pueda leer los números ganadores directamente, no solo el texto. Se calculan
@@ -204,6 +216,11 @@ export default async function Home() {
           <p className="mb-3 text-center text-sm font-semibold leading-relaxed text-[#FBF7EE] sm:text-left sm:text-base">
             ¡Resultados de Loterías Dominicanas en Vivo! Consulta Leidsa, Nacional, Loteka y más.
           </p>
+          {horaUltimoResultado ? (
+            <p className="mb-3 text-center font-mono text-xs font-semibold text-[#E7A63C] sm:text-left">
+              Último resultado publicado hoy: {horaUltimoResultado}
+            </p>
+          ) : null}
           <Suspense fallback={<PanelSuperior cambios={cambios} fechaActual={hoy} />}>
             <PanelSuperiorConFecha cambios={cambios} hoy={hoy} />
           </Suspense>

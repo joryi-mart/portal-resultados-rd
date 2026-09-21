@@ -591,7 +591,7 @@ export function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: 
               return (
                 <span
                   key={k}
-                  className={"flex h-12 w-12 items-center justify-center rounded-full font-mono text-lg font-bold " + (fila.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
+                  className={"flex h-12 w-12 items-center justify-center rounded-full text-[1.3rem] font-extrabold tracking-tight [font-variant-numeric:lining-nums] " + (fila.esDeAyer ? "bg-[#E4E8EB] text-[#7B858F]" : estiloEspecial ? "" : "bg-[#1E4D8C] text-white")}
                   style={estiloEspecial}
                 >
                   {n}
@@ -606,7 +606,12 @@ export function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: 
             );
             return (
               <a key={j} href={href} className="block rounded-lg -mx-1 px-1 py-1 transition hover:bg-[#FBF7EE]">
-                <div className="mb-1.5">{etiqueta}</div>
+                <div className="mb-1.5 flex items-baseline justify-between gap-2">
+                  {etiqueta}
+                  <span className="shrink-0 font-mono text-xs font-bold" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                    {formatearHora12(horaSorteoEfectiva(fila.sorteoId, fila.horaSorteo, props.fechaSeleccionada))}
+                  </span>
+                </div>
                 <div className="flex flex-wrap items-center gap-1.5">{bolitas}</div>
               </a>
             );
