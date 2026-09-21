@@ -1,6 +1,7 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
 import { supabase } from "@/lib/supabase";
 import { slugSorteo } from "@/lib/slug";
+import { COLOR_POR_POSICION_SORTEOS } from "@/app/componentesResultados";
 import { notFound } from "next/navigation";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
@@ -65,12 +66,12 @@ function tamanoBolita(cantidad: number) {
   return "h-14 w-14 text-xl";
 }
 
-function Bolita(props: { children: React.ReactNode; tamano: string; opaca?: boolean }) {
+function Bolita(props: { children: React.ReactNode; tamano: string; opaca?: boolean; color?: { fondo: string; texto: string } }) {
   const opaca = props.opaca === true;
   return (
     <div
       className={"relative flex shrink-0 items-center justify-center rounded-full font-mono font-bold " + props.tamano + (opaca ? " border-2 border-dashed border-[#9AA5AF] text-[#7B858F]" : " text-white")}
-      style={opaca ? { backgroundColor: "#E4E8EB" } : { backgroundColor: COLOR_AZUL }}
+      style={opaca ? { backgroundColor: "#E4E8EB" } : props.color ? { backgroundColor: props.color.fondo, color: props.color.texto } : { backgroundColor: COLOR_AZUL }}
     >
       {props.children}
     </div>
@@ -184,7 +185,10 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
           <p className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Resultado de hoy</p>
           {numeros.length > 0 ? (
             <div className="flex flex-wrap items-center gap-2">
-              {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano}>{n}</Bolita>; })}
+              {numeros.map(function (n, i) {
+                const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[sorteo.id];
+                return <Bolita key={i} tamano={tamano} color={colorPorPosicion ? colorPorPosicion(i, numeros.length) ?? undefined : undefined}>{n}</Bolita>;
+              })}
             </div>
           ) : (
             <span className="inline-block rounded-full px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wide" style={{ backgroundColor: "#E4E8EB", color: "#7B858F" }}>

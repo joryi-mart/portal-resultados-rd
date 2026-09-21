@@ -1,6 +1,7 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
 import { supabase } from "@/lib/supabase";
 import { slugSorteo } from "@/lib/slug";
+import { COLOR_POR_POSICION_SORTEOS } from "@/app/componentesResultados";
 import { notFound } from "next/navigation";
 import NavPildoras from "../NavPildoras";
 import PreguntasFrecuentes from "../PreguntasFrecuentes";
@@ -130,12 +131,12 @@ function calcularCalientesFrios(resultados: Resultado[]) {
   };
 }
 
-function Bolita(props: { children: React.ReactNode; tamano: string; opaca?: boolean }) {
+function Bolita(props: { children: React.ReactNode; tamano: string; opaca?: boolean; color?: { fondo: string; texto: string } }) {
   const opaca = props.opaca === true;
   return (
     <div
       className={"relative flex shrink-0 items-center justify-center rounded-full font-mono font-bold " + props.tamano + (opaca ? " border-2 border-dashed border-[#9AA5AF] text-[#7B858F]" : " text-white")}
-      style={opaca ? { backgroundColor: "#E4E8EB" } : { backgroundColor: COLOR_AZUL }}
+      style={opaca ? { backgroundColor: "#E4E8EB" } : props.color ? { backgroundColor: props.color.fondo, color: props.color.texto } : { backgroundColor: COLOR_AZUL }}
     >
       {props.children}
     </div>
@@ -368,7 +369,10 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
                       </div>
                     ) : (
                       <div className="flex flex-wrap items-center gap-2">
-                        {numeros.map(function (n, i) { return <Bolita key={i} tamano={tamano}>{n}</Bolita>; })}
+                        {numeros.map(function (n, i) {
+                          const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[sorteo.id];
+                          return <Bolita key={i} tamano={tamano} color={colorPorPosicion ? colorPorPosicion(i, numeros.length) ?? undefined : undefined}>{n}</Bolita>;
+                        })}
                       </div>
                     )
                   ) : (

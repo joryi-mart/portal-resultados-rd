@@ -47,6 +47,12 @@ type ColorBolita = { fondo: string; texto: string };
 // los primeros 6 son el loto normal, y trae 2 numeros extra de otro sorteo),
 // esta funcion decide el color segun la posicion del numero.
 export const COLOR_POR_POSICION_SORTEOS: Record<number, (indice: number, total: number) => ColorBolita | null> = {
+  // Juega + Pega + (Loteria Nacional): tres bolas azules, una verde y una roja.
+  64: function (indice) {
+    if (indice <= 2) return { fondo: "#1E4D8C", texto: "#FFFFFF" };
+    if (indice === 3) return { fondo: "#2E8B3D", texto: "#FFFFFF" };
+    return { fondo: "#C8302E", texto: "#FFFFFF" };
+  },
   69: function (indice) {
     if (indice === 6) return { fondo: "#D4E157", texto: "#3D4B0A" }; // verde amarillo claro
     if (indice === 7) return { fondo: "#0A5C36", texto: "#FFFFFF" }; // verde presidente
@@ -733,8 +739,8 @@ export function TablaResultadosDelDia(props: { loterias: Loteria[]; fechaSelecci
                 href={href}
                 className="flex items-center justify-between gap-3 border-t border-[#10203A]/6 px-5 py-3 hover:bg-[#FBF7EE]"
               >
-                <span className="min-w-0 truncate text-base font-semibold text-[#10203A]">{fila.sorteo}</span>
-                <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+                <span className="max-w-[45%] shrink-0 text-base font-semibold text-[#10203A]">{fila.sorteo}</span>
+                <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-1.5">
                   {fila.numeros.map(function (n, k) {
                     const colorEspecial = colorPorPosicion ? colorPorPosicion(k, fila.numeros.length) : null;
                     const esPrimera = k === 0 && !colorEspecial;
