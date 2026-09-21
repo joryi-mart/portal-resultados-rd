@@ -1,4 +1,5 @@
 import RelojDigital from "./RelojDigital";
+import NotificacionesPush from "./NotificacionesPush";
 
 export type Resultado = { numeros: string; fecha: string; creado_en: string };
 export type Sorteo = {
@@ -615,6 +616,16 @@ export function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: 
     );
   }
 
+  // La tarjeta de avisos va entre las tarjetas de loterias: 4 arriba y el resto debajo.
+  function conTarjetaDeAvisos(lista: ReturnType<typeof ordenarPor>) {
+    const salida: React.ReactNode[] = [];
+    lista.forEach(function (t, ti) {
+      salida.push(renderTarjeta(t, ti));
+      if (ti === 3) salida.push(<NotificacionesPush key="tarjeta-avisos" className="mb-3 break-inside-avoid" />);
+    });
+    return salida;
+  }
+
   return (
     <div className="overflow-hidden rounded-2xl bg-[#10203A]">
       <div className="p-5 pb-3 sm:p-6 sm:pb-4">
@@ -634,10 +645,10 @@ export function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: 
       ) : (
         <>
           <div className="mx-3 mb-3 columns-1 gap-3 sm:hidden">
-            {ordenarPor(ORDEN_IMPORTANCIA_MOVIL).map(renderTarjeta)}
+            {conTarjetaDeAvisos(ordenarPor(ORDEN_IMPORTANCIA_MOVIL))}
           </div>
           <div className="mx-3 mb-3 hidden gap-3 sm:mx-4 sm:mb-4 sm:columns-3 sm:block">
-            {ordenarPor(ORDEN_IMPORTANCIA_ESCRITORIO).map(renderTarjeta)}
+            {conTarjetaDeAvisos(ordenarPor(ORDEN_IMPORTANCIA_ESCRITORIO))}
           </div>
         </>
       )}

@@ -11,30 +11,48 @@ function base64UrlAUint8Array(base64Url: string) {
   return salida;
 }
 
-export default function NotificacionesPush() {
-  const [estado, setEstado] = useState<"cargando" | "no-soportado" | "puede-activar" | "activado" | "bloqueado">("cargando");
+const CLAVE_OCULTO = "aviso-notificaciones-oculto-hasta";
+const DIAS_OCULTO = 7;
+
+function estaOculto() {
+  try {
+    const hasta = Number(localStorage.getItem(CLAVE_OCULTO) || 0);
+    return hasta > Date.now();
+  } catch {
+    return false;
+  }
+}
+
+// Tarjeta que invita a activar los avisos. Solo aparece si el telefono lo permite
+// y la persona todavia no los tiene activados; si toca "Ahora no" no vuelve a
+// salir por una semana.
+export default function NotificacionesPush(props: { className?: string }) {
+  const [estado, setEstado] = useState<"cargando" | "oculto" | "puede-activar">("cargando");
 
   useEffect(function () {
-    if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
-      setEstado("no-soportado");
-      return;
-    }
-    if (Notification.permission === "denied") {
-      setEstado("bloqueado");
+    if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window) || Notification.permission === "denied" || estaOculto()) {
+      setEstado("oculto");
       return;
     }
     navigator.serviceWorker.ready.then(function (registro) {
       registro.pushManager.getSubscription().then(function (suscripcion) {
-        setEstado(suscripcion ? "activado" : "puede-activar");
+        setEstado(suscripcion ? "oculto" : "puede-activar");
       });
     });
   }, []);
+
+  function ocultarPorUnaSemana() {
+    try {
+      localStorage.setItem(CLAVE_OCULTO, String(Date.now() + DIAS_OCULTO * 24 * 60 * 60 * 1000));
+    } catch {}
+    setEstado("oculto");
+  }
 
   async function activarNotificaciones() {
     try {
       const permiso = await Notification.requestPermission();
       if (permiso !== "granted") {
-        setEstado(permiso === "denied" ? "bloqueado" : "puede-activar");
+        ocultarPorUnaSemana();
         return;
       }
       const registro = await navigator.serviceWorker.ready;
@@ -50,37 +68,28 @@ export default function NotificacionesPush() {
         body: JSON.stringify(suscripcion.toJSON()),
       });
 
-      setEstado("activado");
+      setEstado("oculto");
     } catch {
       setEstado("puede-activar");
     }
   }
 
-  if (estado === "cargando" || estado === "no-soportado") return null;
+  if (estado !== "puede-activar") return null;
 
   return (
-    <button
-      onClick={estado === "puede-activar" ? activarNotificaciones : undefined}
-      disabled={estado !== "puede-activar"}
-      className="mb-8 flex w-full items-center justify-between rounded-xl border border-[#10203A]/12 bg-white px-5 py-4 text-left shadow-[0_1px_3px_rgba(16,32,58,0.08)] transition hover:shadow-md disabled:cursor-default"
-    >
-      <div>
-        <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">
-          {estado === "activado" ? "Ya recibes notificaciones" : estado === "bloqueado" ? "Notificaciones bloqueadas" : "Avísame cuando salga un resultado"}
-        </p>
-        <p className="font-mono text-xs text-[#5C6B78]">
-          {estado === "activado"
-            ? "Te avisaremos apenas salga un resultado nuevo"
-            : estado === "bloqueado"
-              ? "Actívalas desde la configuración de tu navegador"
-              : "Recibe un aviso en tu teléfono, sin tener que revisar"}
-        </p>
+    <div role="region" aria-label="Activar avisos" className={(props.className || "m-4") + " rounded-2xl border border-[#E7A63C]/50 bg-[#0A1830] p-4 shadow-[0_10px_30px_rgba(10,24,48,0.25)]"}>
+      <div className="flex items-start gap-3">
+        <span className="text-2xl leading-none" aria-hidden="true">🔔</span>
+        <div className="min-w-0 flex-1">
+          <p className="font-[family-name:var(--font-display)] text-base font-bold text-[#FBF7EE]">¿Quieres saber cuándo sale tu lotería?</p>
+          <p className="mt-1 text-sm leading-snug text-[#C9D6E8]">Te avisamos apenas salga el resultado, en tu teléfono o en tu computadora. Gratis, y lo puedes quitar cuando quieras.</p>
+        </div>
+        <button type="button" onClick={ocultarPorUnaSemana} aria-label="Cerrar" className="-mt-1 px-1 text-xl leading-none text-[#C9D6E8] hover:text-white">×</button>
       </div>
-      {estado === "puede-activar" ? (
-        <span className="font-mono text-sm font-semibold text-[#007A33]">Activar →</span>
-      ) : estado === "activado" ? (
-        <span className="text-2xl">🔔</span>
-      ) : null}
-    </button>
+      <div className="mt-3 flex gap-2">
+        <button type="button" onClick={activarNotificaciones} className="flex-1 rounded-full bg-[#E7A63C] px-4 py-2.5 sm:flex-none sm:px-8 text-sm font-extrabold text-[#0A1830] hover:brightness-110">Sí, avísame</button>
+        <button type="button" onClick={ocultarPorUnaSemana} className="rounded-full bg-white/10 px-4 py-2.5 text-sm font-extrabold text-[#FBF7EE] hover:bg-white/20">Ahora no</button>
+      </div>
+    </div>
   );
 }

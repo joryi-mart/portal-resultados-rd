@@ -17,7 +17,6 @@ export const metadata = {
 };
 import { supabase } from "@/lib/supabase";
 import NavPildoras from "./NavPildoras";
-import NotificacionesPush from "./NotificacionesPush";
 import { PildoraEstado, PanelSuperiorConFecha, ResultadosPortada } from "./PortadaCliente";
 import {
   hoyISO,
@@ -28,7 +27,6 @@ import {
   COLOR_VERDE_RD,
   PanelSuperior,
   PizarronDelDia,
-  TablaResultadosDelDia,
   type Loteria,
   type UltimoResultado,
 } from "./componentesResultados";
@@ -219,8 +217,6 @@ export default async function Home() {
       />
 
       <main className="mx-auto max-w-7xl px-4 pb-6 pt-3 sm:px-8 sm:pt-4 lg:px-12">
-        <NotificacionesPush />
-
         <Suspense
           fallback={
             <>
@@ -251,8 +247,6 @@ export default async function Home() {
                 </div>
                 <span className="font-mono text-sm font-semibold text-[#007A33]">Compartir →</span>
               </a>
-
-              <TablaResultadosDelDia loterias={listaLoterias} fechaSeleccionada={hoy} />
             </>
           }
         >

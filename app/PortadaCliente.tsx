@@ -4,7 +4,6 @@ import { useSearchParams } from "next/navigation";
 import {
   PanelSuperior,
   PizarronDelDia,
-  TablaResultadosDelDia,
   etiquetaFechaResumen,
   formatearFechaTitulo,
   COLOR_TEXTO_SECUNDARIO,
@@ -95,8 +94,6 @@ export function ResultadosPortada(props: { loterias: Loteria[]; ultimosResultado
         </div>
         <span className="font-mono text-sm font-semibold text-[#007A33]">Compartir →</span>
       </a>
-
-      <TablaResultadosDelDia loterias={props.loterias} fechaSeleccionada={fechaSeleccionada} />
     </>
   );
 }
