@@ -739,11 +739,17 @@ export function TablaResultadosDelDia(props: { loterias: Loteria[]; fechaSelecci
                       ? COLOR_PRIMERA_POSICION
                       : undefined;
                     const fondo = fondoEspecial || (fila.esDeAyer ? "#E4E8EB" : "#1E4D8C");
+                    // Numero blanco sobre azul; oscuro sobre amarillo y otros colores claros.
+                    const colorTexto = fila.esDeAyer
+                      ? "#7B858F"
+                      : fondoEspecial
+                      ? (colorEspecial ? colorEspecial.texto : "#10203A")
+                      : "#FFFFFF";
                     return (
                       <span
                         key={k}
-                        className="flex h-12 w-12 items-center justify-center rounded-full font-mono text-lg font-bold text-black"
-                        style={{ backgroundColor: fondo }}
+                        className="flex h-12 w-12 items-center justify-center rounded-full font-mono text-lg font-bold"
+                        style={{ backgroundColor: fondo, color: colorTexto }}
                       >
                         {n}
                       </span>
