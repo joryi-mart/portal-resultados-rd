@@ -43,6 +43,7 @@ function construirCaption(loteriaNombre: string, loteriaSlug: string, fecha: str
   return (
     `🎱 ${loteriaNombre} — Resultados del ${fechaTitulo(fecha)}\n\n${lineas}\n\n` +
     `Ve más resultados en https://labankerard.com/${loteriaSlug}\n\n` +
+    `Página informativa. No vendemos jugadas ni aceptamos apuestas.\n\n` +
     `#LoteriaDominicana #ResultadosHoy ${hashtag}`.trim()
   );
 }
