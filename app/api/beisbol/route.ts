@@ -54,13 +54,15 @@ async function obtenerJugadoresDominicanos() {
   if (!res.ok) throw new Error(`Error MLB API (jugadores): ${res.status}`);
   const data = await res.json();
 
+  // Ojo: este endpoint solo trae el ID del equipo actual (currentTeam.id), no
+  // su nombre. El nombre se resuelve despues, cruzando con obtenerEquiposMLB().
   const dominicanos = (data.people || [])
     .filter((p: any) => p.birthCountry === "Dominican Republic")
     .map((p: any) => ({
       id: p.id,
       nombre: p.fullName,
       posicion: p.primaryPosition?.abbreviation || "",
-      equipo: p.currentTeam?.name || "Sin equipo actual",
+      equipoId: p.currentTeam?.id ?? null,
     }))
     .sort((a: any, b: any) => a.nombre.localeCompare(b.nombre));
 
@@ -301,6 +303,14 @@ export async function GET(request: Request) {
       ]);
 
     const idsDominicanos = new Set<number>(jugadoresDominicanos.map((j: any) => Number(j.id)));
+    // Resolvemos el nombre del equipo de cada jugador cruzando su equipoId con
+    // la lista de equipos (que si trae los nombres). Un jugador sin equipoId
+    // es un agente libre o esta en ligas menores, y ahi si decimos "Sin equipo actual".
+    const nombrePorEquipoId = new Map<number, string>((equipos as any[]).map((e: any) => [e.id, e.nombre]));
+    const jugadoresDominicanosConEquipo = (jugadoresDominicanos as any[]).map((j: any) => ({
+      ...j,
+      equipo: (j.equipoId && nombrePorEquipoId.get(j.equipoId)) || "Sin equipo actual",
+    }));
     const juegosHoy = mlb?.dates?.[0]?.games || [];
 
     const [noticiasMLB, noticiasDominicanosDeporte, posicionesLIDOM, boxscores] = await Promise.all([
@@ -320,7 +330,7 @@ export async function GET(request: Request) {
       noticiasMLB,
       noticiasDominicanosDeporte,
       equipos,
-      jugadoresDominicanos,
+      jugadoresDominicanos: jugadoresDominicanosConEquipo,
       liderJonrones,
       liderPitcheo,
       equiposLIDOM: lidom.equipos,
