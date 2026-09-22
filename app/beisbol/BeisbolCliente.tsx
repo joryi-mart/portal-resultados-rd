@@ -265,13 +265,17 @@ export default function BeisbolCliente() {
 
   function renderJuego(juego: Juego) {
     const terminado = juego.status.abstractGameState === "Final";
+    // Antes de empezar (Preview), la fuente a veces manda "0" y a veces no manda
+    // nada; en los dos casos se debe ver "-", para no dar la impresion de que
+    // el juego ya va empatado sin haber comenzado.
+    const noHaEmpezado = juego.status.abstractGameState === "Preview";
     const pitcherVisitante = juego.teams.away.probablePitcher?.fullName;
     const pitcherLocal = juego.teams.home.probablePitcher?.fullName;
     const hayPicheo = !terminado && (pitcherVisitante || pitcherLocal);
     const destacado = destacadosPorJuego[juego.gamePk];
 
-    const scoreVisitante = juego.teams.away.score;
-    const scoreLocal = juego.teams.home.score;
+    const scoreVisitante = noHaEmpezado ? undefined : juego.teams.away.score;
+    const scoreLocal = noHaEmpezado ? undefined : juego.teams.home.score;
     const ganoVisitante = terminado && scoreVisitante != null && scoreLocal != null && scoreVisitante > scoreLocal;
     const ganoLocal = terminado && scoreVisitante != null && scoreLocal != null && scoreLocal > scoreVisitante;
 
