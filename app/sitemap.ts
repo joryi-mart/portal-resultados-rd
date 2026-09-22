@@ -60,6 +60,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.3,
     },
     {
+      url: `${SITIO}/nosotros`,
+      lastModified: new Date("2026-09-01"),
+      changeFrequency: "monthly",
+      priority: 0.4,
+    },
+    {
+      url: `${SITIO}/contacto`,
+      lastModified: new Date("2026-09-01"),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
       url: `${SITIO}/resumen`,
       lastModified: new Date(),
       changeFrequency: "hourly",

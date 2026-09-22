@@ -437,6 +437,14 @@ export default async function Home() {
           Días feriados en República Dominicana 2026
         </a>
         <span className="mx-2 font-mono text-sm text-[#10203A]/30">·</span>
+        <a href="/nosotros" className="mt-2 inline-block font-mono text-sm text-[#1E4D8C] hover:underline">
+          Nosotros
+        </a>
+        <span className="mx-2 font-mono text-sm text-[#10203A]/30">·</span>
+        <a href="/contacto" className="mt-2 inline-block font-mono text-sm text-[#1E4D8C] hover:underline">
+          Contacto
+        </a>
+        <span className="mx-2 font-mono text-sm text-[#10203A]/30">·</span>
         <a href="/politica-de-privacidad" className="mt-2 inline-block font-mono text-sm text-[#1E4D8C] hover:underline">
           Política de Privacidad
         </a>
