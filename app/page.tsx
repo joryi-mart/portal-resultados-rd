@@ -436,6 +436,10 @@ export default async function Home() {
         <a href="/dias-feriados" className="mt-2 inline-block font-mono text-sm text-[#1E4D8C] hover:underline">
           Días feriados en República Dominicana 2026
         </a>
+        <span className="mx-2 font-mono text-sm text-[#10203A]/30">·</span>
+        <a href="/politica-de-privacidad" className="mt-2 inline-block font-mono text-sm text-[#1E4D8C] hover:underline">
+          Política de Privacidad
+        </a>
         <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-[#10203A]">
           Aviso: Labankerard.com es un portal estrictamente informativo y no representa de manera oficial a la Lotería Nacional Dominicana ni a ninguna otra institución de juegos de azar. Para consultar reglamentos, premios vigentes, resultados definitivos y demás información institucional, le sugerimos visitar los canales oficiales autorizados de las respectivas loterías.
         </p>
