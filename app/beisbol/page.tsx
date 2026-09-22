@@ -57,6 +57,9 @@ export default async function BeisbolPage() {
             <a href="/reglas-basicas-del-beisbol" className="underline" style={{ color: "#1E4D8C" }}>
               Reglas básicas del béisbol
             </a>
+            <a href="/glorias-dominicanas-del-beisbol" className="underline" style={{ color: "#1E4D8C" }}>
+              Glorias Dominicanas del Béisbol
+            </a>
             <a href="/como-funciona-la-lidom" className="underline" style={{ color: "#1E4D8C" }}>
               Cómo funciona la LIDOM
             </a>

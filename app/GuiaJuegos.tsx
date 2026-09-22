@@ -45,6 +45,7 @@ export default function GuiaJuegos(props: {
   mostrarComoJugar?: boolean;
   guiasRelacionadas?: { href: string; titulo: string }[];
   tituloGuias?: string;
+  extra?: React.ReactNode;
 }) {
   const datosEstructurados = {
     "@context": "https://schema.org",
@@ -103,6 +104,8 @@ export default function GuiaJuegos(props: {
             );
           })}
         </div>
+
+        {props.extra}
 
         {props.mostrarComoJugar === false ? null : (
           <p className="mb-8 text-sm leading-relaxed">

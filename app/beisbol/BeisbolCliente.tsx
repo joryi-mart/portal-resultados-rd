@@ -57,13 +57,6 @@ type Noticia = {
   published: string;
 };
 
-type JugadorDominicano = {
-  id: number;
-  nombre: string;
-  posicion: string;
-  equipo: string;
-};
-
 type Lider = {
   puesto: number;
   nombre: string;
@@ -119,7 +112,6 @@ export default function BeisbolCliente() {
   const [posicionesMLB, setPosicionesMLB] = useState<Division[]>([]);
   const [posicionesLIDOM, setPosicionesLIDOM] = useState<Division[]>([]);
   const [desempeno, setDesempeno] = useState<DesempenoJugador[]>([]);
-  const [dominicanos, setDominicanos] = useState<JugadorDominicano[]>([]);
   const [liderJonrones, setLiderJonrones] = useState<Lider[]>([]);
   const [liderPitcheo, setLiderPitcheo] = useState<Lider[]>([]);
   const [destacadosPorJuego, setDestacadosPorJuego] = useState<Record<number, DestacadoJuego>>({});
@@ -153,7 +145,6 @@ export default function BeisbolCliente() {
         setPosicionesMLB(data.posicionesMLB || []);
         setPosicionesLIDOM(data.posicionesLIDOM || []);
         setDesempeno(data.desempenoDominicanos || []);
-        setDominicanos(data.jugadoresDominicanos || []);
         setLiderJonrones(data.liderJonrones || []);
         setLiderPitcheo(data.liderPitcheo || []);
         setDestacadosPorJuego(data.destacadosPorJuego || {});
@@ -341,48 +332,6 @@ export default function BeisbolCliente() {
           </p>
         )}
       </div>
-    );
-  }
-
-  function iniciales(nombre: string) {
-    const partes = nombre.trim().split(" ");
-    const primera = partes[0]?.[0] || "";
-    const ultima = partes[partes.length - 1]?.[0] || "";
-    return (primera + ultima).toUpperCase();
-  }
-
-  function renderJugadorDominicano(jugador: JugadorDominicano) {
-    const urlWikipedia = "https://es.wikipedia.org/wiki/" + encodeURIComponent(jugador.nombre.replace(/ /g, "_"));
-    return (
-      <a
-        key={jugador.id}
-        href={urlWikipedia}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-3 rounded-xl border border-[#10203A]/15 bg-white p-3 shadow-sm hover:shadow-md"
-      >
-        <div className="relative h-12 w-12 shrink-0">
-          <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#1E4D8C]/10 font-mono text-xs font-bold text-[#1E4D8C]">
-            {iniciales(jugador.nombre)}
-          </div>
-          <Image
-            src={`https://midfield.mlbstatic.com/v1/people/${jugador.id}/spots/120`}
-            alt={jugador.nombre}
-            width={48}
-            height={48}
-            className="absolute inset-0 h-12 w-12 rounded-full object-cover"
-            onError={function (e) {
-              (e.target as HTMLImageElement).style.display = "none";
-            }}
-          />
-        </div>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-[#10203A]">{jugador.nombre}</p>
-          <p className="truncate text-xs text-[#5C6B78]">
-            {jugador.posicion} · {jugador.equipo}
-          </p>
-        </div>
-      </a>
     );
   }
 
@@ -586,20 +535,16 @@ export default function BeisbolCliente() {
             </div>
           </section>
 
-          <section className="mb-10">
-            <h2 className="mb-1 text-lg font-semibold text-[#10203A]">
-              Jugadores dominicanos en MLB
-            </h2>
-            <p className="mb-4 text-xs text-[#5C6B78]">
-              {dominicanos.length} jugadores dominicanos activos en la MLB esta temporada.
-            </p>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {dominicanos.slice(0, 24).map(renderJugadorDominicano)}
-              {dominicanos.length === 0 && (
-                <p className="text-sm text-[#5C6B78]">No se encontraron jugadores dominicanos.</p>
-              )}
+          <a
+            href="/glorias-dominicanas-del-beisbol"
+            className="mb-10 flex items-center justify-between gap-3 rounded-xl border border-[#10203A]/15 bg-white p-5 shadow-sm hover:shadow-md"
+          >
+            <div>
+              <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">🇩🇴 Glorias Dominicanas del Béisbol</p>
+              <p className="mt-1 text-xs text-[#5C6B78]">Las historias de Pedro Martínez, Sammy Sosa y más leyendas, y la lista de jugadores dominicanos activos hoy en la MLB</p>
             </div>
-          </section>
+            <span className="shrink-0 font-mono text-sm font-semibold text-[#1E4D8C]">Ver →</span>
+          </a>
 
           <div className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
             <section id="jonrones" className="rounded-xl border border-[#10203A]/15 bg-white p-5">

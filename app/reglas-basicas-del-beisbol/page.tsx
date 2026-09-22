@@ -2,6 +2,7 @@ import GuiaJuegos from "../GuiaJuegos";
 
 const GUIAS_BEISBOL = [
   { href: "/reglas-basicas-del-beisbol", titulo: "Reglas básicas del béisbol" },
+  { href: "/glorias-dominicanas-del-beisbol", titulo: "Glorias Dominicanas del Béisbol" },
   { href: "/como-funciona-la-lidom", titulo: "Cómo funciona la LIDOM" },
   { href: "/equipos-de-la-lidom", titulo: "Los 6 equipos de la LIDOM" },
   { href: "/beisbol", titulo: "Béisbol y Grandes Ligas hoy" },
