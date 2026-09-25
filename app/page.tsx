@@ -6,7 +6,7 @@ export const revalidate = 60;
 
 export const metadata = {
   title: "La Bankera RD | Resultados de Loterías Dominicanas en Vivo",
-  description: "Consulta los resultados de Leidsa, Lotería Nacional, Loteka, Lotería Real y más loterías dominicanas e internacionales, actualizados en vivo. Tipo de cambio del dólar y euro incluido.",
+  description: "Resultados de Leidsa, Lotería Nacional, Loteka, Lotería Real y más loterías dominicanas, de hoy y de ayer, con horarios. Incluye el tipo de cambio del dólar y el euro.",
   openGraph: {
     title: "La Bankera RD 🇩🇴 | Resultados de Loterías Dominicanas en Vivo",
     description: "Consulta los resultados de las principales loterías dominicanas e internacionales, actualizados en vivo.",
@@ -213,9 +213,9 @@ export default async function Home() {
               <PildoraEstado hoy={hoy} />
             </Suspense>
           </div>
-          <p className="mb-3 text-center text-sm font-semibold leading-relaxed text-[#FBF7EE] sm:text-left sm:text-base">
-            ¡Resultados de Loterías Dominicanas en Vivo! Consulta Leidsa, Nacional, Loteka y más.
-          </p>
+          <h1 className="mb-3 text-center text-sm font-semibold leading-relaxed text-[#FBF7EE] sm:text-left sm:text-base">
+            Resultados de loterías dominicanas hoy y en vivo: Leidsa, Nacional, Loteka, Real y más.
+          </h1>
           {horaUltimoResultado ? (
             <p className="mb-3 text-center font-mono text-xs font-semibold text-[#E7A63C] sm:text-left">
               Último resultado publicado hoy: {horaUltimoResultado}

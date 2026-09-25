@@ -124,9 +124,11 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
 
   const fechaLarga = formatearFechaLarga(params.fecha);
   const esHoy = params.fecha === hoyISO();
+  // Titulo corto (sin dia de la semana) para que Google no lo corte.
+  const fechaCorta = new Date(params.fecha + "T00:00:00").toLocaleDateString("es-DO", { day: "numeric", month: "long", year: "numeric" });
   const titulo = esHoy
-    ? `Resultados de ${loteria.nombre} hoy ${fechaLarga}`
-    : `Resultados de ${loteria.nombre} del ${fechaLarga}`;
+    ? `Resultados de ${loteria.nombre} hoy, ${fechaCorta}`
+    : `Resultados de ${loteria.nombre} del ${fechaCorta}`;
 
   // Los numeros van en la descripcion para que se vean directo en Google.
   // Se omiten los sorteos con muchos numeros (ej. Super Kino TV, 20) para
@@ -221,8 +223,8 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
       <header className="bg-[#10203A] px-6 py-8 sm:px-10">
         <div className="mx-auto max-w-3xl">
           <a href={"/" + params.slug + "/historial"} className="font-mono text-sm text-[#E7A63C] hover:underline">← Ver historial completo de {loteriaData.nombre}</a>
-          <h1 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-bold capitalize text-[#FBF7EE] sm:text-4xl">
-            Resultados de {loteriaData.nombre}
+          <h1 className="mt-3 font-[family-name:var(--font-display)] text-2xl font-bold text-[#FBF7EE] sm:text-4xl">
+            Resultados de {loteriaData.nombre} {esHoy ? "hoy" : "del " + fechaLarga}
           </h1>
           <p className="mt-2 font-mono text-sm capitalize text-[#D5DEEA]">
             {esHoy ? "Hoy, " : ""}{fechaLarga}

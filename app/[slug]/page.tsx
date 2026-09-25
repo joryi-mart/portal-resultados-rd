@@ -143,13 +143,31 @@ function Bolita(props: { children: React.ReactNode; tamano: string; opaca?: bool
   );
 }
 
+// Sorteos que la fuente de datos ya no ofrece (descontinuados o renombrados).
+const SORTEOS_OCULTOS = [73, 78, 119];
+
 export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
-  const { data: loteria } = await supabase.from("loterias").select("nombre").eq("slug", params.slug).maybeSingle();
-  if (!loteria) return { title: "Lotería no encontrada" };
+  const { data } = await supabase.from("loterias").select("nombre, sorteos ( id, nombre )").eq("slug", params.slug).maybeSingle();
+  if (!data) return { title: "Lotería no encontrada" };
+  const loteria = data as unknown as { nombre: string; sorteos: { id: number; nombre: string }[] };
 
-  const titulo = `Resultados de ${loteria.nombre} Hoy en Vivo`;
-  const descripcion = `Consulta en directo los números ganadores y la quiniela de ${loteria.nombre} de hoy en República Dominicana, actualizados al instante.`;
+  const titulo = `Resultados de ${loteria.nombre} hoy y horarios`;
+
+  // La descripcion nombra los juegos reales de cada loteria (es lo que la gente
+  // busca) y se recorta para no pasar de ~160 caracteres.
+  const juegos = (loteria.sorteos || [])
+    .filter(function (s) { return !SORTEOS_OCULTOS.includes(s.id); })
+    .map(function (s) { return s.nombre; })
+    .slice(0, 4);
+  const armar = function (lista: string[]) {
+    return `Resultados de ${loteria.nombre} de hoy y de ayer: ${lista.join(", ")}. Horarios de sorteos y números ganadores al instante.`;
+  };
+  let lista = juegos;
+  while (lista.length > 1 && armar(lista).length > 160) lista = lista.slice(0, -1);
+  const descripcion = lista.length > 0
+    ? armar(lista)
+    : `Resultados de ${loteria.nombre} de hoy y de ayer, horarios de sorteos y números ganadores al instante en República Dominicana.`;
 
   return {
     title: titulo,
@@ -162,6 +180,7 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
 export default async function PaginaLoteria(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
   const hoy = hoyISO();
+  const ayer = new Date(new Date(hoy + "T12:00:00Z").getTime() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
   const { data: loteria, error } = await supabase
     .from("loterias")
@@ -175,10 +194,8 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
   }
 
   const loteriaData = loteria as unknown as Loteria;
-  // Sorteos que la fuente de datos ya no ofrece (descontinuados o renombrados).
   // Se ocultan aquí en vez de borrarlos de la base de datos, para no perder el historial.
-  const SORTEOS_DESCONTINUADOS = [73, 78, 119];
-  const sorteos = (loteriaData.sorteos || []).filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id); });
+  const sorteos = (loteriaData.sorteos || []).filter(function (s) { return !SORTEOS_OCULTOS.includes(s.id); });
 
   // Datos estructurados (schema.org) con los resultados de hoy, para que Google
   // pueda leer los números ganadores directamente, no solo el texto. Mismo patrón
@@ -218,7 +235,7 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
         <div className="mx-auto max-w-3xl">
           <a href="/" className="font-mono text-sm text-[#E7A63C] hover:underline">← Ver todas las loterías</a>
           <h1 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-bold text-[#FBF7EE] sm:text-4xl">
-            {loteriaData.nombre}
+            Resultados de {loteriaData.nombre} hoy
           </h1>
           <p className="mt-2 font-mono text-sm text-[#D5DEEA]">
             {sorteos.length} producto{sorteos.length === 1 ? "" : "s"} · resultados de hoy
@@ -417,6 +434,43 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
             })}
           </div>
         )}
+
+        <section className="mt-10">
+          <h2 className="mb-3 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
+            Horarios de los sorteos de {loteriaData.nombre}
+          </h2>
+          <div className="rounded-xl border border-[#10203A]/15 bg-white">
+            {sorteos.map(function (s) {
+              const horaDomingo = HORA_DOMINGO_SORTEOS[s.id];
+              return (
+                <div
+                  key={s.id}
+                  className="flex flex-col gap-1 border-t border-[#10203A]/8 px-5 py-3 first:border-t-0 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <span className="font-semibold text-[#10203A]">{s.nombre}</span>
+                  <span className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                    {s.hora_sorteo ? formatearHora12(s.hora_sorteo) : "Hora por confirmar"}
+                    {horaDomingo ? " (domingos: " + formatearHora12(horaDomingo) + ")" : ""} · {formatearDias(s.dias_semana)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-xs leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+            Horarios de República Dominicana. Pueden cambiar en feriados y fechas especiales: confirma siempre en los canales oficiales de la lotería.
+          </p>
+        </section>
+
+        <section className="mt-8">
+          <h2 className="mb-3 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
+            Juegos de {loteriaData.nombre}
+          </h2>
+          <p className="text-sm leading-relaxed">
+            {loteriaData.nombre} tiene {sorteos.length} {sorteos.length === 1 ? "juego" : "juegos"}: {sorteos.map(function (s) { return s.nombre; }).join(", ")}. En esta página ves los resultados de hoy, y puedes revisar{" "}
+            <a href={"/" + params.slug + "/" + ayer} className="underline" style={{ color: COLOR_AZUL }}>los resultados de ayer de {loteriaData.nombre}</a>
+            {" "}o el historial de cada sorteo.
+          </p>
+        </section>
       </main>
 
       <PreguntasFrecuentes
