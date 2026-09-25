@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { generarImagenResultados } from "@/lib/imagenPublicacion";
 import { enviarNotificacionATodos } from "@/lib/pushNotificaciones";
+import { avisarResultadosRecientes } from "@/lib/indexnow";
 
 const LOTERIAS_DESTACADAS = ["nacional", "leidsa", "real", "loteka"];
 const SORTEOS_DESCONTINUADOS = [73, 78, 119];
@@ -195,7 +196,12 @@ export async function GET(request: Request) {
       }
     }
 
-    return NextResponse.json(resumen);
+    // Aviso a Bing (IndexNow) de las paginas con resultados nuevos, de TODAS las
+    // loterias (no solo las que se publican en Facebook). Nunca debe romper la
+    // publicacion: la funcion atrapa sus propios errores.
+    const indexnow = await avisarResultadosRecientes(15);
+
+    return NextResponse.json({ ...resumen, indexnow });
   } catch (error: any) {
     return NextResponse.json({ error: "Error publicando en Facebook", detalle: error.message }, { status: 500 });
   }
