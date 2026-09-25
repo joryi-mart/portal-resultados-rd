@@ -18,7 +18,7 @@ const COLOR_DORADO = "#B97F16";
 export const revalidate = 21600;
 
 export const metadata = {
-  title: "Glorias Dominicanas del Béisbol: del Salón de la Fama a las Estrellas de Hoy",
+  title: "Glorias Dominicanas del Béisbol: leyendas y estrellas",
   description:
     "Las historias y logros en MLB y LIDOM de los grandes del béisbol dominicano: del Salón de la Fama (Marichal, Pedro Martínez, Guerrero, Ortiz, Beltré) a las leyendas históricas, los pioneros y las estrellas activas de hoy.",
   openGraph: {

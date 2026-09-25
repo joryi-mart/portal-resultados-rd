@@ -202,6 +202,7 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
     { etiqueta: "Jonrones del día", href: "/beisbol#jonrones" },
     { etiqueta: "Mejores pitchers", href: "/beisbol#pitchers" },
     { etiqueta: "LIDOM", href: "/lidom" },
+    { etiqueta: "Glorias dominicanas", href: "/glorias-dominicanas-del-beisbol" },
   ];
 
   const itemsNBA: ItemMenu[] = [
