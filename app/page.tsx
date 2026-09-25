@@ -172,7 +172,7 @@ export default async function Home() {
         <div className="pointer-events-none absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "radial-gradient(#FBF7EE 1px, transparent 1px)", backgroundSize: "18px 18px" }} />
         <Image
           src="/tambora.png"
-          alt=""
+          alt="Tambora dominicana pintada con la bandera de República Dominicana"
           width={144}
           height={144}
           priority
@@ -184,7 +184,7 @@ export default async function Home() {
             <a href="/" className="flex shrink-0 items-center gap-2.5">
               <Image
                 src="/logo-icon.svg"
-                alt=""
+                alt="Logo de La Bankera RD"
                 width={40}
                 height={40}
                 priority
@@ -196,7 +196,7 @@ export default async function Home() {
               <Image src="/bandera-rd.svg" alt="Bandera de República Dominicana" width={30} height={20} className="h-5 w-[30px]" />
               <Image
                 src="/tambora.png"
-                alt=""
+                alt="Tambora dominicana pintada con la bandera de República Dominicana"
                 width={64}
                 height={64}
                 priority

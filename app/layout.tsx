@@ -79,7 +79,7 @@ export default function RootLayout({
         <div className="sticky top-0 z-50 border-b border-white/10 bg-[#10203A] px-4 py-2 shadow-md sm:px-8">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
             <a href="/" className="flex items-center gap-2">
-              <Image src="/logo-icon.svg" alt="" width={24} height={24} className="h-6 w-6" priority />
+              <Image src="/logo-icon.svg" alt="Logo de La Bankera RD" width={24} height={24} className="h-6 w-6" priority />
               <span className="text-base font-bold leading-none text-[#FBF7EE]">
                 La Bankera<span className="text-[#E7A63C]">RD</span>
               </span>
