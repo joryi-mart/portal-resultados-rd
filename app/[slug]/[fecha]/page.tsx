@@ -41,6 +41,11 @@ function formatearFechaLarga(fechaISO: string) {
   return d.toLocaleDateString("es-DO", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 }
 
+function formatearFechaBreve(fechaISO: string) {
+  const d = new Date(fechaISO + "T00:00:00");
+  return d.toLocaleDateString("es-DO", { weekday: "long", day: "numeric", month: "long" });
+}
+
 function formatearHora12(hora24: string) {
   if (!hora24) return "";
   const partes = hora24.split(":");
@@ -146,9 +151,16 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
     ? `Números ganadores de ${loteria.nombre} del ${fechaLarga}: ${lineasNumeros.join(" · ")}. Información no oficial de La Bankera RD.`
     : `Consulta los números ganadores de ${loteria.nombre} del ${fechaLarga} en República Dominicana. Información no oficial de La Bankera RD.`;
 
+  // Una fecha sin ningun resultado registrado (y que no es hoy) es una pagina
+  // vacia: se marca noindex para no llenar Google de paginas sin contenido.
+  const hayResultados = (loteria.sorteos || []).some(function (s) {
+    return (s.resultados || []).some(function (r) { return r.fecha === params.fecha; });
+  });
+
   return {
     title: titulo,
     description: descripcion,
+    ...(!hayResultados && !esHoy ? { robots: { index: false, follow: true } } : {}),
     openGraph: { title: `${titulo} | La Bankera RD`, description: descripcion, locale: "es_DO", type: "website" },
     alternates: { canonical: `https://labankerard.com/${params.slug}/${params.fecha}` },
   };
@@ -211,6 +223,24 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
     eventosParaGoogle.length > 0
       ? { "@context": "https://schema.org", "@graph": eventosParaGoogle }
       : null;
+
+  // Resumen en texto (con datos reales) y enlaces a otros dias recientes:
+  // dan contenido util a la pagina y una red de enlaces internos entre fechas.
+  const resumenLineas = sorteos
+    .map(function (sorteo) {
+      const r = sorteo.resultados.find(function (x) { return x.fecha === params.fecha; });
+      if (!r) return null;
+      const hora = formatearHora12(horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, params.fecha));
+      return `${sorteo.nombre}${hora ? " (" + hora + ")" : ""}: ${r.numeros.split("-").join(" - ")}`;
+    })
+    .filter(function (l): l is string { return !!l; });
+
+  const PRIMER_DIA_DE_DATOS = "2026-08-31";
+  const otrosDias: string[] = [];
+  for (let i = 1; i <= 7; i++) {
+    const f = sumarDias(params.fecha, -i);
+    if (f >= PRIMER_DIA_DE_DATOS && f <= hoy) otrosDias.push(f);
+  }
 
   return (
     <div className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
@@ -291,11 +321,57 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
                       {esHoy ? "Todavía no hay resultado publicado para hoy." : "No hay resultado registrado para esta fecha."}
                     </p>
                   )}
+
+                  {(function () {
+                    const anterior = sorteo.resultados
+                      .filter(function (r) { return r.fecha < params.fecha; })
+                      .sort(function (a, b) { return b.fecha.localeCompare(a.fecha); })[0];
+                    if (!anterior) return null;
+                    return (
+                      <p className="mt-4 border-t border-[#10203A]/8 pt-3 font-mono text-xs leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                        Sorteo anterior ({formatearFechaBreve(anterior.fecha)}):{" "}
+                        <a href={"/" + params.slug + "/" + anterior.fecha} className="underline" style={{ color: COLOR_AZUL }}>
+                          {anterior.numeros.split("-").join(" - ")}
+                        </a>
+                      </p>
+                    );
+                  })()}
                 </div>
               );
             })}
           </div>
         )}
+
+        {resumenLineas.length > 0 ? (
+          <section className="mt-10">
+            <h2 className="mb-3 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
+              Resumen de {loteriaData.nombre} del {fechaLarga}
+            </h2>
+            <p className="text-sm leading-relaxed">
+              Estos son los números ganadores que se registraron en {loteriaData.nombre} el {fechaLarga} en República Dominicana:{" "}
+              {resumenLineas.join("; ")}. Información no oficial: confirma siempre en los canales oficiales de la lotería.
+            </p>
+          </section>
+        ) : null}
+
+        {otrosDias.length > 0 ? (
+          <section className="mt-8">
+            <h2 className="mb-3 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
+              Otros días de {loteriaData.nombre}
+            </h2>
+            <ul className="flex flex-col gap-1.5 text-sm">
+              {otrosDias.map(function (f) {
+                return (
+                  <li key={f}>
+                    <a href={"/" + params.slug + "/" + f} className="underline" style={{ color: COLOR_AZUL }}>
+                      Resultados de {loteriaData.nombre} del {formatearFechaBreve(f)}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ) : null}
       </main>
 
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">

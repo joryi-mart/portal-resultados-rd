@@ -14,6 +14,8 @@ export const metadata = {
     locale: "es_DO",
     type: "website",
   },
+  // Sin esto, las variantes "/?fecha=..." compiten con la portada.
+  alternates: { canonical: "https://labankerard.com" },
 };
 import { supabase } from "@/lib/supabase";
 import NavPildoras from "./NavPildoras";

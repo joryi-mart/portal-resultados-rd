@@ -320,5 +320,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
-  return [...paginasFijas, ...paginasLoterias, ...paginasSorteos, ...paginasHistorial, ...paginasTurismo, ...paginasLidom];
+  // Paginas por fecha de los ultimos 14 dias, solo las fechas que tienen
+  // resultados reales (evita listar paginas vacias). Son las que hoy traen
+  // visitas desde Google, y hasta ahora solo se descubrian siguiendo enlaces.
+  const DIAS_FECHAS_EN_SITEMAP = 14;
+  const hoyRD = new Date(Date.now() - 4 * 60 * 60 * 1000);
+  const desdeISO = new Date(hoyRD.getTime() - DIAS_FECHAS_EN_SITEMAP * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const { data: loteriasConFechas } = await supabase
+    .from("loterias")
+    .select("slug, sorteos ( resultados ( fecha ) )")
+    .eq("activa", true)
+    .gte("sorteos.resultados.fecha", desdeISO);
+  const paginasFechas: MetadataRoute.Sitemap = ((loteriasConFechas || []) as unknown as { slug: string; sorteos: { resultados: { fecha: string }[] }[] }[]).flatMap(function (l) {
+    const fechas = new Set<string>();
+    (l.sorteos || []).forEach(function (s) {
+      (s.resultados || []).forEach(function (r) {
+        if (r.fecha >= desdeISO) fechas.add(r.fecha);
+      });
+    });
+    return Array.from(fechas).sort().reverse().map(function (f) {
+      return {
+        url: `${SITIO}/${l.slug}/${f}`,
+        lastModified: new Date(f + "T12:00:00-04:00"),
+        changeFrequency: "monthly" as const,
+        priority: 0.5,
+      };
+    });
+  });
+
+  return [...paginasFijas, ...paginasLoterias, ...paginasSorteos, ...paginasHistorial, ...paginasFechas, ...paginasTurismo, ...paginasLidom];
 }
