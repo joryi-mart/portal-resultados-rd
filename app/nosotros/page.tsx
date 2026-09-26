@@ -10,7 +10,7 @@ const COLOR_VERDE_RD = "#007A33";
 const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 
 export const metadata = {
-  title: "Sobre Nosotros | La Bankera RD",
+  title: "Sobre Nosotros",
   description: "Qué es La Bankera RD, desde cuándo existe y qué puedes encontrar en labankerard.com: resultados de loterías dominicanas, béisbol, NBA, fútbol y más.",
   alternates: { canonical: "https://labankerard.com/nosotros" },
 };

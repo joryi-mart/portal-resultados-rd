@@ -9,7 +9,7 @@ const COLOR_AZUL = "#1E4D8C";
 const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 
 export const metadata = {
-  title: "Política de Privacidad | La Bankera RD",
+  title: "Política de Privacidad",
   description: "Cómo La Bankera RD usa cookies, mide las visitas y qué información recoge de quienes visitan labankerard.com.",
   alternates: { canonical: "https://labankerard.com/politica-de-privacidad" },
 };

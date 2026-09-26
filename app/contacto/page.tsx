@@ -9,7 +9,7 @@ const COLOR_AZUL = "#1E4D8C";
 const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 
 export const metadata = {
-  title: "Contacto | La Bankera RD",
+  title: "Contacto",
   description: "Cómo escribirle a La Bankera RD por correo o por Facebook.",
   alternates: { canonical: "https://labankerard.com/contacto" },
 };
