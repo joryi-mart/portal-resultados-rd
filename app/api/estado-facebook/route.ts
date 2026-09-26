@@ -2,17 +2,20 @@ import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 
 // Ruta TEMPORAL de solo lectura para revisar la página de Facebook.
-// Solo responde si se abre con ?clave=<CLAVE_REVISION_FB>. Si esa variable no existe en
+// Solo responde si se abre con ?clave=<CLAVE_REVISION_FB o CRON_SECRET>. Si ninguna existe en
 // Vercel, no responde a nadie. No publica nada y nunca devuelve la llave de Facebook.
 // Se borra después de usarla.
 export const dynamic = "force-dynamic";
 
 function claveValida(recibida: string | null) {
-  const esperada = process.env.CLAVE_REVISION_FB;
-  if (!esperada || esperada.length < 12 || !recibida) return false;
-  const a = Buffer.from(recibida);
-  const b = Buffer.from(esperada);
-  return a.length === b.length && timingSafeEqual(a, b);
+  if (!recibida) return false;
+  const b = Buffer.from(recibida);
+  // Acepta la clave propia de esta revisión o la clave del cron (ya guardada en Vercel).
+  return [process.env.CLAVE_REVISION_FB, process.env.CRON_SECRET].some(function (esperada) {
+    if (!esperada || esperada.length < 12) return false;
+    const a = Buffer.from(esperada);
+    return a.length === b.length && timingSafeEqual(a, b);
+  });
 }
 
 async function leer(ruta: string, token: string) {
