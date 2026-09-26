@@ -136,6 +136,11 @@ def extraer_resultados():
         bolitas = tarjeta.select("ul.balls li")
         numeros = [li.get_text(strip=True) for li in bolitas if li.get_text(strip=True).isdigit()]
 
+        # Loto Pool se juega con numeros del 00 al 99, pero la fuente a veces publica
+        # los menores de 10 sin el cero (ej. "2" en vez de "02"). Se completan a dos cifras.
+        if "loto pool" in nombre_sorteo.lower():
+            numeros = [n.zfill(2) for n in numeros]
+
         actualizado = tarjeta.find(class_="updated-badge") is not None
 
         if numeros:

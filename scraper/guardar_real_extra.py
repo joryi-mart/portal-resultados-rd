@@ -124,8 +124,12 @@ def main():
             if resultado["fecha"] != hoy:
                 print(f"  ⏳ {url}: todavia muestra el resultado del {resultado['fecha']}, no de hoy ({hoy})")
                 continue
-            accion = guardar_en_supabase(sorteo_id, resultado["fecha"], resultado["numeros"])
-            print(f"  ✅ sorteo_id {sorteo_id}: {resultado['numeros']} ({accion})")
+            numeros = resultado["numeros"]
+            # Loto Pool Noche (147) va del 00 al 99: se completan a dos cifras los menores de 10.
+            if sorteo_id == 147:
+                numeros = [n.zfill(2) for n in numeros]
+            accion = guardar_en_supabase(sorteo_id, resultado["fecha"], numeros)
+            print(f"  ✅ sorteo_id {sorteo_id}: {numeros} ({accion})")
         except Exception as e:
             print(f"  ❌ Error con {url}: {e}")
 
