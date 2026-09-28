@@ -23,6 +23,9 @@ async function leer(ruta: string, token: string) {
   const res = await fetch(`https://graph.facebook.com/v19.0/${ruta}${separador}access_token=${token}`, { cache: "no-store" });
   const data = await res.json();
   if (!res.ok) return { error: data.error?.message || "Error desconocido" };
+  // Facebook a veces incluye la llave de acceso dentro de las URLs de "paging"
+  // (siguiente/anterior pagina). Se quita para que esta ruta nunca la devuelva.
+  if (data && typeof data === "object" && "paging" in data) delete data.paging;
   return data;
 }
 
@@ -43,7 +46,6 @@ export async function GET(request: Request) {
     `me/posts?limit=40&fields=created_time,message,permalink_url,reactions.summary(true).limit(0),comments.summary(true).limit(0),shares`,
     token
   );
-  const alcance = await leer(`me/insights?metric=page_impressions_unique&period=days_28`, token);
   const vistas = await leer(`me/insights?metric=page_views_total&period=days_28`, token);
 
   const lista = Array.isArray(publicaciones?.data)
@@ -66,7 +68,6 @@ export async function GET(request: Request) {
       pagina,
       totalPublicaciones: Array.isArray(lista) ? lista.length : null,
       publicaciones: lista,
-      alcance,
       vistas,
     },
     { headers: { "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0" } }
