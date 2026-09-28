@@ -58,12 +58,18 @@ export async function GET(request: Request) {
       }))
     : publicaciones;
 
-  return NextResponse.json({
-    quienSoy,
-    pagina,
-    totalPublicaciones: Array.isArray(lista) ? lista.length : null,
-    publicaciones: lista,
-    alcance,
-    vistas,
-  });
+  return NextResponse.json(
+    {
+      // Sello de hora real del servidor: si esto no cambia entre dos aperturas,
+      // el navegador esta mostrando una respuesta guardada de antes, no una nueva.
+      generadoAhora: new Date().toISOString(),
+      quienSoy,
+      pagina,
+      totalPublicaciones: Array.isArray(lista) ? lista.length : null,
+      publicaciones: lista,
+      alcance,
+      vistas,
+    },
+    { headers: { "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0" } }
+  );
 }
