@@ -39,7 +39,7 @@ export async function GET(request: Request) {
   // Diagnostico: "me" dice a quien pertenece de verdad el token guardado (deberia
   // ser la pagina "la bankera RD", no una cuenta personal). No revela el token.
   const quienSoy = await leer(`me?fields=id,name`, token);
-  const pagina = await leer(`${pageId}?fields=name,fan_count,followers_count,link,category`, token);
+  const pagina = await leer(`${pageId}?fields=name,followers_count,link,category`, token);
   const publicaciones = await leer(
     `${pageId}/posts?limit=40&fields=created_time,message,permalink_url,reactions.summary(true).limit(0),comments.summary(true).limit(0),shares`,
     token
