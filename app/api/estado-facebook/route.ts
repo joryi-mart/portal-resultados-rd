@@ -36,6 +36,9 @@ export async function GET(request: Request) {
   const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
   if (!pageId || !token) return NextResponse.json({ error: "Faltan las claves de Facebook" }, { status: 500 });
 
+  // Diagnostico: "me" dice a quien pertenece de verdad el token guardado (deberia
+  // ser la pagina "la bankera RD", no una cuenta personal). No revela el token.
+  const quienSoy = await leer(`me?fields=id,name`, token);
   const pagina = await leer(`${pageId}?fields=name,fan_count,followers_count,link,category`, token);
   const publicaciones = await leer(
     `${pageId}/posts?limit=40&fields=created_time,message,permalink_url,reactions.summary(true).limit(0),comments.summary(true).limit(0),shares`,
@@ -56,6 +59,7 @@ export async function GET(request: Request) {
     : publicaciones;
 
   return NextResponse.json({
+    quienSoy,
     pagina,
     totalPublicaciones: Array.isArray(lista) ? lista.length : null,
     publicaciones: lista,
