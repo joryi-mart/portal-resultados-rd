@@ -7,10 +7,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
-  const pageId = process.env.FACEBOOK_PAGE_ID;
   const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
 
-  const res = await fetch(`https://graph.facebook.com/v19.0/${pageId}/picture`, {
+  // "me" en vez del numero de FACEBOOK_PAGE_ID, para no depender de ese numero.
+  const res = await fetch(`https://graph.facebook.com/v19.0/me/picture`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({

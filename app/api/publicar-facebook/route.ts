@@ -50,7 +50,6 @@ function construirCaption(loteriaNombre: string, loteriaSlug: string, fecha: str
 }
 
 async function crearPublicacion(caption: string, imagen: Buffer) {
-  const pageId = process.env.FACEBOOK_PAGE_ID;
   const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
 
   const formData = new FormData();
@@ -59,7 +58,9 @@ async function crearPublicacion(caption: string, imagen: Buffer) {
   formData.append("published", "true");
   formData.append("access_token", token || "");
 
-  const res = await fetch(`https://graph.facebook.com/v19.0/${pageId}/photos`, {
+  // Se usa "me" (la pagina duena del token) en vez del numero de FACEBOOK_PAGE_ID,
+  // para no depender de que ese numero este guardado correctamente en Vercel.
+  const res = await fetch(`https://graph.facebook.com/v19.0/me/photos`, {
     method: "POST",
     body: formData,
   });
@@ -87,7 +88,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    if (!process.env.FACEBOOK_PAGE_ID || !process.env.FACEBOOK_PAGE_ACCESS_TOKEN) {
+    if (!process.env.FACEBOOK_PAGE_ACCESS_TOKEN) {
       return NextResponse.json({ error: "Faltan las claves de Facebook" }, { status: 500 });
     }
 

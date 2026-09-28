@@ -40,7 +40,8 @@ async function crearPublicacion(caption: string, imagen: Buffer) {
   formData.append("published", "true");
   formData.append("access_token", process.env.FACEBOOK_PAGE_ACCESS_TOKEN || "");
 
-  const res = await fetch(`https://graph.facebook.com/v19.0/${process.env.FACEBOOK_PAGE_ID}/photos`, { method: "POST", body: formData });
+  // "me" en vez del numero de FACEBOOK_PAGE_ID, para no depender de ese numero.
+  const res = await fetch(`https://graph.facebook.com/v19.0/me/photos`, { method: "POST", body: formData });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || "Error creando la publicacion en Facebook");
   return data.id as string;
@@ -52,7 +53,7 @@ export async function GET(request: Request) {
     if (!claveValida(url.searchParams.get("clave"))) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
-    if (!process.env.FACEBOOK_PAGE_ID || !process.env.FACEBOOK_PAGE_ACCESS_TOKEN) {
+    if (!process.env.FACEBOOK_PAGE_ACCESS_TOKEN) {
       return NextResponse.json({ error: "Faltan las claves de Facebook" }, { status: 500 });
     }
 
