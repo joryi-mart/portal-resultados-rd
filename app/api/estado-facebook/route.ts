@@ -9,11 +9,12 @@ export const dynamic = "force-dynamic";
 
 function claveValida(recibida: string | null) {
   if (!recibida) return false;
-  const b = Buffer.from(recibida);
+  const b = Buffer.from(recibida.trim());
   // Acepta la clave propia de esta revisión o la clave del cron (ya guardada en Vercel).
   return [process.env.CLAVE_REVISION_FB, process.env.CRON_SECRET].some(function (esperada) {
-    if (!esperada || esperada.length < 12) return false;
-    const a = Buffer.from(esperada);
+    const limpia = (esperada || "").trim();
+    if (!limpia || limpia.length < 12) return false;
+    const a = Buffer.from(limpia);
     return a.length === b.length && timingSafeEqual(a, b);
   });
 }

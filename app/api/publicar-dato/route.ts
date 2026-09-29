@@ -26,9 +26,9 @@ const DATOS: Dato[] = [
 ];
 
 function claveValida(recibida: string | null) {
-  const esperada = process.env.CRON_SECRET;
+  const esperada = (process.env.CRON_SECRET || "").trim();
   if (!esperada || esperada.length < 12 || !recibida) return false;
-  const a = Buffer.from(recibida);
+  const a = Buffer.from(recibida.trim());
   const b = Buffer.from(esperada);
   return a.length === b.length && timingSafeEqual(a, b);
 }

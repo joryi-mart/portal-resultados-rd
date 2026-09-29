@@ -55,8 +55,10 @@ async function publicarUno(tipo: TipoDeporte) {
 export async function GET(request: Request) {
   try {
     const secretoEsperado = process.env.CRON_SECRET;
-    const autorizacion = request.headers.get("authorization");
-    if (secretoEsperado && autorizacion !== `Bearer ${secretoEsperado}`) {
+    // .trim(): algunos paneles (ej. cron-job.org) a veces guardan un espacio o
+    // salto de linea de mas al pegar la clave; se ignora para no fallar por eso.
+    const autorizacion = (request.headers.get("authorization") || "").trim();
+    if (secretoEsperado && autorizacion !== `Bearer ${secretoEsperado.trim()}`) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
