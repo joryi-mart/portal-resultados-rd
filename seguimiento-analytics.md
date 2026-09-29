@@ -32,6 +32,17 @@ Cambios ya publicados que se quieren medir: títulos/descripciones/encabezados c
 - Notificaciones push: 1 suscrito. Facebook: 4 publicaciones al día (Nacional, Leidsa, Real, Loteka).
 - Bing: 36 URLs enviadas por IndexNow (respuesta 202).
 
+## 29 de septiembre de 2026 (7 días: 22 al 28 de septiembre — se pisa 3 días con la línea base anterior)
+
+Contexto: el sábado 26 y domingo 27 Facebook estuvo caído varias horas (llave de acceso rota, resuelto el 28 en la noche). Primer reel y publicación "¿Sabías qué?" salieron el 28.
+
+- Usuarios activos: 109 (línea base: 117, -7 %) · Nuevos: 105 · Tiempo de interacción medio: 12 s (antes 16 s) · Eventos: 680 (antes 715)
+- Primera fuente del usuario: Google orgánico 48 (~44 %, antes 61 %) · Facebook 32 = m.facebook.com 21 + facebook.com 11 (~29 %, antes 18 %) · Directo 15 (~14 %) · Yahoo 6 · ChatGPT (asistente IA) 3 · Bing 2
+- Página más visitada aparte de la portada: "Béisbol y MLB Hoy" (10 vistas) y "Historia de la Lotería Nacional" (4 vistas, viene del enlace del "¿Sabías qué?" en Facebook)
+- Ciudades: Santo Domingo 24, Dublín 7, Prineville 7, Luleå 6, Fort Worth 5, Santo Domingo Este 4 (Dublín/Prineville/Luleå: probables centros de datos, no personas)
+
+Lectura: el total bajó un poco (explicado por la caída de Facebook esos días), pero el peso de Facebook en el tráfico casi se duplicó (18 % → 29 %) a costa de Google. La primera semana completa sin cortes de Facebook es del 29 de sept al 5 de oct — esa comparación sí mide bien si el arreglo funcionó.
+
 **Qué comparar el 1 y el 8 de octubre (mismos 7 días, mismos 3 bloques de Analytics)**
 1. Usuarios activos y % de Google (meta: subir de 117 y 61 %).
 2. Search Console, últimos 28 días SIN filtro de página: impresiones, clics, CTR, posición media.
