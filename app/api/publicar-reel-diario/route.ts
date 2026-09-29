@@ -56,11 +56,20 @@ export async function GET(request: Request) {
     const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
     if (!token) return NextResponse.json({ error: "Faltan las claves de Facebook" }, { status: 500 });
 
+    // Si todavia no existe ningun reel generado (o la web devuelve su pagina
+    // normal en vez de un 404 limpio para el archivo faltante), se trata igual:
+    // no hay nada que publicar hoy.
     const metaRes = await fetch("https://labankerard.com/reel-diario.json", { cache: "no-store" });
-    if (!metaRes.ok) {
+    const tipo = metaRes.headers.get("content-type") || "";
+    if (!metaRes.ok || !tipo.includes("json")) {
       return NextResponse.json({ resultado: "sin reel para hoy (no se genero contenido real)" });
     }
-    const meta = (await metaRes.json()) as { slug: string; caption: string; fecha: string };
+    let meta: { slug: string; caption: string; fecha: string };
+    try {
+      meta = await metaRes.json();
+    } catch {
+      return NextResponse.json({ resultado: "sin reel para hoy (no se genero contenido real)" });
+    }
 
     const { data: yaPublicado, error: errorConsulta } = await supabase
       .from("publicaciones_facebook")
