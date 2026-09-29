@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
+import { supabase } from "@/lib/supabase";
 
 // Publica un Reel en Facebook a partir de un video ya alojado en nuestra propia
 // web (public/), usando el proceso de 3 pasos que pide la Graph API:
@@ -81,11 +82,29 @@ export async function GET(request: Request) {
     const reel = REELS[indice];
     if (!reel) return NextResponse.json({ error: `No hay ningun reel en el indice ${indice}` }, { status: 400 });
 
+    // Cada reel se publica una sola vez para siempre (no por dia, como las
+    // loterias): si ya existe un registro con este slug, no se vuelve a publicar.
+    const { data: yaPublicado, error: errorConsulta } = await supabase
+      .from("publicaciones_facebook")
+      .select("id, post_id")
+      .eq("loteria_slug", reel.slug)
+      .limit(1);
+    if (errorConsulta) throw new Error(errorConsulta.message);
+    if (yaPublicado && yaPublicado.length > 0) {
+      return NextResponse.json({ slug: reel.slug, resultado: "ya publicado antes", post_id: yaPublicado[0].post_id });
+    }
+
     const fileUrl = `https://labankerard.com/${reel.archivo}`;
 
     const { videoId, uploadUrl } = await iniciarSesion(token);
     await subirVideo(videoId, fileUrl, token);
     const resultado = await publicarReel(videoId, reel.descripcion, token);
+
+    const hoy = new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const { error: errorInsert } = await supabase
+      .from("publicaciones_facebook")
+      .insert({ loteria_slug: reel.slug, fecha: hoy, post_id: resultado.post_id || videoId, mensaje: reel.descripcion });
+    if (errorInsert) throw new Error(errorInsert.message);
 
     return NextResponse.json({ slug: reel.slug, videoId, uploadUrl, resultado });
   } catch (error: any) {
