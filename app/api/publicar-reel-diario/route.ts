@@ -6,15 +6,18 @@ import { supabase } from "@/lib/supabase";
 // public/reel-diario.json ({slug, caption, fecha}), generados por
 // scripts/generar_reel_diario.py, y lo sube a Facebook. Pensada para que la
 // llame un asistente en la nube programado, despues de generar y subir esos
-// 2 archivos al repositorio. Se activa con ?clave=<CRON_SECRET>.
+// 2 archivos al repositorio. Se activa con ?clave=<REEL_DIARIO_SECRET o CRON_SECRET>.
 export const dynamic = "force-dynamic";
 
 function claveValida(recibida: string | null) {
-  const esperada = (process.env.CRON_SECRET || "").trim();
-  if (!esperada || esperada.length < 12 || !recibida) return false;
-  const a = Buffer.from(recibida.trim());
-  const b = Buffer.from(esperada);
-  return a.length === b.length && timingSafeEqual(a, b);
+  if (!recibida) return false;
+  const b = Buffer.from(recibida.trim());
+  return [process.env.REEL_DIARIO_SECRET, process.env.CRON_SECRET].some(function (esperada) {
+    const limpia = (esperada || "").trim();
+    if (!limpia || limpia.length < 12) return false;
+    const a = Buffer.from(limpia);
+    return a.length === b.length && timingSafeEqual(a, b);
+  });
 }
 
 async function iniciarSesion(token: string) {
