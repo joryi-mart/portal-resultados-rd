@@ -43,6 +43,18 @@ Contexto: el sábado 26 y domingo 27 Facebook estuvo caído varias horas (llave 
 
 Lectura: el total bajó un poco (explicado por la caída de Facebook esos días), pero el peso de Facebook en el tráfico casi se duplicó (18 % → 29 %) a costa de Google. La primera semana completa sin cortes de Facebook es del 29 de sept al 5 de oct — esa comparación sí mide bien si el arreglo funcionó.
 
+## PRIMER MES COMPLETO (1 al 30 de septiembre de 2026) — LINEA BASE OFICIAL para comparar meses futuros
+
+Numero confirmado por el usuario el 1 de octubre como cierre definitivo del primer mes.
+
+- Usuarios activos: 331 · Nuevos: 333 · Tiempo de interacción medio: 1 min 09 s · Eventos: 3 700
+- Primera fuente del usuario: Google orgánico 125 (38 %) · Directo 116 (35 %, probablemente incluye trafico de Facebook mal etiquetado por el navegador interno de la app) · Facebook 51 = m.facebook.com 32 + facebook.com 19 (15 %) · Yahoo 16 · Bing 9 · DuckDuckGo 7
+- Paginas mas vistas aparte de portada (641 vistas, 105 usuarios): Béisbol/MLB (36), Lotería Real (31), Todas las loterías (22), Farándula (19), Lotería Nacional (19), NBA (13)
+- Por pagina principal de cada loteria (datos del 29/sept): Real 41 vistas/27 usuarios, Nacional 34/21, Leidsa 28/21, Loteka 9/9. La Primera, Lotedom, La Suerte Dominicana, King Lottery (SXM), Florida, New York y Anguila casi sin visitas directas a su pagina principal (fuera del top 50 del sitio).
+- Ciudades: Santo Domingo 57, Santiago 16, San José 14, Luleå 12, Prineville 12, Dublín 11, Santo Domingo Este 11 (Luleå/Prineville/Dublín: probables centros de datos)
+
+Lectura: primer mes completo de la página. Usar este resumen como linea base oficial para comparar contra octubre y meses siguientes. El tiempo de interacción mejoró mucho frente a las mediciones anteriores (12-16 s), señal de que la mezcla de contenido (loterías + deportes + farándula) está funcionando. Real, Nacional, Leidsa y Loteka siguen siendo, por mucho, las 4 loterías que de verdad importan para esta audiencia.
+
 **Qué comparar el 1 y el 8 de octubre (mismos 7 días, mismos 3 bloques de Analytics)**
 1. Usuarios activos y % de Google (meta: subir de 117 y 61 %).
 2. Search Console, últimos 28 días SIN filtro de página: impresiones, clics, CTR, posición media.
