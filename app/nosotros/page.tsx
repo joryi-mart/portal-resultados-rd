@@ -62,6 +62,15 @@ export default function NosotrosPage() {
           </p>
         </Seccion>
 
+        <Seccion titulo="Quién está detrás">
+          <p>
+            La Bankera RD la lleva un dominicano que quería un solo lugar confiable para ver los resultados de
+            lotería del día, sin tener que entrar a cinco páginas distintas ni esperar a que alguien lo publique en
+            un grupo de WhatsApp. De ahí nació la idea de reunir todo — loterías, béisbol, NBA, fútbol — en un solo
+            sitio, actualizado al momento.
+          </p>
+        </Seccion>
+
         <Seccion titulo="Desde cuándo existimos">
           <p>
             La Bankera RD se lanzó el <strong>1 de septiembre de 2026</strong>. Empezamos con los resultados de
