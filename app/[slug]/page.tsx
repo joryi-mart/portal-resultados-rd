@@ -476,6 +476,19 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
       <PreguntasFrecuentes
         preguntas={[
           {
+            pregunta: `¿A qué hora juega ${loteriaData.nombre}?`,
+            respuesta:
+              sorteos.length > 0
+                ? `${loteriaData.nombre} tiene ${sorteos.length} ${sorteos.length === 1 ? "sorteo" : "sorteos"}: ` +
+                  sorteos
+                    .map(function (s) {
+                      return `${s.nombre} a las ${s.hora_sorteo ? formatearHora12(s.hora_sorteo) : "hora por confirmar"}`;
+                    })
+                    .join(", ") +
+                  " (hora de República Dominicana). Pueden cambiar en feriados y fechas especiales."
+                : `Consulta los horarios de ${loteriaData.nombre} más abajo en esta página.`,
+          },
+          {
             pregunta: `¿Cómo veo resultados anteriores de ${loteriaData.nombre}?`,
             respuesta: `Toca "Ver historial" junto a cada sorteo, o entra a cualquier sorteo específico para ver sus últimos resultados.`,
           },
