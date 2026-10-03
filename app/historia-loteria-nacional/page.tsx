@@ -116,6 +116,14 @@ export default function HistoriaLoteriaNacionalPage() {
         </p>
 
         <PreguntasFrecuentes preguntas={PREGUNTAS} />
+
+        <p className="mt-6 text-xs text-[#5C6B78]">
+          Escrito por el equipo de{" "}
+          <a href="/nosotros" className="underline" style={{ color: "#1E4D8C" }}>
+            La Bankera RD
+          </a>
+          .
+        </p>
       </main>
 
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">

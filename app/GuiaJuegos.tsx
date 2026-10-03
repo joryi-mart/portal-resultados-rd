@@ -119,6 +119,14 @@ export default function GuiaJuegos(props: {
 
         <PreguntasFrecuentes preguntas={props.preguntas} />
 
+        <p className="mt-6 text-xs text-[#5C6B78]">
+          Escrito por el equipo de{" "}
+          <a href="/nosotros" className="underline" style={{ color: COLOR_AZUL }}>
+            La Bankera RD
+          </a>
+          .
+        </p>
+
         <p className="mt-8 rounded-xl border border-[#10203A]/12 bg-white p-4 text-xs leading-relaxed">
           {props.notaFinal ??
             "Esta guía es informativa y no oficial. Las reglas, horarios y premios los define cada lotería y pueden cambiar: confirma siempre en tu banca o en los canales oficiales de la lotería antes de jugar."}
