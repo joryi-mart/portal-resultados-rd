@@ -219,6 +219,7 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
 
   const itemsVariedades: ItemMenu[] = [
     { etiqueta: "💭 Números por sueños", href: "/numeros-por-suenos" },
+    { etiqueta: "📊 Números más salidos", href: "/numeros-mas-salidos" },
     { etiqueta: "📺 Series", href: "/series" },
     { etiqueta: "🎮 Videojuegos", href: "/videojuegos" },
     { etiqueta: "🏝️ Turismo", href: "/turismo" },
