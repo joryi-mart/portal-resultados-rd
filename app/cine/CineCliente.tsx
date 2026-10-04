@@ -106,6 +106,10 @@ export default function CineCliente() {
           Afiches, sinopsis y calificación de películas en cartelera, próximos estrenos y populares. Todavía no tenemos horarios ni salas específicas de cines dominicanos — esa información no tiene una fuente gratis disponible por ahora.
         </p>
 
+        <p className="mb-4 text-sm leading-relaxed text-[#5C6B78]">
+          Las tres secciones de abajo se actualizan varias veces al día: en cartelera, próximos estrenos y las películas más populares del momento, cada una con su sinopsis, calificación y fecha de estreno.
+        </p>
+
         <a
           href="/"
           className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"

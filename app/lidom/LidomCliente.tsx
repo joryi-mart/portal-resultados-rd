@@ -139,6 +139,10 @@ export default function LidomCliente() {
           La Liga de Béisbol Profesional de la República Dominicana (LIDOM) es el torneo de béisbol invernal más seguido del país y una de las ligas más competitivas del Caribe. Seis equipos —Tigres del Licey, Águilas Cibaeñas, Leones del Escogido, Estrellas Orientales, Toros del Este y Gigantes del Cibao— se disputan la corona cada temporada, entre mediados de octubre y mediados de enero, con roster llenos de peloteros de Grandes Ligas que regresan a jugar en su país durante el invierno. El campeón representa a República Dominicana en la Serie del Caribe, el torneo más prestigioso del béisbol latinoamericano.
         </p>
 
+        <p className="mb-6 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          Más abajo puedes ver la tabla de posiciones actualizada de la temporada, el calendario de juegos de cada equipo y las noticias más recientes de la liga. También puedes entrar al perfil de cada equipo para conocer su historia, su roster y sus peloteros famosos.
+        </p>
+
         {cargando && <p className="font-mono text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Cargando...</p>}
         {error && <p className="rounded-lg bg-red-50 p-4 text-sm text-red-600">{error}</p>}
 
