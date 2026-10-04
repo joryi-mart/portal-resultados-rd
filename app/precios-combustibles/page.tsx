@@ -21,14 +21,16 @@ export const metadata = {
 };
 
 // El Ministerio de Industria, Comercio y Mipymes (MICM) publica un aviso
-// nuevo cada viernes. Estos son los precios de la semana vigente al
-// actualizar esta pagina — revisar micm.gob.do para la semana mas reciente.
-const SEMANA_VIGENTE = "29 de agosto al 4 de septiembre de 2026";
+// nuevo cada semana (normalmente los viernes/sabados). Estos son los precios
+// del aviso oficial vigente al actualizar esta pagina — revisar micm.gob.do
+// para la semana mas reciente antes de volver a actualizar este arreglo.
+// Fuente: aviso firmado el 02/oct/2026 por el Ministro Eduardo Sanz Lovaton.
+const SEMANA_VIGENTE = "3 al 9 de octubre de 2026";
 const PRECIOS = [
-  { nombre: "Gasolina Premium", precio: "341.10" },
-  { nombre: "Gasolina Regular", precio: "310.50" },
-  { nombre: "Gasoil Óptimo", precio: "293.10" },
-  { nombre: "Gasoil Regular", precio: "262.80" },
+  { nombre: "Gasolina Premium", precio: "353.10" },
+  { nombre: "Gasolina Regular", precio: "317.50" },
+  { nombre: "Gasoil Óptimo", precio: "306.10" },
+  { nombre: "Gasoil Regular", precio: "270.80" },
   { nombre: "GLP (Gas Licuado de Petróleo)", precio: "135.20" },
 ];
 
