@@ -6,7 +6,7 @@ export const revalidate = 60;
 
 export const metadata = {
   title: "La Bankera RD | Resultados de Loterías Dominicanas en Vivo",
-  description: "Resultados de Leidsa, Lotería Nacional, Loteka, Lotería Real y más loterías dominicanas, de hoy y de ayer, con horarios. Incluye el tipo de cambio del dólar y el euro.",
+  description: "Resultados de Leidsa, Lotería Nacional, Loteka, Lotería Real y más loterías dominicanas, de hoy y de ayer, con horarios y tipo de cambio del dólar.",
   openGraph: {
     title: "La Bankera RD 🇩🇴 | Resultados de Loterías Dominicanas en Vivo",
     description: "Consulta los resultados de las principales loterías dominicanas e internacionales, actualizados en vivo.",
