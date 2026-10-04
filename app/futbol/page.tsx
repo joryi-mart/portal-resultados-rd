@@ -24,11 +24,11 @@ const PREGUNTAS_FUTBOL = [
 export const revalidate = 900;
 
 export const metadata = {
-  title: "Fútbol Hoy: Resultados de LaLiga, Premier League y Champions League",
+  title: "Fútbol Hoy: LaLiga, Premier y Champions",
   description:
     "Resultados en vivo de fútbol: LaLiga española, Premier League inglesa y Champions League. Marcadores, goleadores de cada partido y tabla de posiciones.",
   openGraph: {
-    title: "Fútbol Hoy: Resultados de LaLiga, Premier League y Champions League",
+    title: "Fútbol Hoy: LaLiga, Premier y Champions",
     description: "Marcadores en vivo, goleadores y tabla de posiciones de las principales ligas de fútbol.",
     locale: "es_DO",
     type: "website",

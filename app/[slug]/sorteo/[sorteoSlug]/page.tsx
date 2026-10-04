@@ -118,7 +118,21 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
 
   const { loteria, sorteo } = encontrado;
   const horaTexto = formatearHora12(sorteo.hora_sorteo);
-  const titulo = `Resultados ${sorteo.nombre} de ${loteria.nombre} Hoy — ${horaTexto}`;
+  // El nombre del sorteo a veces ya incluye el de la loteria (ej. "Quiniela
+  // Loteka" en Loteka, "Quiniela Real" en Loteria Real): si lo repetimos se
+  // ve como "Quiniela Loteka de Loteka", asi que lo omitimos en ese caso.
+  // Para las loterias de nombre largo usamos un alias corto en el titulo
+  // (si no, el titulo se pasa de los ~580px que Google corta en buscadores).
+  const NOMBRE_CORTO_TITULO: Record<string, string> = {
+    "la-suerte": "La Suerte",
+    sxm: "SXM",
+    "loterias-americanas": "Americanas",
+  };
+  const nombreCortoLoteria = NOMBRE_CORTO_TITULO[loteria.slug] || loteria.nombre.replace(/^Lotería\s+/i, "");
+  const sorteoYaIncluyeLoteria = sorteo.nombre.toLowerCase().includes(nombreCortoLoteria.toLowerCase());
+  const titulo = sorteoYaIncluyeLoteria
+    ? `${sorteo.nombre} — ${horaTexto}`
+    : `${sorteo.nombre} (${nombreCortoLoteria}) — ${horaTexto}`;
   const descripcion = `Número ganador de ${sorteo.nombre} (${loteria.nombre}) en vivo y en directo, sorteo de las ${horaTexto} de hoy. Resultado actualizado al instante en La Bankera RD.`;
 
   return {

@@ -9,7 +9,7 @@ const GUIAS_LIDOM = [
 ];
 
 export const metadata = {
-  title: "Cómo Funciona la LIDOM: Temporada, Round Robin, Serie Final y Serie del Caribe",
+  title: "Cómo Funciona la LIDOM: Temporada y Series",
   description:
     "Explicación sencilla de la LIDOM (béisbol invernal dominicano): cuántos equipos hay, cuántos juegos se juegan, cómo funciona el round robin y cómo se llega a la Serie del Caribe.",
   openGraph: {
