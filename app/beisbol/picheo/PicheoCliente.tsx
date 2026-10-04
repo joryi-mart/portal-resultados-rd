@@ -233,6 +233,11 @@ export default function PicheoCliente() {
           </button>
         </div>
 
+        <p className="mb-6 text-sm leading-relaxed text-[#5C6B78]">
+          Esta hoja de picheo muestra los pícheres probables de cada juego de la MLB de hoy, con sus
+          estadísticas de la temporada, su última salida y su rendimiento como local y visitante.
+        </p>
+
         {cargando && (
           <p className="font-mono text-sm text-[#5C6B78]">Cargando picheos...</p>
         )}

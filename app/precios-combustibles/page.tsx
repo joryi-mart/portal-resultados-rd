@@ -70,8 +70,9 @@ export default function PreciosCombustiblesPage() {
 
         <p className="mt-6 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
           El <strong>Ministerio de Industria, Comercio y Mipymes (MICM)</strong> publica un aviso nuevo cada
-          viernes con los precios que rigen la semana siguiente. Los precios pueden incluir subsidios del
-          gobierno para amortiguar el costo internacional del petróleo.
+          semana con los precios de estos combustibles que rigen los próximos siete días. Los precios de
+          cada combustible pueden incluir subsidios del gobierno para amortiguar el costo internacional del
+          petróleo.
         </p>
 
         <a
