@@ -13,7 +13,7 @@ import {
 
 export const metadata = {
   title: "Todas las Loterías Dominicanas y Américas",
-  description: "Lista completa de loterías y sus productos: Leidsa, Nacional, Loteka, Real, Lotedom, La Primera, La Suerte, y las internacionales Haití, Anguila, Sint Maarten, New York, Florida, PowerBall y Mega Millions.",
+  description: "Lista completa de loterías dominicanas y americanas: Leidsa, Nacional, Loteka, Real, Lotedom, La Primera, La Suerte y más, con todos sus productos.",
   openGraph: {
     title: "Todas las Loterías Dominicanas y Américas",
     description: "Lista completa de loterías dominicanas e internacionales y sus productos.",
