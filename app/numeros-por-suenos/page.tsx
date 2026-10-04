@@ -100,6 +100,25 @@ export default function NumerosPorSuenosPage() {
           sigue usando hoy en día. Aquí tienes los 36 números originales y qué representa cada uno.
         </p>
 
+        <div className="mb-8 flex flex-wrap gap-2">
+          <a
+            href="https://wa.me/?text=Mira%20esta%20tabla%20de%20n%C3%BAmeros%20seg%C3%BAn%20tus%20sue%C3%B1os%3A%20https%3A%2F%2Flabankerard.com%2Fnumeros-por-suenos"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-2 text-sm font-bold text-white hover:opacity-90"
+          >
+            Compartir en WhatsApp
+          </a>
+          <a
+            href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Flabankerard.com%2Fnumeros-por-suenos"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-[#1877F2] px-4 py-2 text-sm font-bold text-white hover:opacity-90"
+          >
+            Compartir en Facebook
+          </a>
+        </div>
+
         <div className="mb-8 grid grid-cols-1 gap-2 sm:grid-cols-2">
           {CHARADA.map(function (c) {
             return (

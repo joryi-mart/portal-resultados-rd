@@ -100,6 +100,25 @@ export default async function NumerosMasSalidosPage() {
           vuelve este conteo.
         </p>
 
+        <div className="mb-8 flex flex-wrap gap-2">
+          <a
+            href="https://wa.me/?text=Mira%20los%20n%C3%BAmeros%20m%C3%A1s%20salidos%20en%20cada%20loter%C3%ADa%3A%20https%3A%2F%2Flabankerard.com%2Fnumeros-mas-salidos"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-2 text-sm font-bold text-white hover:opacity-90"
+          >
+            Compartir en WhatsApp
+          </a>
+          <a
+            href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Flabankerard.com%2Fnumeros-mas-salidos"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-[#1877F2] px-4 py-2 text-sm font-bold text-white hover:opacity-90"
+          >
+            Compartir en Facebook
+          </a>
+        </div>
+
         <div className="mb-8 flex flex-col gap-6">
           {resultadosPorLoteria.map(function (l) {
             return (
