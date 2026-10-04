@@ -49,13 +49,23 @@ export const mono = IBM_Plex_Mono({
   variable: "--font-mono",
 });
 
+// Cuantos dias hacia atras trae la portada. La navegacion "dia anterior" del
+// pizarron solo se usa unos pocos dias hacia atras en la practica (no hay
+// ningun enlace que salte directo a una fecha vieja); con esto alcanza de
+// sobra y evita traer TODO el historial de resultados en cada carga de la
+// portada, que sin este limite crece sin parar desde que existe el sitio.
+const DIAS_RESULTADOS_PORTADA = 14;
+
 export default async function Home() {
   const hoy = hoyISO();
+  const hoyRD = new Date(Date.now() - 4 * 60 * 60 * 1000);
+  const desdeISO = new Date(hoyRD.getTime() - DIAS_RESULTADOS_PORTADA * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
   const loteriasResult = await supabase
     .from("loterias")
     .select("id, nombre, slug, activa, sorteos ( id, nombre, hora_sorteo, dias_semana, resultados ( numeros, fecha, creado_en ) )")
     .eq("activa", true)
+    .gte("sorteos.resultados.fecha", desdeISO)
     .order("id");
   const loterias = loteriasResult.data;
   const error = loteriasResult.error;
