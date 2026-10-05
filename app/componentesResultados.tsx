@@ -654,14 +654,13 @@ export function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: 
           Todavía no hay resultados publicados para este día.
         </p>
       ) : (
-        <>
-          <div className="mx-3 mb-3 columns-1 gap-3 sm:hidden">
-            {conTarjetaDeAvisos(ordenarPor(ORDEN_IMPORTANCIA_MOVIL))}
-          </div>
-          <div className="mx-3 mb-3 hidden gap-3 sm:mx-4 sm:mb-4 sm:columns-3 sm:block">
-            {conTarjetaDeAvisos(ordenarPor(ORDEN_IMPORTANCIA_ESCRITORIO))}
-          </div>
-        </>
+        // Antes habia dos bloques (uno para movil, oculto en escritorio, y
+        // viceversa) con el mismo contenido completo en distinto orden: Google
+        // veia esta lista duplicada dentro del HTML. Ahora es un solo bloque
+        // con el orden de movil para ambos tamanos de pantalla.
+        <div className="mx-3 mb-3 columns-1 gap-3 sm:mx-4 sm:mb-4 sm:columns-3">
+          {conTarjetaDeAvisos(ordenarPor(ORDEN_IMPORTANCIA_MOVIL))}
+        </div>
       )}
     </div>
   );
