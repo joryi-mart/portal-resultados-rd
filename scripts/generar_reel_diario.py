@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-Genera el reel de deportes del dia (video vertical, 1080x1920) usando resultados
-reales de ayer (hora de Republica Dominicana, UTC-4). Prueba los deportes en
-este orden y usa el primero que tenga resultados: LIDOM, MLB, Liga Espanola, NBA.
-Si ninguno tiene resultados ese dia, no genera nada (no se inventa contenido).
+Genera un reel de deportes (video vertical, 1080x1920) por cada deporte que
+tenga resultados reales de ayer (hora de Republica Dominicana, UTC-4), de
+entre: LIDOM, MLB, Liga Espanola, NBA. Pueden salir varios el mismo dia (ej.
+MLB y futbol a la vez). El deporte que no tenga resultados ese dia no genera
+nada (no se inventa contenido) y se borra su .json viejo si quedo de otro dia.
 
-Salida:
-  public/reel-diario.mp4   - el video
-  public/reel-diario.json  - {"deporte": ..., "caption": ..., "fecha": ...}
+Salida (por cada deporte con resultados, <slug> = lidom|mlb|futbol|nba):
+  public/reel-<slug>.mp4   - el video
+  public/reel-<slug>.json  - {"slug": ..., "caption": ..., "fecha": ...}
 
 Se necesita: pip install pillow imageio_ffmpeg
 """
@@ -130,7 +131,10 @@ def juegos_nba(fecha_iso_compacta):
     return resultado
 
 
-def elegir_deporte(fecha):
+def elegir_deportes(fecha):
+    # Antes se usaba solo el primer deporte con resultados; ahora se generan
+    # TODOS los que tengan resultados reales de ayer, cada uno en su propio
+    # archivo, para poder publicar varios reels el mismo dia (ej. MLB y futbol).
     fecha_iso = fecha.isoformat()
     fecha_compacta = fecha.strftime("%Y%m%d")
     candidatos = [
@@ -139,6 +143,7 @@ def elegir_deporte(fecha):
         ("futbol", "LIGA ESPAÑOLA", "labankerard.com/futbol", "#LaLiga #Futbol", lambda: juegos_futbol(fecha_compacta)),
         ("nba", "NBA", "labankerard.com/nba", "#NBA #Baloncesto", lambda: juegos_nba(fecha_compacta)),
     ]
+    elegidos = []
     for slug, titulo, enlace, hashtags, fn in candidatos:
         try:
             juegos = fn()
@@ -146,8 +151,8 @@ def elegir_deporte(fecha):
             print(f"  (aviso) {slug} fallo al consultar: {e}", file=sys.stderr)
             continue
         if juegos:
-            return slug, titulo, enlace, hashtags, juegos
-    return None
+            elegidos.append((slug, titulo, enlace, hashtags, juegos))
+    return elegidos
 
 
 # ---------- Animacion ----------
@@ -232,31 +237,40 @@ def construir_caption(titulo, subtitulo, fecha, enlace, hashtags):
     )
 
 
+TODOS_LOS_SLUGS = ["lidom", "mlb", "futbol", "nba"]
+
+
 def main():
     fecha = ayer_rd()
-    elegido = elegir_deporte(fecha)
-    if not elegido:
+    elegidos = elegir_deportes(fecha)
+
+    slugs_con_resultados = {e[0] for e in elegidos}
+    # Se limpia el .json de cualquier deporte que NO tenga resultados hoy, para
+    # que el publicador no reuse uno viejo de otro dia (el .mp4 se deja, pesa
+    # poco y se sobrescribe la proxima vez que ese deporte si tenga resultados).
+    for slug in TODOS_LOS_SLUGS:
+        if slug not in slugs_con_resultados:
+            ruta_json = os.path.join(PUBLIC, f"reel-{slug}.json")
+            if os.path.exists(ruta_json):
+                os.remove(ruta_json)
+
+    if not elegidos:
         print("Sin resultados reales de ningun deporte para " + fecha.isoformat() + ". No se genera nada.")
-        # Se limpia cualquier reel-diario.json viejo para que el publicador no reuse uno de otro dia.
-        ruta_json = os.path.join(PUBLIC, "reel-diario.json")
-        if os.path.exists(ruta_json):
-            os.remove(ruta_json)
         return
 
-    slug, titulo, enlace, hashtags, juegos = elegido
-    subtitulo = "¿Quién ganó ayer?" if slug != "futbol" else "Así quedó la jornada"
-    print(f"Deporte elegido: {slug} ({len(juegos)} juegos)")
+    for slug, titulo, enlace, hashtags, juegos in elegidos:
+        subtitulo = "¿Quién ganó ayer?" if slug != "futbol" else "Así quedó la jornada"
+        print(f"Generando {slug} ({len(juegos)} juegos)...")
 
-    salida_video = os.path.join(PUBLIC, "reel-diario.mp4")
-    generar_video(titulo, subtitulo, enlace, juegos, salida_video)
+        salida_video = os.path.join(PUBLIC, f"reel-{slug}.mp4")
+        generar_video(titulo, subtitulo, enlace, juegos, salida_video)
 
-    caption = construir_caption(titulo, subtitulo, fecha, enlace, hashtags)
-    slug_publicacion = f"reel-{slug}-{fecha.isoformat()}"
-    with open(os.path.join(PUBLIC, "reel-diario.json"), "w", encoding="utf-8") as f:
-        json.dump({"slug": slug_publicacion, "caption": caption, "fecha": fecha.isoformat()}, f, ensure_ascii=False)
+        caption = construir_caption(titulo, subtitulo, fecha, enlace, hashtags)
+        slug_publicacion = f"reel-{slug}-{fecha.isoformat()}"
+        with open(os.path.join(PUBLIC, f"reel-{slug}.json"), "w", encoding="utf-8") as f:
+            json.dump({"slug": slug_publicacion, "caption": caption, "fecha": fecha.isoformat()}, f, ensure_ascii=False)
 
-    print(f"Listo: {salida_video} ({os.path.getsize(salida_video)} bytes)")
-    print(f"slug: {slug_publicacion}")
+        print(f"  Listo: {salida_video} ({os.path.getsize(salida_video)} bytes), slug: {slug_publicacion}")
 
 
 if __name__ == "__main__":

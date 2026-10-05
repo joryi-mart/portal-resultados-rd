@@ -2,12 +2,15 @@ import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { supabase } from "@/lib/supabase";
 
-// Publica el reel diario de deportes: lee public/reel-diario.mp4 (el video) y
-// public/reel-diario.json ({slug, caption, fecha}), generados por
-// scripts/generar_reel_diario.py, y lo sube a Facebook. Pensada para que la
-// llame un asistente en la nube programado, despues de generar y subir esos
-// 2 archivos al repositorio. Se activa con ?clave=<REEL_DIARIO_SECRET o CRON_SECRET>.
+// Publica los reels de deportes del dia: por cada deporte (lidom, mlb, futbol,
+// nba) revisa si existen public/reel-<deporte>.mp4 + .json (generados por
+// scripts/generar_reel_diario.py) y los sube a Facebook, uno por uno. Puede
+// publicar varios el mismo dia (ej. MLB y futbol a la vez). Pensada para que
+// la llame un cron programado cada cierto tiempo. Se activa con
+// ?clave=<REEL_DIARIO_SECRET o CRON_SECRET>.
 export const dynamic = "force-dynamic";
+
+const DEPORTES = ["lidom", "mlb", "futbol", "nba"];
 
 function claveValida(recibida: string | null) {
   if (!recibida) return false;
@@ -47,51 +50,59 @@ async function publicarReel(videoId: string, descripcion: string, token: string)
   return data;
 }
 
-export async function GET(request: Request) {
-  try {
-    const url = new URL(request.url);
-    if (!claveValida(url.searchParams.get("clave"))) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-    }
-    const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
-    if (!token) return NextResponse.json({ error: "Faltan las claves de Facebook" }, { status: 500 });
-
-    // Si todavia no existe ningun reel generado (o la web devuelve su pagina
-    // normal en vez de un 404 limpio para el archivo faltante), se trata igual:
-    // no hay nada que publicar hoy.
-    const metaRes = await fetch("https://labankerard.com/reel-diario.json", { cache: "no-store" });
-    const tipo = metaRes.headers.get("content-type") || "";
-    if (!metaRes.ok || !tipo.includes("json")) {
-      return NextResponse.json({ resultado: "sin reel para hoy (no se genero contenido real)" });
-    }
-    let meta: { slug: string; caption: string; fecha: string };
-    try {
-      meta = await metaRes.json();
-    } catch {
-      return NextResponse.json({ resultado: "sin reel para hoy (no se genero contenido real)" });
-    }
-
-    const { data: yaPublicado, error: errorConsulta } = await supabase
-      .from("publicaciones_facebook")
-      .select("id, post_id")
-      .eq("loteria_slug", meta.slug)
-      .limit(1);
-    if (errorConsulta) throw new Error(errorConsulta.message);
-    if (yaPublicado && yaPublicado.length > 0) {
-      return NextResponse.json({ slug: meta.slug, resultado: "ya publicado antes", post_id: yaPublicado[0].post_id });
-    }
-
-    const videoId = await iniciarSesion(token);
-    await subirVideo(videoId, "https://labankerard.com/reel-diario.mp4", token);
-    const resultado = await publicarReel(videoId, meta.caption, token);
-
-    const { error: errorInsert } = await supabase
-      .from("publicaciones_facebook")
-      .insert({ loteria_slug: meta.slug, fecha: meta.fecha, post_id: resultado.post_id || videoId, mensaje: meta.caption });
-    if (errorInsert) throw new Error(errorInsert.message);
-
-    return NextResponse.json({ slug: meta.slug, videoId, resultado });
-  } catch (error: any) {
-    return NextResponse.json({ error: "Error publicando el reel diario en Facebook", detalle: error.message }, { status: 500 });
+async function publicarDeporte(deporte: string, token: string) {
+  // Si todavia no existe el reel de este deporte (o la web devuelve su pagina
+  // normal en vez de un 404 limpio para el archivo faltante), se trata igual:
+  // no hay nada que publicar hoy para este deporte.
+  const metaRes = await fetch(`https://labankerard.com/reel-${deporte}.json`, { cache: "no-store" });
+  const tipo = metaRes.headers.get("content-type") || "";
+  if (!metaRes.ok || !tipo.includes("json")) {
+    return { deporte, resultado: "sin reel para hoy" };
   }
+  let meta: { slug: string; caption: string; fecha: string };
+  try {
+    meta = await metaRes.json();
+  } catch {
+    return { deporte, resultado: "sin reel para hoy" };
+  }
+
+  const { data: yaPublicado, error: errorConsulta } = await supabase
+    .from("publicaciones_facebook")
+    .select("id, post_id")
+    .eq("loteria_slug", meta.slug)
+    .limit(1);
+  if (errorConsulta) throw new Error(errorConsulta.message);
+  if (yaPublicado && yaPublicado.length > 0) {
+    return { deporte, slug: meta.slug, resultado: "ya publicado antes", post_id: yaPublicado[0].post_id };
+  }
+
+  const videoId = await iniciarSesion(token);
+  await subirVideo(videoId, `https://labankerard.com/reel-${deporte}.mp4`, token);
+  const resultado = await publicarReel(videoId, meta.caption, token);
+
+  const { error: errorInsert } = await supabase
+    .from("publicaciones_facebook")
+    .insert({ loteria_slug: meta.slug, fecha: meta.fecha, post_id: resultado.post_id || videoId, mensaje: meta.caption });
+  if (errorInsert) throw new Error(errorInsert.message);
+
+  return { deporte, slug: meta.slug, videoId, resultado };
+}
+
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  if (!claveValida(url.searchParams.get("clave"))) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+  if (!token) return NextResponse.json({ error: "Faltan las claves de Facebook" }, { status: 500 });
+
+  const resultados = [];
+  for (const deporte of DEPORTES) {
+    try {
+      resultados.push(await publicarDeporte(deporte, token));
+    } catch (error: any) {
+      resultados.push({ deporte, error: "Error publicando este reel en Facebook", detalle: error.message });
+    }
+  }
+  return NextResponse.json({ resultados });
 }
