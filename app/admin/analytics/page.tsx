@@ -1,11 +1,30 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { usuariosActivos7Dias, usuariosEnVivo, paginasMasVisitadas, visitantesPorPais } from "@/lib/analytics";
+import { supabase } from "@/lib/supabase";
 
 const COOKIE_NAME = "analytics_auth";
+const MAX_INTENTOS = 3;
+const MINUTOS_BLOQUEO = 15;
+
+async function intentosRecientes() {
+  const desde = new Date(Date.now() - MINUTOS_BLOQUEO * 60 * 1000).toISOString();
+  const { count } = await supabase
+    .from("intentos_admin")
+    .select("id", { count: "exact", head: true })
+    .gte("creado_en", desde);
+  return count || 0;
+}
 
 async function iniciarSesion(formData: FormData) {
   "use server";
+  // Antes de siquiera mirar la contraseña: si ya hubo 3 intentos fallidos en
+  // los ultimos 15 minutos, se bloquea todo (incluso si esta vez la clave es
+  // correcta), para que probar contraseñas al azar no sirva de nada.
+  if ((await intentosRecientes()) >= MAX_INTENTOS) {
+    redirect("/admin/analytics?error=bloqueado");
+  }
+
   const clave = formData.get("clave");
   if (clave && clave === process.env.ANALYTICS_ADMIN_PASSWORD) {
     const cookieStore = await cookies();
@@ -18,6 +37,8 @@ async function iniciarSesion(formData: FormData) {
     });
     redirect("/admin/analytics");
   }
+
+  await supabase.from("intentos_admin").insert({});
   redirect("/admin/analytics?error=1");
 }
 
@@ -27,6 +48,7 @@ export default async function AdminAnalytics(props: { searchParams: Promise<{ er
   const autenticado = cookieStore.get(COOKIE_NAME)?.value === process.env.ANALYTICS_ADMIN_PASSWORD;
 
   if (!autenticado) {
+    const bloqueado = searchParams.error === "bloqueado" || (await intentosRecientes()) >= MAX_INTENTOS;
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#FBF7EE] px-4">
         <form action={iniciarSesion} className="w-full max-w-sm rounded-xl border border-[#10203A]/12 bg-white p-6 shadow-sm">
@@ -36,12 +58,17 @@ export default async function AdminAnalytics(props: { searchParams: Promise<{ er
             name="clave"
             placeholder="Contraseña"
             autoFocus
-            className="mb-3 w-full rounded-lg border border-[#10203A]/20 px-3 py-2 text-base"
+            disabled={bloqueado}
+            className="mb-3 w-full rounded-lg border border-[#10203A]/20 px-3 py-2 text-base disabled:opacity-50"
           />
-          {searchParams.error ? (
+          {bloqueado ? (
+            <p className="mb-3 text-sm text-[#B23B26]">
+              Demasiados intentos fallidos. Espera {MINUTOS_BLOQUEO} minutos e intenta de nuevo.
+            </p>
+          ) : searchParams.error ? (
             <p className="mb-3 text-sm text-[#B23B26]">Contraseña incorrecta.</p>
           ) : null}
-          <button type="submit" className="w-full rounded-lg bg-[#1E4D8C] px-3 py-2 font-bold text-white">
+          <button type="submit" disabled={bloqueado} className="w-full rounded-lg bg-[#1E4D8C] px-3 py-2 font-bold text-white disabled:opacity-50">
             Entrar
           </button>
         </form>
