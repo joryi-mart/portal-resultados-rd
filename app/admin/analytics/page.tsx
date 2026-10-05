@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { usuariosActivos7Dias, usuariosEnVivo, paginasMasVisitadas, visitantesPorPais } from "@/lib/analytics";
 import { supabase } from "@/lib/supabase";
 
@@ -16,32 +15,6 @@ async function intentosRecientes() {
   return count || 0;
 }
 
-async function iniciarSesion(formData: FormData) {
-  "use server";
-  // Antes de siquiera mirar la contraseña: si ya hubo 3 intentos fallidos en
-  // los ultimos 15 minutos, se bloquea todo (incluso si esta vez la clave es
-  // correcta), para que probar contraseñas al azar no sirva de nada.
-  if ((await intentosRecientes()) >= MAX_INTENTOS) {
-    redirect("/admin/analytics?error=bloqueado");
-  }
-
-  const clave = formData.get("clave");
-  if (clave && clave === process.env.ANALYTICS_ADMIN_PASSWORD) {
-    const cookieStore = await cookies();
-    cookieStore.set(COOKIE_NAME, clave.toString(), {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 30,
-      path: "/",
-    });
-    redirect("/admin/analytics");
-  }
-
-  await supabase.from("intentos_admin").insert({});
-  redirect("/admin/analytics?error=1");
-}
-
 export default async function AdminAnalytics(props: { searchParams: Promise<{ error?: string }> }) {
   const searchParams = await props.searchParams;
   const cookieStore = await cookies();
@@ -51,7 +24,7 @@ export default async function AdminAnalytics(props: { searchParams: Promise<{ er
     const bloqueado = searchParams.error === "bloqueado" || (await intentosRecientes()) >= MAX_INTENTOS;
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#FBF7EE] px-4">
-        <form action={iniciarSesion} className="w-full max-w-sm rounded-xl border border-[#10203A]/12 bg-white p-6 shadow-sm">
+        <form action="/api/admin-login" method="POST" className="w-full max-w-sm rounded-xl border border-[#10203A]/12 bg-white p-6 shadow-sm">
           <h1 className="mb-4 text-xl font-bold text-[#10203A]">Acceso privado</h1>
           <input
             type="password"
