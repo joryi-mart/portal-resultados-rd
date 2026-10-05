@@ -180,6 +180,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     },
     {
+      url: `${SITIO}/numero`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    {
       url: `${SITIO}/juegos-de-leidsa`,
       lastModified: new Date(),
       changeFrequency: "yearly",
@@ -360,5 +366,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   });
 
-  return [...paginasFijas, ...paginasLoterias, ...paginasSorteos, ...paginasHistorial, ...paginasFechas, ...paginasTurismo, ...paginasLidom];
+  const paginasNumeros: MetadataRoute.Sitemap = Array.from({ length: 100 }, function (_, i) {
+    return {
+      url: `${SITIO}/numero/${String(i).padStart(2, "0")}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.4,
+    };
+  });
+
+  return [...paginasFijas, ...paginasLoterias, ...paginasSorteos, ...paginasHistorial, ...paginasFechas, ...paginasTurismo, ...paginasLidom, ...paginasNumeros];
 }

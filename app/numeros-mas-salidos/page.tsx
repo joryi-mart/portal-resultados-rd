@@ -171,6 +171,14 @@ export default async function NumerosMasSalidosPage() {
           </p>
         </div>
 
+        <p className="mb-8 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          ¿Buscas un número en específico? Entra a{" "}
+          <a href="/numero" className="underline" style={{ color: COLOR_AZUL }}>
+            busca cualquier número
+          </a>{" "}
+          para ver su historial completo.
+        </p>
+
         <p className="text-xs text-[#5C6B78]">
           Escrito por el equipo de{" "}
           <a href="/nosotros" className="underline" style={{ color: COLOR_AZUL }}>

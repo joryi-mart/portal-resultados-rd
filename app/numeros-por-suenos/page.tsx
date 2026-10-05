@@ -18,7 +18,7 @@ export const metadata = {
 // Los 36 numeros originales de la "charada china", el sistema tradicional de
 // sueños y numeros que llego al Caribe con trabajadores chinos a partir de 1847
 // y que se sigue usando hoy en Cuba, Puerto Rico y Republica Dominicana.
-const CHARADA: { numero: number; significa: string }[] = [
+export const CHARADA: { numero: number; significa: string }[] = [
   { numero: 1, significa: "Caballo" },
   { numero: 2, significa: "Mariposa" },
   { numero: 3, significa: "Marinero" },
@@ -161,7 +161,11 @@ export default function NumerosPorSuenosPage() {
           <a href="/como-jugar-loteria" className="underline" style={{ color: COLOR_AZUL }}>
             cómo jugar quiniela, palé y tripleta
           </a>
-          .
+          . También puedes{" "}
+          <a href="/numero" className="underline" style={{ color: COLOR_AZUL }}>
+            buscar cualquier número
+          </a>{" "}
+          para ver su historial.
         </p>
 
         <p className="text-xs text-[#5C6B78]">
