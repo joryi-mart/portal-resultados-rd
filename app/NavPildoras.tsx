@@ -221,6 +221,7 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
     { etiqueta: "💭 Números por sueños", href: "/numeros-por-suenos" },
     { etiqueta: "📊 Números más salidos", href: "/numeros-mas-salidos" },
     { etiqueta: "🔢 Busca un número", href: "/numero" },
+    { etiqueta: "🇩🇴 Efemérides dominicanas", href: "/efemerides" },
     { etiqueta: "📺 Series", href: "/series" },
     { etiqueta: "🎮 Videojuegos", href: "/videojuegos" },
     { etiqueta: "🏝️ Turismo", href: "/turismo" },
