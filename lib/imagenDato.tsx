@@ -14,7 +14,7 @@ const ALTO = 1080;
 const GOLD = "#E7A63C";
 const DIM = "#8FA3BF";
 
-export async function generarImagenDato(texto: string, pie: string) {
+export async function generarImagenDato(texto: string, pie: string, titulo = "¿SABÍAS QUÉ...?") {
   const imagen = new ImageResponse(
     (
       <div
@@ -29,7 +29,7 @@ export async function generarImagenDato(texto: string, pie: string) {
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "108px" }}>
-          <div style={{ display: "flex", fontSize: "50px", fontWeight: 800, color: GOLD }}>¿SABÍAS QUÉ...?</div>
+          <div style={{ display: "flex", fontSize: "50px", fontWeight: 800, color: GOLD, textAlign: "center", padding: "0 60px" }}>{titulo}</div>
           <div style={{ display: "flex", width: "480px", height: "3px", background: "#1E4D8C", marginTop: "22px" }} />
         </div>
 

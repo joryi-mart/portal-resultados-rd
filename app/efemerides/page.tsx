@@ -23,7 +23,7 @@ type Efemeride = { mes: number; dia: number; texto: string };
 // (varios dias no tienen un hecho suficientemente documentado todavia), pero
 // cada fecha aqui esta verificada contra al menos una fuente. Si encuentras
 // un error, escribenos desde /contacto y lo corregimos.
-const EFEMERIDES: Efemeride[] = [
+export const EFEMERIDES: Efemeride[] = [
   { mes: 1, dia: 1, texto: "1866: Se ponen en circulación los primeros sellos postales dominicanos." },
   { mes: 1, dia: 2, texto: "1931: Nace Manolo Tavárez Justo en Monte Cristi." },
   { mes: 1, dia: 11, texto: "1839: Nace Eugenio María de Hostos." },
