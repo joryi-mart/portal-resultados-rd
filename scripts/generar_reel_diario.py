@@ -235,15 +235,17 @@ def generar_video(titulo, subtitulo, enlace, juegos, salida):
 
 
 def agregar_melodia_anuncio(ffmpeg_exe, video_sin_audio, salida, duracion_video):
-    # Melodia corta de "anuncio" (tipo fanfarria de resultado/premio) generada
-    # con tonos sintetizados, sin usar ninguna pista con derechos de autor.
-    # Cada nota lleva su fundamental mas 2 armonicos mas suaves (para que
-    # suene a campana/trompeta, no a pitido de prueba), con entrada y salida
-    # suaves para que no se oiga como un "beep" seco, y un poco de eco al
-    # final para que se sienta mas "producido". El resto del video queda en
-    # silencio.
+    # Melodia tipo fanfarria de resultado/premio, generada con tonos
+    # sintetizados, sin usar ninguna pista con derechos de autor. Cada nota
+    # lleva su fundamental mas 2 armonicos mas suaves (para que suene a
+    # campana/trompeta, no a pitido de prueba), con entrada y salida suaves
+    # para que no se oiga como un "beep" seco, y un poco de eco para que se
+    # sienta mas "producido". La frase se repite en loop (con un pequeño
+    # espacio de silencio entre repeticiones) durante todo el video, no solo
+    # al principio.
     carpeta_tmp = os.path.dirname(video_sin_audio)
     notas_wav = os.path.join(carpeta_tmp, "notas_tmp.wav")
+    notas_con_espacio_wav = os.path.join(carpeta_tmp, "notas_espacio_tmp.wav")
     melodia_wav = os.path.join(carpeta_tmp, "melodia_tmp.wav")
 
     # Fanfarria ascendente: Do-Mi-Sol-Do(agudo)-Sol-Do(agudo, sostenida).
@@ -270,14 +272,20 @@ def agregar_melodia_anuncio(ffmpeg_exe, video_sin_audio, salida, duracion_video)
             + f"amix=inputs={len(ARMONICOS)}:duration=first:dropout_transition=0,"
             + f"afade=t=in:d=0.015,afade=t=out:st={fade_salida}:d=0.04[nota{i}]"
         )
-    filtros.append("".join(f"[nota{i}]" for i in range(len(NOTAS))) + f"concat=n={len(NOTAS)}:v=0:a=1,aecho=0.6:0.3:60:0.25,volume=6[out]")
+    filtros.append("".join(f"[nota{i}]" for i in range(len(NOTAS))) + f"concat=n={len(NOTAS)}:v=0:a=1,aecho=0.6:0.3:60:0.25,volume=4[out]")
 
     subprocess.run(
         [ffmpeg_exe, "-y", *entradas, "-filter_complex", ";".join(filtros), "-map", "[out]", notas_wav],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True,
     )
+    # Pequeño espacio de silencio antes de repetir la frase, para que el loop
+    # no suene como un corte abrupto.
     subprocess.run(
-        [ffmpeg_exe, "-y", "-i", notas_wav, "-af", f"apad=whole_dur={duracion_video}", melodia_wav],
+        [ffmpeg_exe, "-y", "-i", notas_wav, "-af", "apad=pad_dur=0.35", notas_con_espacio_wav],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True,
+    )
+    subprocess.run(
+        [ffmpeg_exe, "-y", "-stream_loop", "-1", "-i", notas_con_espacio_wav, "-t", str(duracion_video), melodia_wav],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True,
     )
     subprocess.run(
@@ -285,6 +293,7 @@ def agregar_melodia_anuncio(ffmpeg_exe, video_sin_audio, salida, duracion_video)
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True,
     )
     os.remove(notas_wav)
+    os.remove(notas_con_espacio_wav)
     os.remove(melodia_wav)
 
 
