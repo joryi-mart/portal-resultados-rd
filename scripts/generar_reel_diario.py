@@ -221,13 +221,48 @@ def generar_video(titulo, subtitulo, enlace, juegos, salida):
 
     import imageio_ffmpeg
     ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
+    salida_sin_audio = salida + ".sinaudio.mp4"
     cmd = [ffmpeg_exe, "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
-           "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-preset", "veryfast", salida]
+           "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-preset", "veryfast", salida_sin_audio]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     for i in range(n_frames):
         proc.stdin.write(render(i / FPS).tobytes())
     proc.stdin.close()
     proc.wait()
+
+    agregar_melodia_anuncio(ffmpeg_exe, salida_sin_audio, salida, dur)
+    os.remove(salida_sin_audio)
+
+
+def agregar_melodia_anuncio(ffmpeg_exe, video_sin_audio, salida, duracion_video):
+    # Melodia corta de "anuncio" (tipo tambora/redoble de loteria) generada con
+    # tonos sintetizados (sin usar ninguna pista con derechos de autor): 4
+    # notas ascendientes (Do-Mi-Sol-Do agudo) al principio del video, el resto
+    # en silencio. Se hace en 3 pasos de ffmpeg: generar las notas, rellenar
+    # con silencio hasta la duracion del video, y pegarla al video ya hecho.
+    carpeta_tmp = os.path.dirname(video_sin_audio)
+    notas_wav = os.path.join(carpeta_tmp, "notas_tmp.wav")
+    melodia_wav = os.path.join(carpeta_tmp, "melodia_tmp.wav")
+
+    NOTAS = [(523.25, 0.14), (659.25, 0.14), (783.99, 0.14), (1046.50, 0.55)]
+    entradas = []
+    for frecuencia, dur_nota in NOTAS:
+        entradas += ["-f", "lavfi", "-i", f"sine=frequency={frecuencia}:duration={dur_nota}"]
+    filtro = "".join(f"[{i}]" for i in range(len(NOTAS))) + f"concat=n={len(NOTAS)}:v=0:a=1[out]"
+    subprocess.run(
+        [ffmpeg_exe, "-y", *entradas, "-filter_complex", filtro, "-map", "[out]", notas_wav],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True,
+    )
+    subprocess.run(
+        [ffmpeg_exe, "-y", "-i", notas_wav, "-af", f"apad=whole_dur={duracion_video}", melodia_wav],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True,
+    )
+    subprocess.run(
+        [ffmpeg_exe, "-y", "-i", video_sin_audio, "-i", melodia_wav, "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-shortest", salida],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True,
+    )
+    os.remove(notas_wav)
+    os.remove(melodia_wav)
 
 
 def construir_caption(titulo, subtitulo, fecha, enlace, hashtags):
