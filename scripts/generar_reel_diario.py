@@ -235,22 +235,45 @@ def generar_video(titulo, subtitulo, enlace, juegos, salida):
 
 
 def agregar_melodia_anuncio(ffmpeg_exe, video_sin_audio, salida, duracion_video):
-    # Melodia corta de "anuncio" (tipo tambora/redoble de loteria) generada con
-    # tonos sintetizados (sin usar ninguna pista con derechos de autor): 4
-    # notas ascendientes (Do-Mi-Sol-Do agudo) al principio del video, el resto
-    # en silencio. Se hace en 3 pasos de ffmpeg: generar las notas, rellenar
-    # con silencio hasta la duracion del video, y pegarla al video ya hecho.
+    # Melodia corta de "anuncio" (tipo fanfarria de resultado/premio) generada
+    # con tonos sintetizados, sin usar ninguna pista con derechos de autor.
+    # Cada nota lleva su fundamental mas 2 armonicos mas suaves (para que
+    # suene a campana/trompeta, no a pitido de prueba), con entrada y salida
+    # suaves para que no se oiga como un "beep" seco, y un poco de eco al
+    # final para que se sienta mas "producido". El resto del video queda en
+    # silencio.
     carpeta_tmp = os.path.dirname(video_sin_audio)
     notas_wav = os.path.join(carpeta_tmp, "notas_tmp.wav")
     melodia_wav = os.path.join(carpeta_tmp, "melodia_tmp.wav")
 
-    NOTAS = [(523.25, 0.14), (659.25, 0.14), (783.99, 0.14), (1046.50, 0.55)]
+    # Fanfarria ascendente: Do-Mi-Sol-Do(agudo)-Sol-Do(agudo, sostenida).
+    NOTAS = [
+        (523.25, 0.13), (659.25, 0.13), (783.99, 0.13),
+        (1046.50, 0.16), (783.99, 0.13), (1046.50, 0.70),
+    ]
+    ARMONICOS = [(1.0, 1.0), (2.0, 0.30), (3.0, 0.12)]  # (multiplo de frecuencia, volumen relativo)
+
     entradas = []
-    for frecuencia, dur_nota in NOTAS:
-        entradas += ["-f", "lavfi", "-i", f"sine=frequency={frecuencia}:duration={dur_nota}"]
-    filtro = "".join(f"[{i}]" for i in range(len(NOTAS))) + f"concat=n={len(NOTAS)}:v=0:a=1[out]"
+    filtros = []
+    idx_entrada = 0
+    for i, (frecuencia, dur_nota) in enumerate(NOTAS):
+        etiquetas_armonico = []
+        for mult, vol in ARMONICOS:
+            entradas += ["-f", "lavfi", "-i", f"sine=frequency={frecuencia * mult}:duration={dur_nota}"]
+            etiqueta = f"h{i}_{mult}"
+            filtros.append(f"[{idx_entrada}]volume={vol}[{etiqueta}]")
+            etiquetas_armonico.append(f"[{etiqueta}]")
+            idx_entrada += 1
+        fade_salida = max(dur_nota - 0.04, 0.01)
+        filtros.append(
+            "".join(etiquetas_armonico)
+            + f"amix=inputs={len(ARMONICOS)}:duration=first:dropout_transition=0,"
+            + f"afade=t=in:d=0.015,afade=t=out:st={fade_salida}:d=0.04[nota{i}]"
+        )
+    filtros.append("".join(f"[nota{i}]" for i in range(len(NOTAS))) + f"concat=n={len(NOTAS)}:v=0:a=1,aecho=0.6:0.3:60:0.25,volume=6[out]")
+
     subprocess.run(
-        [ffmpeg_exe, "-y", *entradas, "-filter_complex", filtro, "-map", "[out]", notas_wav],
+        [ffmpeg_exe, "-y", *entradas, "-filter_complex", ";".join(filtros), "-map", "[out]", notas_wav],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True,
     )
     subprocess.run(
