@@ -37,9 +37,28 @@ export async function GET(request: Request) {
     if (!fila) return NextResponse.json({ resultado: "no se encontro ese slug en publicaciones_facebook" });
 
     const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
-    const res = await fetch(`https://graph.facebook.com/v21.0/${fila.post_id}?access_token=${token}`, { method: "DELETE" });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message || "Error borrando la publicacion en Facebook");
+
+    // Primero se intenta con el verbo DELETE normal; si Facebook lo rechaza
+    // (algunos objetos, como los Reels, no lo aceptan), se intenta el
+    // metodo alterno documentado por Facebook: POST con ?method=delete.
+    let res = await fetch(`https://graph.facebook.com/v21.0/${fila.post_id}?access_token=${token}`, { method: "DELETE" });
+    let data = await res.json();
+    if (!res.ok) {
+      res = await fetch(`https://graph.facebook.com/v21.0/${fila.post_id}?method=delete&access_token=${token}`, { method: "POST" });
+      data = await res.json();
+    }
+
+    if (!res.ok) {
+      const infoRes = await fetch(`https://graph.facebook.com/v21.0/${fila.post_id}?fields=id&access_token=${token}`);
+      const info = await infoRes.json();
+      return NextResponse.json({
+        slug,
+        post_id: fila.post_id,
+        error: "No se pudo borrar en Facebook (ningun metodo funciono)",
+        detalle: data.error?.message,
+        info_del_objeto: info,
+      }, { status: 500 });
+    }
 
     const { error: errorBorrar } = await supabase.from("publicaciones_facebook").delete().eq("id", fila.id);
     if (errorBorrar) throw new Error(errorBorrar.message);
