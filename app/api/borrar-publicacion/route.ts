@@ -37,7 +37,7 @@ export async function GET(request: Request) {
     if (!fila) return NextResponse.json({ resultado: "no se encontro ese slug en publicaciones_facebook" });
 
     const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
-    const res = await fetch(`https://graph.facebook.com/v19.0/${fila.post_id}?access_token=${token}`, { method: "DELETE" });
+    const res = await fetch(`https://graph.facebook.com/v21.0/${fila.post_id}?access_token=${token}`, { method: "DELETE" });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error?.message || "Error borrando la publicacion en Facebook");
 
