@@ -318,27 +318,32 @@ export default async function Home() {
           <span className="font-mono text-sm font-semibold text-[#1E4D8C]">Buscar →</span>
         </a>
 
-        <a
-          href="/calculadora-regalia-pascual"
-          className="mb-8 flex items-center justify-between rounded-xl border border-[#10203A]/12 bg-white px-5 py-4 shadow-[0_1px_3px_rgba(16,32,58,0.08)] transition hover:shadow-md"
-        >
-          <div>
-            <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">🎄 Calculadora de regalía pascual</p>
-            <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>¿Cuánto te toca de doble sueldo este año?</p>
+        <div className="mb-8 rounded-xl border border-[#10203A]/12 bg-white px-5 py-4 shadow-[0_1px_3px_rgba(16,32,58,0.08)]">
+          <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">🧮 Calculadoras laborales RD</p>
+          <p className="mb-3 font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Saca tus cuentas según el Código de Trabajo</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <a
+              href="/calculadora-regalia-pascual"
+              className="flex items-center justify-between gap-2 rounded-lg border border-[#10203A]/12 bg-[#FBF7EE] px-4 py-3 transition hover:shadow-md"
+            >
+              <div>
+                <p className="font-bold text-[#10203A]">🎄 Regalía pascual</p>
+                <p className="text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>¿Cuánto te toca de doble sueldo?</p>
+              </div>
+              <span className="font-mono text-sm font-semibold text-[#007A33]">→</span>
+            </a>
+            <a
+              href="/calcular-prestaciones-rd"
+              className="flex items-center justify-between gap-2 rounded-lg border border-[#10203A]/12 bg-[#FBF7EE] px-4 py-3 transition hover:shadow-md"
+            >
+              <div>
+                <p className="font-bold text-[#10203A]">⚖️ Prestaciones laborales</p>
+                <p className="text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>¿Te botaron o renunciaste?</p>
+              </div>
+              <span className="font-mono text-sm font-semibold text-[#007A33]">→</span>
+            </a>
           </div>
-          <span className="font-mono text-sm font-semibold text-[#007A33]">Calcular →</span>
-        </a>
-
-        <a
-          href="/calcular-prestaciones-rd"
-          className="mb-8 flex items-center justify-between rounded-xl border border-[#10203A]/12 bg-white px-5 py-4 shadow-[0_1px_3px_rgba(16,32,58,0.08)] transition hover:shadow-md"
-        >
-          <div>
-            <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">⚖️ Calcular prestaciones laborales</p>
-            <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>¿Te botaron o renunciaste? Mira cuánto te deben pagar</p>
-          </div>
-          <span className="font-mono text-sm font-semibold text-[#007A33]">Calcular →</span>
-        </a>
+        </div>
 
         <section className="mt-8 rounded-xl border border-[#10203A]/12 bg-white p-5 sm:p-8">
           <h2 className="mb-4 font-[family-name:var(--font-display)] text-2xl font-bold text-[#10203A]">
