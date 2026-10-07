@@ -1,0 +1,75 @@
+name: Reel diario de deportes
+
+# Cada mañana genera los reels con los resultados de ayer (MLB, LIDOM, NBA,
+# futbol), los sube a la pagina y le pide a la pagina que los publique en
+# Facebook. Corre dos veces por si GitHub atrasa o salta la primera: la
+# segunda no repite nada, porque el publicador revisa si ya salio.
+on:
+  schedule:
+    - cron: "0 12 * * *"   # 8:00 AM hora de RD
+    - cron: "0 15 * * *"   # 11:00 AM hora de RD (respaldo)
+  workflow_dispatch: # permite correrlo manualmente desde la pestaña "Actions" en GitHub
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reel-diario
+  cancel-in-progress: false
+
+jobs:
+  reel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install pillow imageio_ffmpeg
+
+      - name: Generar los reels de ayer
+        run: python scripts/generar_reel_diario.py
+
+      - name: Subir los reels a la pagina
+        id: subir
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A -- 'public/reel-*'
+          if git diff --cached --quiet; then
+            echo "Los reels de hoy ya estaban subidos."
+          else
+            git commit -m "Reels de deportes del $(TZ=America/Santo_Domingo date -d yesterday +%Y-%m-%d)"
+            git pull --rebase
+            git push
+          fi
+          for slug in mlb lidom nba futbol; do
+            if [ -f "public/reel-$slug.json" ]; then
+              echo "esperado=$(python -c "import json;print(json.load(open('public/reel-$slug.json'))['slug'])")" >> "$GITHUB_OUTPUT"
+              break
+            fi
+          done
+
+      - name: Esperar a que la pagina tenga los reels nuevos
+        if: steps.subir.outputs.esperado != ''
+        run: |
+          for i in $(seq 1 40); do
+            for slug in mlb lidom nba futbol; do
+              if curl -s "https://labankerard.com/reel-$slug.json?v=$i" | grep -q "${{ steps.subir.outputs.esperado }}"; then
+                echo "La pagina ya tiene los reels nuevos."
+                exit 0
+              fi
+            done
+            sleep 15
+          done
+          echo "La pagina tardo demasiado en actualizarse." && exit 1
+
+      - name: Publicar en Facebook
+        if: steps.subir.outputs.esperado != ''
+        run: |
+          curl -sf -m 280 "https://labankerard.com/api/publicar-reel-diario?clave=${{ secrets.CRON_SECRET }}"
