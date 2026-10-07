@@ -1,5 +1,5 @@
 {
-  "_comentario": "Calendario semanal de publicaciones en Facebook. Horas en hora de RD (0-23). Dias: 0=domingo, 1=lunes ... 6=sabado. Lo ejecuta .github/workflows/calendario.yml cada hora con scripts/ejecutar_calendario.mjs. Si GitHub se atrasa, una publicacion todavia sale hasta 'ventanaHoras' despues de su hora; mas tarde ya no (para no publicar cosas viejas). Cada publicador revisa si ya salio, asi que nunca se repite.",
+  "_comentario": "Calendario semanal de publicaciones en Facebook. Horas en hora de RD (0-23). Dias: 0=domingo, 1=lunes ... 6=sabado. Lo ejecutan los Cron Jobs de Vercel (vercel.json, horas en UTC = hora RD + 4; si se cambia una hora aqui, cambiarla tambien alli) y, de respaldo, .github/workflows/calendario.yml cada hora. Si GitHub se atrasa, una publicacion todavia sale hasta 'ventanaHoras' despues de su hora; mas tarde ya no (para no publicar cosas viejas). Cada publicador revisa si ya salio, asi que nunca se repite.",
   "ventanaHoras": 4,
   "publicaciones": [
     { "id": "reel-deportes", "nombre": "Reel: ¿Quién ganó ayer?", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 8, "ruta": "/api/publicar-reel-diario" },
