@@ -4,7 +4,7 @@
   "publicaciones": [
     { "id": "reel-deportes", "nombre": "Reel: ¿Quién ganó ayer?", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 8, "ruta": "/api/publicar-reel-diario" },
     { "id": "que-paso-mlb", "nombre": "¿Qué pasó ayer en MLB?", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 9, "ruta": "/api/publicar-que-paso?deporte=mlb" },
-    { "id": "efemeride", "nombre": "Efeméride del día", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 10, "ruta": "/api/publicar-efemeride" },
+    { "id": "efemeride", "nombre": "Un día como hoy", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 10, "ruta": "/api/publicar-efemeride" },
     { "id": "que-paso-lidom", "nombre": "¿Qué pasó ayer en LIDOM?", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 11, "ruta": "/api/publicar-que-paso?deporte=lidom" },
     { "id": "que-paso-nba", "nombre": "¿Qué pasó ayer en la NBA?", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 12, "ruta": "/api/publicar-que-paso?deporte=nba" },
     { "id": "que-paso-futbol", "nombre": "¿Qué pasó ayer en LaLiga?", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 13, "ruta": "/api/publicar-que-paso?deporte=futbol" },

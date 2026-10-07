@@ -3,6 +3,7 @@ import { timingSafeEqual } from "crypto";
 import { supabase } from "@/lib/supabase";
 import { generarImagenDato } from "@/lib/imagenDato";
 import { EFEMERIDES } from "@/app/efemerides/page";
+import { hechoDeWikipedia } from "@/lib/unDiaComoHoy";
 
 // Publica en Facebook la efemeride dominicana del dia (si hay una en la lista
 // de app/efemerides/page.tsx para la fecha de hoy). Pensada para que un cron
@@ -50,9 +51,6 @@ export async function GET(request: Request) {
     }
 
     const { anio, mes, dia } = hoyRD();
-    const efemeride = EFEMERIDES.find(function (e) { return e.mes === mes && e.dia === dia; });
-    if (!efemeride) return NextResponse.json({ resultado: "sin efemeride para hoy" });
-
     const slug = `efemeride-${anio}-${mes}-${dia}`;
     const { data: yaPublicado, error: errorConsulta } = await supabase
       .from("publicaciones_facebook")
@@ -64,10 +62,24 @@ export async function GET(request: Request) {
       return NextResponse.json({ slug, resultado: "ya publicado antes", post_id: yaPublicado[0].post_id });
     }
 
+    // Primero la efeméride dominicana de la lista propia; si ese día no tiene, un
+    // hecho de Wikipedia ("En este día"), dando prioridad a lo dominicano.
+    const propia = EFEMERIDES.find(function (e) { return e.mes === mes && e.dia === dia; });
+    const deWikipedia = propia ? null : await hechoDeWikipedia(mes, dia);
+    if (!propia && !deWikipedia) return NextResponse.json({ resultado: "sin efemeride para hoy" });
+    const texto = propia ? propia.texto : deWikipedia!.texto;
+    const dominicana = propia ? true : deWikipedia!.esDominicana;
+
+    const titulo = dominicana ? "UN DÍA COMO HOY EN RD 🇩🇴" : "UN DÍA COMO HOY";
+    // ?prueba=1 muestra qué se publicaría hoy, sin publicar nada.
+    if (url.searchParams.get("prueba") === "1") return NextResponse.json({ titulo, texto, fuente: propia ? "lista propia" : "Wikipedia" });
     const caption =
-      `HOY EN LA HISTORIA DOMINICANA 🇩🇴\n\n${efemeride.texto}\n\n` +
-      `Más efemérides en https://labankerard.com/efemerides\n\nPágina informativa de La Bankera RD.\n\n#EfemeridesRD #HistoriaDominicana`;
-    const imagen = await generarImagenDato(efemeride.texto, "Síguenos para más efemérides dominicanas", "HOY EN LA HISTORIA DOMINICANA 🇩🇴");
+      `${titulo}\n\n${texto}\n\n` +
+      `¿Lo sabías? Cuéntanos en los comentarios 👇\n\n` +
+      (propia ? "" : "Fuente: Wikipedia.\n\n") +
+      `Más efemérides en https://labankerard.com/efemerides\n\nPágina informativa de La Bankera RD.\n\n` +
+      `#UnDiaComoHoy #EfemeridesRD ${dominicana ? "#HistoriaDominicana" : "#Historia"}`;
+    const imagen = await generarImagenDato(texto, "Síguenos para más historia todos los días", titulo);
     const idPublicacion = await crearPublicacion(caption, imagen);
 
     const fechaISO = `${anio}-${String(mes).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;

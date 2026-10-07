@@ -25,7 +25,7 @@ function tipoDeSlug(slug: string) {
   if (slug.startsWith("que-paso-lidom")) return "¿Qué pasó ayer en LIDOM?";
   if (slug.startsWith("que-paso-nba")) return "¿Qué pasó ayer en la NBA?";
   if (slug.startsWith("que-paso-futbol")) return "¿Qué pasó ayer en LaLiga?";
-  if (slug.startsWith("efemeride-")) return "Efeméride del día";
+  if (slug.startsWith("efemeride-")) return "Un día como hoy";
   if (slug.startsWith("reel-")) return "Reel de deportes";
   return "¿Sabías qué…?";
 }

@@ -10,7 +10,7 @@ Salida (por cada deporte con resultados, <slug> = lidom|mlb|futbol|nba):
   public/reel-<slug>.mp4   - el video
   public/reel-<slug>.json  - {"slug": ..., "caption": ..., "fecha": ...}
 
-Se necesita: pip install pillow imageio_ffmpeg
+Se necesita: pip install pillow imageio_ffmpeg edge-tts
 """
 import json
 import os
@@ -177,11 +177,11 @@ def blend_text(base_img, xy, text, font, color, alpha, anchor="mm", y_off=0):
     base_img.alpha_composite(layer)
 
 
-def generar_video(titulo, subtitulo, enlace, juegos, salida):
+def generar_video(titulo, subtitulo, enlace, juegos, salida, voz_mp3=None, duracion_voz=0.0):
     b = lambda s: ImageFont.truetype(os.path.join(FUENTES, "Manrope-ExtraBold.ttf"), s)
     r = lambda s: ImageFont.truetype(os.path.join(FUENTES, "Manrope-Regular.ttf"), s)
 
-    dur = 20 + len(juegos) * 0.55 + 4
+    dur = max(20 + len(juegos) * 0.55 + 4, duracion_voz + 2.0)
     n_frames = int(FPS * dur)
 
     def render(t):
@@ -230,11 +230,11 @@ def generar_video(titulo, subtitulo, enlace, juegos, salida):
     proc.stdin.close()
     proc.wait()
 
-    agregar_melodia_anuncio(ffmpeg_exe, salida_sin_audio, salida, dur)
+    agregar_melodia_anuncio(ffmpeg_exe, salida_sin_audio, salida, dur, voz_mp3)
     os.remove(salida_sin_audio)
 
 
-def agregar_melodia_anuncio(ffmpeg_exe, video_sin_audio, salida, duracion_video):
+def agregar_melodia_anuncio(ffmpeg_exe, video_sin_audio, salida, duracion_video, voz_mp3=None):
     # Melodia tipo fanfarria de resultado/premio, generada con tonos
     # sintetizados, sin usar ninguna pista con derechos de autor. Cada nota
     # lleva su fundamental mas 2 armonicos mas suaves (para que suene a
@@ -288,13 +288,61 @@ def agregar_melodia_anuncio(ffmpeg_exe, video_sin_audio, salida, duracion_video)
         [ffmpeg_exe, "-y", "-stream_loop", "-1", "-i", notas_con_espacio_wav, "-t", str(duracion_video), melodia_wav],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True,
     )
-    subprocess.run(
-        [ffmpeg_exe, "-y", "-i", video_sin_audio, "-i", melodia_wav, "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-shortest", salida],
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True,
-    )
+    if voz_mp3:
+        # Con narración: la melodía baja a un fondo suave y la voz entra a los 0.4 s.
+        subprocess.run(
+            [ffmpeg_exe, "-y", "-i", video_sin_audio, "-i", melodia_wav, "-i", voz_mp3,
+             "-filter_complex",
+             "[1:a]volume=0.22[fondo];[2:a]adelay=400|400,volume=1.6[voz];[fondo][voz]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[a]",
+             "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-shortest", salida],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True,
+        )
+    else:
+        subprocess.run(
+            [ffmpeg_exe, "-y", "-i", video_sin_audio, "-i", melodia_wav, "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-shortest", salida],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True,
+        )
     os.remove(notas_wav)
     os.remove(notas_con_espacio_wav)
     os.remove(melodia_wav)
+
+
+VOZ = "es-MX-DaliaNeural"  # voz elegida por el dueño para todos los reels (alegre y clara)
+NOMBRE_HABLADO = {"lidom": "la pelota invernal dominicana", "mlb": "Grandes Ligas", "futbol": "LaLiga española", "nba": "la NBA"}
+
+
+def texto_narracion(slug, juegos):
+    partes = [f"¡Hola, hola! Esto fue lo que pasó ayer en {NOMBRE_HABLADO.get(slug, slug)}."]
+    for visitante, pv, local, pl in juegos:
+        if pv == pl:
+            partes.append(f"{visitante} y {local} empataron a {pv}.")
+        elif pv > pl:
+            partes.append(f"{visitante} {pv}, {local} {pl}.")
+        else:
+            partes.append(f"{local} {pl}, {visitante} {pv}.")
+    partes.append("¿Y tú, viste los juegos? Déjanos tu comentario. ¡Más resultados en La Bankera R D punto com!")
+    return " ".join(partes)
+
+
+def generar_voz(texto, salida_mp3):
+    """Narración con la voz de Dalia. Si el servicio de voz falla, el reel sale igual sin voz."""
+    try:
+        import asyncio
+        import edge_tts
+
+        async def hablar():
+            await edge_tts.Communicate(texto, VOZ, rate="+8%", pitch="+6Hz").save(salida_mp3)
+
+        asyncio.run(hablar())
+        import imageio_ffmpeg
+        sonda = subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(), "-i", salida_mp3], capture_output=True, text=True)
+        import re
+        m = re.search(r"Duration: (\d+):(\d+):([\d.]+)", sonda.stderr)
+        duracion = int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3)) if m else 0.0
+        return salida_mp3, duracion
+    except Exception as error:
+        print(f"  Sin voz (no se pudo generar: {error}); el reel sale solo con música.")
+        return None, 0.0
 
 
 def construir_caption(titulo, subtitulo, fecha, enlace, hashtags):
@@ -330,7 +378,10 @@ def main():
         print(f"Generando {slug} ({len(juegos)} juegos)...")
 
         salida_video = os.path.join(PUBLIC, f"reel-{slug}.mp4")
-        generar_video(titulo, subtitulo, enlace, juegos, salida_video)
+        voz_mp3, duracion_voz = generar_voz(texto_narracion(slug, juegos), os.path.join(PUBLIC, f"voz-{slug}.tmp.mp3"))
+        generar_video(titulo, subtitulo, enlace, juegos, salida_video, voz_mp3, duracion_voz)
+        if voz_mp3 and os.path.exists(voz_mp3):
+            os.remove(voz_mp3)
 
         caption = construir_caption(titulo, subtitulo, fecha, enlace, hashtags)
         slug_publicacion = f"reel-{slug}-{fecha.isoformat()}"

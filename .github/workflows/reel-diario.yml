@@ -30,7 +30,7 @@ jobs:
           python-version: "3.11"
 
       - name: Instalar dependencias
-        run: pip install pillow imageio_ffmpeg
+        run: pip install pillow imageio_ffmpeg edge-tts
 
       - name: Generar los reels de ayer
         run: python scripts/generar_reel_diario.py
