@@ -3,6 +3,7 @@ import Image from "next/image";
 import "./globals.css";
 import GoogleAnalytics from "./GoogleAnalytics";
 import RegistrarServiceWorker from "./RegistrarServiceWorker";
+import AvisoCookies from "./AvisoCookies";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://labankerard.com"),
@@ -102,6 +103,7 @@ export default function RootLayout({
           </div>
         </div>
         {children}
+        <AvisoCookies />
       </body>
     </html>
   );
