@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 
-// Ruta TEMPORAL de solo lectura para revisar la página de Facebook.
+// Ruta de solo lectura para revisar la página de Facebook (nombre, seguidores).
+// Se usa para seguir la meta de seguidores de la monetización (10,000).
 // Solo responde si se abre con ?clave=<CLAVE_REVISION_FB o CRON_SECRET>. Si ninguna existe en
 // Vercel, no responde a nadie. No publica nada y nunca devuelve la llave de Facebook.
-// Se borra después de usarla.
 export const dynamic = "force-dynamic";
 
 function claveValida(recibida: string | null) {
