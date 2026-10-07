@@ -11,7 +11,7 @@ export type JuegoTerminado = {
   etiqueta?: string;
 };
 
-const MLB_EN_ESPANOL: Record<string, string> = {
+export const MLB_EN_ESPANOL: Record<string, string> = {
   "Arizona Diamondbacks": "Diamondbacks",
   "Atlanta Braves": "Bravos",
   "Athletics": "Atléticos",

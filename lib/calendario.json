@@ -1,0 +1,13 @@
+{
+  "_comentario": "Calendario semanal de publicaciones en Facebook. Horas en hora de RD (0-23). Dias: 0=domingo, 1=lunes ... 6=sabado. Lo ejecuta .github/workflows/calendario.yml cada hora con scripts/ejecutar_calendario.mjs. Si GitHub se atrasa, una publicacion todavia sale hasta 'ventanaHoras' despues de su hora; mas tarde ya no (para no publicar cosas viejas). Cada publicador revisa si ya salio, asi que nunca se repite.",
+  "ventanaHoras": 4,
+  "publicaciones": [
+    { "id": "reel-deportes", "nombre": "Reel: ¿Quién ganó ayer?", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 8, "ruta": "/api/publicar-reel-diario" },
+    { "id": "que-paso-mlb", "nombre": "¿Qué pasó ayer en MLB?", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 9, "ruta": "/api/publicar-que-paso?deporte=mlb" },
+    { "id": "efemeride", "nombre": "Efeméride del día", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 10, "ruta": "/api/publicar-efemeride" },
+    { "id": "que-paso-lidom", "nombre": "¿Qué pasó ayer en LIDOM?", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 11, "ruta": "/api/publicar-que-paso?deporte=lidom" },
+    { "id": "que-paso-nba", "nombre": "¿Qué pasó ayer en la NBA?", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 12, "ruta": "/api/publicar-que-paso?deporte=nba" },
+    { "id": "que-paso-futbol", "nombre": "¿Qué pasó ayer en LaLiga?", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 13, "ruta": "/api/publicar-que-paso?deporte=futbol" },
+    { "id": "dato", "nombre": "¿Sabías qué…?", "dias": [1, 3, 5, 6], "hora": 15, "ruta": "/api/publicar-dato?siguiente=1" }
+  ]
+}

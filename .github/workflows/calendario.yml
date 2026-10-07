@@ -1,0 +1,31 @@
+name: Calendario de publicaciones
+
+# Cada hora revisa lib/calendario.json y publica en Facebook lo que toque
+# (¿Qué pasó ayer en...?, efemérides, ¿Sabías qué...?, etc.). Si algo falla,
+# la ejecución sale en rojo y GitHub manda un correo de aviso.
+on:
+  schedule:
+    - cron: "7 * * * *"
+  workflow_dispatch:
+    inputs:
+      solo:
+        description: "Opcional: id de una publicación para correrla ya (ej. que-paso-mlb)"
+        required: false
+        default: ""
+
+concurrency:
+  group: calendario
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Publicar lo que toca a esta hora
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SOLO: ${{ github.event.inputs.solo }}
+        run: node scripts/ejecutar_calendario.mjs
