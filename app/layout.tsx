@@ -57,7 +57,7 @@ const datosEstructurados = {
   inLanguage: "es-DO",
   potentialAction: {
     "@type": "SearchAction",
-    target: "https://labankerard.com/{search_term_string}",
+    target: "https://labankerard.com/buscador?numero={search_term_string}",
     "query-input": "required name=search_term_string",
   },
 };

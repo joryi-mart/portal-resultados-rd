@@ -1,4 +1,5 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
+import { inicioSorteoISO } from "@/lib/eventoSorteo";
 import Image from "next/image";
 import { Suspense } from "react";
 
@@ -6,7 +7,7 @@ export const revalidate = 60;
 
 export const metadata = {
   title: "La Bankera RD | Resultados de Loterías Dominicanas en Vivo",
-  description: "Resultados de Leidsa, Lotería Nacional, Loteka, Lotería Real y más loterías dominicanas, de hoy y de ayer, con horarios y tipo de cambio del dólar.",
+  description: "Resultados de hoy y de ayer de Leidsa, Lotería Nacional, Loteka, Lotería Real y más, con horarios y tipo de cambio.",
   openGraph: {
     title: "La Bankera RD 🇩🇴 | Resultados de Loterías Dominicanas en Vivo",
     description: "Consulta los resultados de las principales loterías dominicanas e internacionales, actualizados en vivo.",
@@ -146,16 +147,12 @@ export default async function Home() {
     return {
       "@type": "Event",
       name: `${r.sorteoNombre} - ${r.loteriaNombre} - ${r.fecha}`,
-      startDate: `${r.fecha}T${r.horaSorteo || "00:00"}:00-04:00`,
+      startDate: inicioSorteoISO(r.fecha, r.horaSorteo),
       eventStatus: "https://schema.org/EventScheduled",
       eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
       location: { "@type": "VirtualLocation", url: `https://labankerard.com/${r.loteriaSlug}/${r.fecha}` },
       organizer: { "@type": "Organization", name: r.loteriaNombre },
-      additionalProperty: {
-        "@type": "PropertyValue",
-        name: "Números ganadores",
-        value: r.numeros,
-      },
+      description: "Números ganadores: " + r.numeros,
     };
   });
   const datosEstructurados =
@@ -226,7 +223,7 @@ export default async function Home() {
             </Suspense>
           </div>
           <h1 className="mb-3 text-center text-sm font-semibold leading-relaxed text-[#FBF7EE] sm:text-left sm:text-base">
-            Resultados de loterías dominicanas hoy y en vivo: Leidsa, Nacional, Loteka, Real y más.
+            Resultados de loterías dominicanas hoy en vivo
           </h1>
           {horaUltimoResultado ? (
             <p className="mb-3 text-center font-mono text-xs font-semibold text-[#E7A63C] sm:text-left">
@@ -319,6 +316,28 @@ export default async function Home() {
             <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>¿Cuándo salió tu número por última vez?</p>
           </div>
           <span className="font-mono text-sm font-semibold text-[#1E4D8C]">Buscar →</span>
+        </a>
+
+        <a
+          href="/calculadora-regalia-pascual"
+          className="mb-8 flex items-center justify-between rounded-xl border border-[#10203A]/12 bg-white px-5 py-4 shadow-[0_1px_3px_rgba(16,32,58,0.08)] transition hover:shadow-md"
+        >
+          <div>
+            <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">🎄 Calculadora de regalía pascual</p>
+            <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>¿Cuánto te toca de doble sueldo este año?</p>
+          </div>
+          <span className="font-mono text-sm font-semibold text-[#007A33]">Calcular →</span>
+        </a>
+
+        <a
+          href="/calcular-prestaciones-rd"
+          className="mb-8 flex items-center justify-between rounded-xl border border-[#10203A]/12 bg-white px-5 py-4 shadow-[0_1px_3px_rgba(16,32,58,0.08)] transition hover:shadow-md"
+        >
+          <div>
+            <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">⚖️ Calcular prestaciones laborales</p>
+            <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>¿Te botaron o renunciaste? Mira cuánto te deben pagar</p>
+          </div>
+          <span className="font-mono text-sm font-semibold text-[#007A33]">Calcular →</span>
         </a>
 
         <section className="mt-8 rounded-xl border border-[#10203A]/12 bg-white p-5 sm:p-8">

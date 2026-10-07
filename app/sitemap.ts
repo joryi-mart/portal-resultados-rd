@@ -162,6 +162,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     },
     {
+      url: `${SITIO}/calculadora-regalia-pascual`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${SITIO}/calcular-prestaciones-rd`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
       url: `${SITIO}/como-jugar-loteria`,
       lastModified: new Date(),
       changeFrequency: "yearly",

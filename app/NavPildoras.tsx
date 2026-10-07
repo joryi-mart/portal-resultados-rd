@@ -226,6 +226,8 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
     { etiqueta: "🎮 Videojuegos", href: "/videojuegos" },
     { etiqueta: "🏝️ Turismo", href: "/turismo" },
     { etiqueta: "⛽ Precio del combustible", href: "/precios-combustibles" },
+    { etiqueta: "🎄 Calculadora de regalía", href: "/calculadora-regalia-pascual" },
+    { etiqueta: "⚖️ Calcular prestaciones", href: "/calcular-prestaciones-rd" },
     { etiqueta: "📍 Códigos postales", href: "/codigos-postales" },
     { etiqueta: "📅 Días feriados 2026", href: "/dias-feriados" },
   ];

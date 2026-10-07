@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { inicioSorteoISO } from "@/lib/eventoSorteo";
 import NavPildoras from "../NavPildoras";
 import { display, body, mono } from "../page";
 import {
@@ -68,16 +69,12 @@ export default async function LoteriasPage(props: { searchParams: Promise<{ fech
         return {
           "@type": "Event",
           name: `${sorteo.nombre} - ${loteria.nombre} - ${fechaSeleccionada}`,
-          startDate: `${fechaSeleccionada}T${sorteo.hora_sorteo || "00:00"}:00-04:00`,
+          startDate: inicioSorteoISO(fechaSeleccionada, sorteo.hora_sorteo),
           eventStatus: "https://schema.org/EventScheduled",
           eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
           location: { "@type": "VirtualLocation", url: `https://labankerard.com/${loteria.slug}/${fechaSeleccionada}` },
           organizer: { "@type": "Organization", name: loteria.nombre },
-          additionalProperty: {
-            "@type": "PropertyValue",
-            name: "Números ganadores",
-            value: resultado.numeros,
-          },
+          description: "Números ganadores: " + resultado.numeros,
         };
       })
       .filter(Boolean);

@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { inicioSorteoISO } from "@/lib/eventoSorteo";
 import NavPildoras from "../NavPildoras";
 import { display, body, mono } from "../page";
 import {
@@ -89,16 +90,12 @@ export default async function ResumenPage(props: { searchParams: Promise<{ fecha
     return {
       "@type": "Event",
       name: `${r.sorteoNombre} - ${r.loteriaNombre} - ${r.fecha}`,
-      startDate: `${r.fecha}T${r.horaSorteo || "00:00"}:00-04:00`,
+      startDate: inicioSorteoISO(r.fecha, r.horaSorteo),
       eventStatus: "https://schema.org/EventScheduled",
       eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
       location: { "@type": "VirtualLocation", url: `https://labankerard.com/${r.loteriaSlug}/${r.fecha}` },
       organizer: { "@type": "Organization", name: r.loteriaNombre },
-      additionalProperty: {
-        "@type": "PropertyValue",
-        name: "Números ganadores",
-        value: r.numeros,
-      },
+      description: "Números ganadores: " + r.numeros,
     };
   });
   const datosEstructurados =

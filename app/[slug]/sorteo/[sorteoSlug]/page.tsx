@@ -1,4 +1,5 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
+import { inicioSorteoISO } from "@/lib/eventoSorteo";
 import { supabase } from "@/lib/supabase";
 import { slugSorteo } from "@/lib/slug";
 import { COLOR_POR_POSICION_SORTEOS } from "@/app/componentesResultados";
@@ -167,12 +168,12 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
         "@context": "https://schema.org",
         "@type": "Event",
         name: `${sorteo.nombre} - ${loteria.nombre} - ${hoy}`,
-        startDate: `${hoy}T${horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, hoy) || "00:00"}:00-04:00`,
+        startDate: inicioSorteoISO(hoy, horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, hoy)),
         eventStatus: "https://schema.org/EventScheduled",
         eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
         location: { "@type": "VirtualLocation", url: `https://labankerard.com/${params.slug}/sorteo/${params.sorteoSlug}` },
         organizer: { "@type": "Organization", name: loteria.nombre },
-        additionalProperty: { "@type": "PropertyValue", name: "Números ganadores", value: resultadoHoy.numeros },
+        description: "Números ganadores: " + resultadoHoy.numeros,
       }
     : null;
 
