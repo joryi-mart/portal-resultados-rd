@@ -87,8 +87,62 @@ def juegos_lidom(fecha_iso):
     return resultado
 
 
+# Frases del resumen de cada juego de MLB para la voz (ganador, jonrones, serie).
+# En pantalla solo salen los marcadores; esto lo cuenta la narración.
+RESUMEN_MLB = {}
+
+
+def apellido(nombre_completo):
+    partes = nombre_completo.split()
+    if len(partes) > 1 and partes[-1].rstrip(".") in ("Jr", "Sr", "II", "III"):
+        return " ".join(partes[-2:])
+    return partes[-1] if partes else nombre_completo
+
+
+def unir(lista):
+    return lista[0] if len(lista) == 1 else ", ".join(lista[:-1]) + " y " + lista[-1]
+
+
+def resumen_juego_mlb(g, visitante, local):
+    a, h = g["teams"]["away"], g["teams"]["home"]
+    if a["score"] > h["score"]:
+        ganador, perdedor, pg, pp = visitante, local, a["score"], h["score"]
+    else:
+        ganador, perdedor, pg, pp = local, visitante, h["score"], a["score"]
+    frases = [f"Los {ganador} le ganaron {pg} a {pp} a los {perdedor}."]
+
+    dec = g.get("decisions") or {}
+    if dec.get("winner"):
+        frase = f"Ganó {dec['winner']['fullName']}"
+        if dec.get("save"):
+            frase += f", y salvó {dec['save']['fullName']}"
+        frases.append(frase + ".")
+
+    box = obtener_json(f"https://statsapi.mlb.com/api/v1/game/{g['gamePk']}/boxscore")
+    jonroneros = []
+    for lado in ("away", "home"):
+        for p in (box.get("teams", {}).get(lado, {}).get("players") or {}).values():
+            hr = (p.get("stats", {}).get("batting") or {}).get("homeRuns") or 0
+            if hr:
+                jonroneros.append(apellido(p["person"]["fullName"]) + (" dos veces" if hr == 2 else (f" {hr} veces" if hr > 2 else "")))
+    if jonroneros:
+        frases.append(f"Jonrón de {unir(jonroneros)}." if len(jonroneros) == 1 else f"Dieron jonrón {unir(jonroneros)}.")
+
+    serie = g.get("seriesStatus") or {}
+    if g.get("gameType") in ("F", "D", "L", "W") and serie.get("wins") is not None:
+        lider = NOMBRES_MLB_ES.get((serie.get("winningTeam") or {}).get("name", ""), "")
+        w, l = serie["wins"], serie["losses"]
+        if serie.get("isTied"):
+            frases.append(f"La serie está empatada a {w}.")
+        elif serie.get("isOver") and lider:
+            frases.append(f"¡Los {lider} ganan la serie {w} a {l}!")
+        elif lider:
+            frases.append(f"Los {lider} están arriba {w} a {l} en la serie.")
+    return " ".join(frases)
+
+
 def juegos_mlb(fecha_iso):
-    d = obtener_json(f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={fecha_iso}&hydrate=team")
+    d = obtener_json(f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={fecha_iso}&hydrate=team,decisions,seriesStatus")
     fechas = d.get("dates") or []
     juegos = fechas[0]["games"] if fechas else []
     resultado = []
@@ -99,7 +153,12 @@ def juegos_mlb(fecha_iso):
         if a.get("score") is None:
             continue
         nombre = lambda t: NOMBRES_MLB_ES.get(t["team"]["name"], t["team"].get("teamName", t["team"]["name"]))
-        resultado.append((nombre(a), a["score"], nombre(h), h["score"]))
+        juego = (nombre(a), a["score"], nombre(h), h["score"])
+        resultado.append(juego)
+        try:
+            RESUMEN_MLB[juego] = resumen_juego_mlb(g, nombre(a), nombre(h))
+        except Exception as error:
+            print(f"  Sin resumen para {juego}: {error}")
     # Con muchos juegos, se priorizan los mas renidos para un reel corto.
     resultado.sort(key=lambda x: abs(x[1] - x[3]))
     return resultado[:6]
@@ -312,15 +371,18 @@ NOMBRE_HABLADO = {"lidom": "la pelota invernal dominicana", "mlb": "Grandes Liga
 
 
 def texto_narracion(slug, juegos):
-    partes = [f"¡Hola, hola! Esto fue lo que pasó ayer en {NOMBRE_HABLADO.get(slug, slug)}."]
-    for visitante, pv, local, pl in juegos:
-        if pv == pl:
+    partes = [f"Esto fue lo que pasó ayer en {NOMBRE_HABLADO.get(slug, slug)}."]
+    for juego in juegos:
+        visitante, pv, local, pl = juego
+        if slug == "mlb" and juego in RESUMEN_MLB:
+            partes.append(RESUMEN_MLB[juego])
+        elif pv == pl:
             partes.append(f"{visitante} y {local} empataron a {pv}.")
         elif pv > pl:
             partes.append(f"{visitante} {pv}, {local} {pl}.")
         else:
             partes.append(f"{local} {pl}, {visitante} {pv}.")
-    partes.append("¿Y tú, viste los juegos? Déjanos tu comentario. ¡Más resultados en La Bankera R D punto com!")
+    partes.append("¿Y tú, quién crees que gana hoy? Déjalo en los comentarios.")
     return " ".join(partes)
 
 
