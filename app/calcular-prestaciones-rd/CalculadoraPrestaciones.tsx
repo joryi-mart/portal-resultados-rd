@@ -15,7 +15,7 @@ import { useState } from "react";
 // - Regalía (art. 219): parte proporcional del año en curso.
 // - Despido injustificado o dimisión justificada (art. 95): además, hasta 6 meses de salario.
 
-const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
+const COLOR_TEXTO_SECUNDARIO = "#2E3B48";
 const COLOR_VERDE_RD = "#007A33";
 const DIVISOR_DIARIO = 23.83;
 const DIA_MS = 24 * 60 * 60 * 1000;
@@ -140,7 +140,7 @@ export default function CalculadoraPrestaciones({ hoy }: { hoy: string }) {
               className="w-full bg-transparent px-2 py-3 font-mono text-lg outline-none"
             />
           </div>
-          <span className="mt-1 block text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          <span className="mt-1 block text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
             Tu sueldo fijo. Si variaba, pon el promedio del último año.
           </span>
         </label>
@@ -190,7 +190,7 @@ export default function CalculadoraPrestaciones({ hoy }: { hoy: string }) {
                   />
                   <span>
                     <span className="block font-semibold">{o.etiqueta}</span>
-                    <span className="block text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{o.ayuda}</span>
+                    <span className="block text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{o.ayuda}</span>
                   </span>
                 </label>
               );
@@ -227,18 +227,18 @@ export default function CalculadoraPrestaciones({ hoy }: { hoy: string }) {
 
       {hayResultado ? (
         <div className="mt-6 rounded-xl border-2 bg-white p-5 sm:p-6" style={{ borderColor: COLOR_VERDE_RD }}>
-          <p className="text-center text-sm font-semibold uppercase tracking-wider" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          <p className="text-center text-base font-semibold uppercase tracking-wider" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
             Te deben pagar
           </p>
           <p className="my-2 text-center font-mono text-4xl font-bold sm:text-5xl" style={{ color: COLOR_VERDE_RD }}>
             {formatoPesos(total)}
           </p>
-          <p className="text-center text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          <p className="text-center text-base" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
             Por {textoTiempo(meses)} trabajando · salario diario {formatoPesos(diario)}
           </p>
 
           <div className="mt-5 overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-base">
               <thead>
                 <tr className="text-left" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
                   <th className="py-2 pr-2 font-semibold">Concepto</th>
@@ -252,7 +252,7 @@ export default function CalculadoraPrestaciones({ hoy }: { hoy: string }) {
                     <tr key={f.concepto} className="border-t border-[#10203A]/8 align-top">
                       <td className="py-2 pr-2">
                         <span className="font-semibold">{f.concepto}</span>
-                        {f.nota ? <span className="block text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{f.nota}</span> : null}
+                        {f.nota ? <span className="block text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{f.nota}</span> : null}
                       </td>
                       <td className="py-2 pr-2 text-right font-mono">{f.dias === null ? "—" : f.dias}</td>
                       <td className="py-2 text-right font-mono font-semibold" style={{ fontVariantNumeric: "tabular-nums" }}>{formatoPesos(f.monto)}</td>
@@ -268,7 +268,7 @@ export default function CalculadoraPrestaciones({ hoy }: { hoy: string }) {
           </div>
 
           {enTribunal ? (
-            <div className="mt-5 rounded-lg border border-[#E7A63C]/50 bg-[#E7A63C]/10 p-4 text-sm">
+            <div className="mt-5 rounded-lg border border-[#E7A63C]/50 bg-[#E7A63C]/10 p-4 text-base">
               <p className="font-bold">⚖️ Si llevas el caso a los tribunales y te dan la razón</p>
               <p className="mt-1 leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
                 {salida === "despido"
@@ -281,20 +281,20 @@ export default function CalculadoraPrestaciones({ hoy }: { hoy: string }) {
                 <li>Cesantía: {formatoPesos(extraCesantia)}</li>
                 <li>Hasta 6 meses de salario (art. 95): {formatoPesos(extraArt95)}</li>
               </ul>
-              <p className="mt-2 text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+              <p className="mt-2 text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
                 Para esto necesitas un abogado laboral o ir al Ministerio de Trabajo. Tienes plazos cortos para reclamar.
               </p>
             </div>
           ) : null}
 
           {meses < 3 ? (
-            <p className="mt-4 text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+            <p className="mt-4 text-base" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
               Con menos de 3 meses trabajando todavía no te tocan preaviso ni cesantía.
             </p>
           ) : null}
         </div>
       ) : (
-        <p className="mt-6 text-center text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+        <p className="mt-6 text-center text-base" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
           Escribe tu sueldo y la fecha en que entraste. El resultado aparece al instante. 👆
         </p>
       )}

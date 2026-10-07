@@ -7,7 +7,7 @@ const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], vari
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
 const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "600"], variable: "--font-mono" });
 
-const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
+const COLOR_TEXTO_SECUNDARIO = "#2E3B48";
 
 // Se regenera una vez al día para que la fecha de salida sugerida sea la de hoy en RD.
 export const revalidate = 86400;
@@ -86,7 +86,7 @@ export default function CalcularPrestacionesPage() {
           <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold text-[#FBF7EE] sm:text-4xl">
             Calcular Prestaciones RD
           </h1>
-          <p className="mt-2 font-mono text-sm text-[#D5DEEA]">
+          <p className="mt-2 font-mono text-base text-[#F1F4F8]">
             Preaviso, cesantía, vacaciones y regalía según el Código de Trabajo dominicano.
           </p>
         </div>
@@ -98,7 +98,7 @@ export default function CalcularPrestacionesPage() {
         <section className="mt-10 rounded-xl border border-[#10203A]/12 bg-white p-5 sm:p-6">
           <h2 className="mb-3 font-[family-name:var(--font-display)] text-xl font-bold">¿Qué me toca según cómo salí?</h2>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-base">
               <thead>
                 <tr className="text-left" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
                   <th className="py-2 pr-3 font-semibold">Cómo saliste</th>
@@ -129,7 +129,7 @@ export default function CalcularPrestacionesPage() {
           })}
         </section>
 
-        <p className="mt-6 text-xs leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+        <p className="mt-6 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
           Resultado aproximado, basado en los artículos 76, 80, 86, 95, 177, 180 y 219 del Código de Trabajo (Ley
           16-92). No sustituye la asesoría de un abogado. Para casos especiales (salarios variables, comisiones,
           trabajadores domésticos o del sector público) consulta al Ministerio de Trabajo.
@@ -140,19 +140,19 @@ export default function CalcularPrestacionesPage() {
           className="mt-6 flex items-center justify-between rounded-xl border border-[#10203A]/12 bg-white px-5 py-4 hover:shadow-md"
         >
           <span className="font-semibold">🎄 ¿Solo quieres saber tu regalía pascual?</span>
-          <span className="font-mono text-sm font-semibold" style={{ color: "#007A33" }}>Calcular →</span>
+          <span className="font-mono text-base font-semibold" style={{ color: "#007A33" }}>Calcular →</span>
         </a>
 
         <a
           href="/"
-          className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
+          className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-base font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
         >
           🎱 ¿Ya viste los resultados de la lotería de hoy? Consulta Nacional, Leidsa, Real y más.
         </a>
       </main>
 
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">
-        <a href="/" className="font-mono text-sm text-[#1E4D8C] hover:underline">← Volver a La Bankera RD</a>
+        <a href="/" className="font-mono text-base text-[#1E4D8C] hover:underline">← Volver a La Bankera RD</a>
       </footer>
     </div>
   );

@@ -7,7 +7,7 @@ const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], vari
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
 const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "600"], variable: "--font-mono" });
 
-const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
+const COLOR_TEXTO_SECUNDARIO = "#2E3B48";
 
 // Se regenera una vez al dia para que la cuenta regresiva al 20 de diciembre
 // y el año de la calculadora usen la fecha de RD y no la del dia del build.
@@ -80,7 +80,7 @@ export default function CalculadoraRegaliaPage() {
           <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold text-[#FBF7EE] sm:text-4xl">
             Calculadora de Regalía Pascual
           </h1>
-          <p className="mt-2 font-mono text-sm text-[#D5DEEA]">
+          <p className="mt-2 font-mono text-base text-[#F1F4F8]">
             ¿Cuánto te toca de doble sueldo? Escribe tu sueldo y lo sabrás al instante.
           </p>
         </div>
@@ -113,7 +113,7 @@ export default function CalculadoraRegaliaPage() {
           })}
         </section>
 
-        <p className="mt-6 text-xs leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+        <p className="mt-6 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
           Resultado aproximado, basado en los artículos 219 al 222 del Código de Trabajo y en el salario mínimo del
           sector privado no sectorizado vigente desde febrero de 2026. Para casos especiales (sueldos variables,
           comisiones o sectores con salario mínimo propio), consulta al Ministerio de Trabajo.
@@ -121,14 +121,14 @@ export default function CalculadoraRegaliaPage() {
 
         <a
           href="/"
-          className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
+          className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-base font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
         >
           🎱 ¿Ya viste los resultados de la lotería de hoy? Consulta Nacional, Leidsa, Real y más.
         </a>
       </main>
 
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">
-        <a href="/" className="font-mono text-sm text-[#1E4D8C] hover:underline">← Volver a La Bankera RD</a>
+        <a href="/" className="font-mono text-base text-[#1E4D8C] hover:underline">← Volver a La Bankera RD</a>
       </footer>
     </div>
   );

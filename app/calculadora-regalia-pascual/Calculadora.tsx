@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
+const COLOR_TEXTO_SECUNDARIO = "#2E3B48";
 const COLOR_VERDE_RD = "#007A33";
 
 // Salario minimo del sector privado no sectorizado, vigente desde el
@@ -110,7 +110,7 @@ export default function Calculadora({ hoy }: { hoy: string }) {
               className="w-full bg-transparent px-2 py-3 font-mono text-lg outline-none"
             />
           </div>
-          <span className="mt-1 block text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          <span className="mt-1 block text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
             Tu sueldo fijo, sin contar horas extras.
           </span>
         </label>
@@ -126,7 +126,7 @@ export default function Calculadora({ hoy }: { hoy: string }) {
         </label>
         {entroEsteAnio ? (
           <label className="mt-2 block pl-8">
-            <span className="mb-1 block text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>¿Qué día entraste?</span>
+            <span className="mb-1 block text-base" style={{ color: COLOR_TEXTO_SECUNDARIO }}>¿Qué día entraste?</span>
             <input
               type="date"
               min={inicioAnio}
@@ -149,7 +149,7 @@ export default function Calculadora({ hoy }: { hoy: string }) {
         </label>
         {yaSalio ? (
           <label className="mt-2 block pl-8">
-            <span className="mb-1 block text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>¿Qué día saliste?</span>
+            <span className="mb-1 block text-base" style={{ color: COLOR_TEXTO_SECUNDARIO }}>¿Qué día saliste?</span>
             <input
               type="date"
               min={inicioAnio}
@@ -172,7 +172,7 @@ export default function Calculadora({ hoy }: { hoy: string }) {
               return <option key={o.valor} value={o.valor}>{o.etiqueta}</option>;
             })}
           </select>
-          <span className="mt-1 block text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          <span className="mt-1 block text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
             Solo importa si ganas mucho: la ley pone un tope a la regalía según el salario mínimo.
           </span>
         </label>
@@ -180,16 +180,16 @@ export default function Calculadora({ hoy }: { hoy: string }) {
 
       {hayResultado ? (
         <div className="mt-6 rounded-xl border-2 bg-white p-5 text-center sm:p-6" style={{ borderColor: COLOR_VERDE_RD }}>
-          <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Te toca de regalía</p>
+          <p className="text-base font-semibold uppercase tracking-wider" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Te toca de regalía</p>
           <p className="my-2 font-mono text-4xl font-bold sm:text-5xl" style={{ color: COLOR_VERDE_RD }}>{formatoPesos(monto)}</p>
-          <p className="text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          <p className="text-base" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
             {proporcion >= 1
               ? "Trabajaste el año completo: te toca un mes de sueldo."
               : `Por ${diasTrabajados} días trabajados en ${anio} (${Math.round(proporcion * 100)}% del año).`}
             {" "}Libre de descuentos: no paga ISR ni TSS.
           </p>
           {llegoAlTope ? (
-            <p className="mt-2 text-sm font-semibold text-[#B23B26]">
+            <p className="mt-2 text-base font-semibold text-[#B23B26]">
               Tu regalía llegó al tope de ley: 5 salarios mínimos ({formatoPesos(tope)}).
             </p>
           ) : null}
@@ -207,7 +207,7 @@ export default function Calculadora({ hoy }: { hoy: string }) {
                 );
               })}
             </ul>
-            <p className="mt-2 text-center text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Precios aproximados, solo para reír un rato 😄</p>
+            <p className="mt-2 text-center text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Precios aproximados, solo para reír un rato 😄</p>
           </div>
 
           <a
@@ -221,7 +221,7 @@ export default function Calculadora({ hoy }: { hoy: string }) {
           </a>
         </div>
       ) : (
-        <p className="mt-6 text-center text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+        <p className="mt-6 text-center text-base" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
           Escribe tu sueldo y el resultado aparece al instante. 👆
         </p>
       )}
