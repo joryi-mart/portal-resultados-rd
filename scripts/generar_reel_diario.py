@@ -382,7 +382,7 @@ def texto_narracion(slug, juegos):
             partes.append(f"{visitante} {pv}, {local} {pl}.")
         else:
             partes.append(f"{local} {pl}, {visitante} {pv}.")
-    partes.append("¿Y tú, quién crees que gana hoy? Déjalo en los comentarios.")
+    partes.append("¿Y tú, quién crees que gana hoy? Déjalo en los comentarios, y síguenos para tener los resultados cada mañana.")
     return " ".join(partes)
 
 
@@ -410,6 +410,8 @@ def generar_voz(texto, salida_mp3):
 def construir_caption(titulo, subtitulo, fecha, enlace, hashtags):
     return (
         f"{titulo}: {subtitulo}\n\nResultados de {fecha_larga(fecha)}.\n\n"
+        f"¿Y tú, quién crees que gana hoy? Déjalo en los comentarios 👇\n\n"
+        f"👉 Síguenos para recibir los resultados cada mañana.\n\n"
         f"Más en https://{enlace}\n\nPágina informativa de La Bankera RD.\n\n{hashtags}"
     )
 

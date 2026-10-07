@@ -76,6 +76,7 @@ export async function GET(request: Request) {
     const caption =
       `${titulo}\n\n${texto}\n\n` +
       `¿Lo sabías? Cuéntanos en los comentarios 👇\n\n` +
+      `👉 Síguenos para tu dosis de historia todos los días.\n\n` +
       (propia ? "" : "Fuente: Wikipedia.\n\n") +
       `Más efemérides en https://labankerard.com/efemerides\n\nPágina informativa de La Bankera RD.\n\n` +
       `#UnDiaComoHoy #EfemeridesRD ${dominicana ? "#HistoriaDominicana" : "#Historia"}`;

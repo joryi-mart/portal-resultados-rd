@@ -4,6 +4,7 @@ import "./globals.css";
 import GoogleAnalytics from "./GoogleAnalytics";
 import RegistrarServiceWorker from "./RegistrarServiceWorker";
 import AvisoCookies from "./AvisoCookies";
+import InvitacionFacebook from "./InvitacionFacebook";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://labankerard.com"),
@@ -104,6 +105,7 @@ export default function RootLayout({
         </div>
         {children}
         <AvisoCookies />
+        <InvitacionFacebook />
       </body>
     </html>
   );

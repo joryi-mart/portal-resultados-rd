@@ -206,6 +206,7 @@ export function captionDato(dato: Dato) {
   return (
     `¿Sabías qué...? 🎓\n\n${dato.texto} ${dato.pie}\n\n` +
     `¿Lo sabías? Cuéntanos en los comentarios 👇\n\n` +
+    `👉 Síguenos para aprender algo nuevo de RD cada semana.\n\n` +
     `Más en ${enlace}\n\nPágina informativa de La Bankera RD.\n\n${hashtags}`
   );
 }
