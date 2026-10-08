@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // El CSS (Tailwind, ~10 KB comprimido) va dentro del HTML en vez de en
+  // archivos aparte que bloquean el primer pintado. Casi todas las visitas
+  // son nuevas, asi que el cache del CSS externo no les servia.
+  experimental: {
+    inlineCss: true,
+  },
   outputFileTracingIncludes: {
     "/api/publicar-facebook": ["./lib/fuentes/**"],
     "/api/debug-imagen": ["./lib/fuentes/**"],

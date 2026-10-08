@@ -7,6 +7,8 @@ const GOOGLE_ANALYTICS_ID = "G-S0FTS8VX1J";
 
 // El panel privado (/admin/*) es solo para nosotros, no para el público, así
 // que no debe contarse como visita real en las estadísticas de Analytics.
+// lazyOnload: Analytics se carga cuando la pagina ya termino de cargar, para
+// no competir con el contenido (PageSpeed lo marcaba como JS sin usar).
 export default function GoogleAnalytics() {
   const pathname = usePathname();
   if (pathname && pathname.startsWith("/admin")) {
@@ -17,9 +19,9 @@ export default function GoogleAnalytics() {
     <>
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS_ID}`}
-        strategy="afterInteractive"
+        strategy="lazyOnload"
       />
-      <Script id="google-analytics" strategy="afterInteractive">
+      <Script id="google-analytics" strategy="lazyOnload">
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
