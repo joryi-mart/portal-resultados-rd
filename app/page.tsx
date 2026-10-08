@@ -190,7 +190,7 @@ export default async function Home() {
           <div className="mb-3 flex flex-col gap-3 border-b border-white/10 pb-3 sm:flex-row sm:items-center sm:justify-between">
             <a href="/" className="flex shrink-0 items-center gap-2.5">
               <Image
-                src="/logo-icon.svg"
+                src="/logo-circulo.png"
                 alt="Logo de La Bankera RD"
                 width={40}
                 height={40}
