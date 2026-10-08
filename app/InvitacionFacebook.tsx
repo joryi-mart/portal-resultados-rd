@@ -88,7 +88,7 @@ export default function InvitacionFacebook() {
           target="_blank"
           rel="noopener noreferrer"
           onClick={function () { cerrar("seguir"); }}
-          className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-[#1877F2] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#1668d8]"
+          className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-[#1464D8] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0F55B8]"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M13.5 21v-8h2.7l.4-3.2h-3.1V7.8c0-.9.3-1.5 1.6-1.5h1.7V3.4c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v2.4H7.7V13h2.7v8h3.1z" />

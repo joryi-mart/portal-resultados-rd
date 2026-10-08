@@ -113,7 +113,7 @@ export default async function NumerosMasSalidosPage() {
             href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Flabankerard.com%2Fnumeros-mas-salidos"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full bg-[#1877F2] px-4 py-2 text-sm font-bold text-white hover:opacity-90"
+            className="inline-flex items-center gap-2 rounded-full bg-[#1464D8] px-4 py-2 text-sm font-bold text-white hover:opacity-90"
           >
             Compartir en Facebook
           </a>

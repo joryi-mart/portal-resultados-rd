@@ -287,7 +287,7 @@ export default async function Home() {
             <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Síguenos en Facebook</p>
             <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Recibe los resultados de cada sorteo directo en tu muro</p>
           </div>
-          <span className="font-mono text-sm font-semibold text-[#1877F2]">Seguir →</span>
+          <span className="font-mono text-sm font-semibold text-[#1464D8]">Seguir →</span>
         </a>
 
         {error ? (

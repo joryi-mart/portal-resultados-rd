@@ -1,0 +1,22 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "La Bankera RD",
+    "documentationUrl": "https://labankerard.com/llms.txt",
+    "logoUrl": "https://labankerard.com/icon-512.png"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:labankerard.com:info:resultados-loterias",
+      "displayName": "La Bankera RD: resultados de loterías dominicanas en vivo",
+      "type": "text/markdown",
+      "url": "https://labankerard.com/llms.txt",
+      "representativeQueries": [
+        "resultados de la lotería nacional de hoy",
+        "resultados de Leidsa hoy",
+        "qué número salió hoy en Loteka",
+        "calculadora de regalía pascual República Dominicana"
+      ]
+    }
+  ]
+}

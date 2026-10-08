@@ -303,7 +303,7 @@ function NavegacionFechaMovil(props: { fechaActual: string }) {
     <div className="mx-5 mb-3 flex items-center gap-1.5 sm:hidden">
       <a href={"/?fecha=" + ayer} aria-label="Día anterior" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white font-mono text-sm font-bold text-[#10203A]">‹</a>
       <form method="GET" className="flex min-w-0 flex-1 items-center gap-1.5">
-        <input type="date" name="fecha" defaultValue={fechaActual} max={hoy} className="h-9 w-full min-w-0 rounded-lg border border-white/15 bg-white px-2 font-mono text-xs text-[#10203A]" />
+        <input type="date" name="fecha" aria-label="Fecha de los resultados" defaultValue={fechaActual} max={hoy} className="h-9 w-full min-w-0 rounded-lg border border-white/15 bg-white px-2 font-mono text-xs text-[#10203A]" />
         <button type="submit" aria-label="Ver" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-mono text-sm font-bold text-white" style={{ backgroundColor: COLOR_VERDE_RD }}>✓</button>
       </form>
       {noHayManana ? null : (
@@ -356,7 +356,7 @@ export function PanelSuperior(props: { cambios: Cambio[]; fechaActual: string })
             <a href={"/?fecha=" + manana} className="rounded-lg border border-white/15 bg-white px-3 py-2 text-center font-mono text-sm font-semibold text-[#10203A] hover:bg-[#FBF7EE]">Siguiente →</a>
           )}
           <form method="GET" className="flex items-center gap-2">
-            <input type="date" name="fecha" defaultValue={fechaActual} max={hoy} className="rounded-lg border border-white/15 bg-white px-3 py-2 font-mono text-sm text-[#10203A]" />
+            <input type="date" name="fecha" aria-label="Fecha de los resultados" defaultValue={fechaActual} max={hoy} className="rounded-lg border border-white/15 bg-white px-3 py-2 font-mono text-sm text-[#10203A]" />
             <button type="submit" className="shrink-0 rounded-lg px-3 py-2 font-mono text-sm font-bold text-white" style={{ backgroundColor: COLOR_VERDE_RD }}>Ver</button>
           </form>
           {esHoy ? null : (

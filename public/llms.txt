@@ -1,0 +1,36 @@
+# La Bankera RD
+
+> Portal informativo de República Dominicana con los resultados de las loterías dominicanas (Leidsa, Lotería Nacional, Loteka, Lotería Real, LoteDom, La Primera, La Suerte) e internacionales, actualizados en vivo, más béisbol (MLB y LIDOM), NBA, fútbol y herramientas útiles. No vende jugadas ni acepta apuestas.
+
+## Resultados de loterías
+
+- [Resultados de hoy (portada)](https://labankerard.com/): todos los sorteos del día en un solo lugar.
+- [Resumen del día](https://labankerard.com/resumen): resultados agrupados por lotería.
+- [Todas las loterías y horarios](https://labankerard.com/loterias)
+- [Lotería Nacional](https://labankerard.com/nacional)
+- [Leidsa](https://labankerard.com/leidsa)
+- [Loteka](https://labankerard.com/loteka)
+- [Lotería Real](https://labankerard.com/real)
+- [Buscador de números](https://labankerard.com/buscador): cuándo salió un número por última vez.
+- [Números más salidos](https://labankerard.com/numeros-mas-salidos)
+
+Cada lotería tiene páginas por fecha con la forma `https://labankerard.com/<loteria>/<AAAA-MM-DD>`.
+
+## Herramientas
+
+- [Calculadora de regalía pascual](https://labankerard.com/calculadora-regalia-pascual): doble sueldo según el Código de Trabajo dominicano.
+- [Calculadora de prestaciones laborales](https://labankerard.com/calcular-prestaciones-rd): preaviso, cesantía, vacaciones y regalía.
+- [Tipo de cambio y precio del combustible](https://labankerard.com/precios-combustibles)
+- [Días feriados en República Dominicana](https://labankerard.com/dias-feriados)
+- [Códigos postales](https://labankerard.com/codigos-postales)
+
+## Deportes
+
+- [Béisbol MLB y dominicanos en Grandes Ligas](https://labankerard.com/beisbol)
+- [LIDOM](https://labankerard.com/lidom)
+- [NBA](https://labankerard.com/nba)
+- [Fútbol](https://labankerard.com/futbol)
+
+## Aviso
+
+La información es no oficial. Los resultados definitivos son los que publican las loterías en sus canales oficiales.
