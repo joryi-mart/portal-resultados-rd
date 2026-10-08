@@ -36,7 +36,7 @@ export default async function EquipoLidomPage(props: { params: Promise<{ equipo:
   const historia = HISTORIAS_LIDOM[params.equipo];
 
   return (
-    <div className="min-h-screen bg-[#FBF7EE]">
+    <main className="min-h-screen bg-[#FBF7EE]">
       <NavPildoras />
       <div className="px-4 py-8 sm:px-8">
         <a href="/lidom" className="mb-3 inline-block font-mono text-sm text-[#1E4D8C] hover:underline">← Ver todos los equipos de LIDOM</a>
@@ -119,6 +119,6 @@ export default async function EquipoLidomPage(props: { params: Promise<{ equipo:
 
         <EquipoLidomCliente equipoId={params.equipo} />
       </div>
-    </div>
+    </main>
   );
 }

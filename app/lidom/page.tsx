@@ -16,7 +16,7 @@ export const metadata = {
 
 export default function LidomPage() {
   return (
-    <>
+    <main>
       <LidomCliente />
       <div className="bg-[#FBF7EE] px-4 pb-10 sm:px-8">
         <div className="mx-auto max-w-6xl border-t border-[#10203A]/10 pt-6">
@@ -34,6 +34,6 @@ export default function LidomPage() {
           </div>
         </div>
       </div>
-    </>
+    </main>
   );
 }

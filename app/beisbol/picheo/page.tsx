@@ -15,5 +15,9 @@ export const metadata = {
 };
 
 export default function PicheoPage() {
-  return <PicheoCliente />;
+  return (
+    <main>
+      <PicheoCliente />
+    </main>
+  );
 }
