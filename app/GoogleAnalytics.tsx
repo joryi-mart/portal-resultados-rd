@@ -23,8 +23,14 @@ export default function GoogleAnalytics() {
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${GOOGLE_ANALYTICS_ID}');
+          // Los robots que ejecutan JavaScript (vistas previas de Facebook,
+          // revisiones de Google desde sus centros de datos en Lulea,
+          // Prineville, Council Bluffs...) inflaban "usuarios activos". Sin
+          // 'config' no se manda nada a Analytics.
+          if (!navigator.webdriver && !/bot|crawl|spider|slurp|facebookexternalhit|facebookcatalog|HeadlessChrome|Lighthouse|Google-InspectionTool|Chrome-Lighthouse|PageSpeed/i.test(navigator.userAgent)) {
+            gtag('js', new Date());
+            gtag('config', '${GOOGLE_ANALYTICS_ID}');
+          }
         `}
       </Script>
     </>
