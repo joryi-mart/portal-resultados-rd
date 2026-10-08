@@ -46,11 +46,11 @@ export default async function FutbolPage() {
   }
 
   return (
-    <>
+    <main>
       <FutbolCliente />
       <NoticiasDeporte titulo="Fútbol" noticias={noticias} />
       <PreguntasFrecuentes preguntas={PREGUNTAS_FUTBOL} />
       <EnlacesGuias titulo="Guías de fútbol" enlaces={[{ href: "/como-funcionan-los-torneos-de-futbol", texto: "Cómo funcionan los torneos de fútbol más seguidos" }]} />
-    </>
+    </main>
   );
 }

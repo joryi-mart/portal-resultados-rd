@@ -1,5 +1,18 @@
 import Image from "next/image";
 
+// Fotos de servidores que Next puede achicar (los mismos de images.remotePatterns
+// en next.config.ts). Las de ESPN venian completas (~280 KB) para un cuadro de
+// 80 px; las de otros periodicos (Currents API) se dejan sin optimizar.
+const HOSTS_OPTIMIZABLES = ["espnmedia-cdn.akamaized.net", "a.espncdn.com", "image.tmdb.org", "www.mlbstatic.com", "midfield.mlbstatic.com", "upload.wikimedia.org"];
+
+function sePuedeOptimizar(url: string) {
+  try {
+    return HOSTS_OPTIMIZABLES.includes(new URL(url).hostname);
+  } catch {
+    return false;
+  }
+}
+
 type Noticia = {
   id: string;
   title: string;
@@ -36,7 +49,7 @@ export default function NoticiasDeporte({
                 alt={noticia.title}
                 width={80}
                 height={80}
-                unoptimized
+                unoptimized={!sePuedeOptimizar(noticia.image)}
                 className="h-20 w-20 shrink-0 rounded-lg bg-[#10203A]/5 object-cover"
               />
             ) : null}

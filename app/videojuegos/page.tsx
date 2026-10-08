@@ -41,11 +41,11 @@ export default async function VideojuegosPage() {
   }
 
   return (
-    <>
+    <main>
       <VideojuegosCliente />
       <NoticiasDeporte titulo="Videojuegos" noticias={noticias} />
       <PreguntasFrecuentes preguntas={PREGUNTAS_VIDEOJUEGOS} />
       <EnlacesGuias titulo="Guías de videojuegos" enlaces={[{ href: "/clasificacion-de-videojuegos-esrb", texto: "Qué significan las clasificaciones de los videojuegos (ESRB)" }]} />
-    </>
+    </main>
   );
 }

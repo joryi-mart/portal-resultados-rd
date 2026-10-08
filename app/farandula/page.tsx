@@ -41,10 +41,10 @@ export default async function FarandulaPage() {
   }
 
   return (
-    <>
+    <main>
       <FarandulaCliente />
       <NoticiasDeporte titulo="Farándula" noticias={noticias} />
       <PreguntasFrecuentes preguntas={PREGUNTAS_FARANDULA} />
-    </>
+    </main>
   );
 }

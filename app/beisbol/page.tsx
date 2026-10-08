@@ -47,7 +47,7 @@ export default async function BeisbolPage() {
   }
 
   return (
-    <>
+    <main>
       <BeisbolCliente />
       <NoticiasDeporte titulo="Béisbol y MLB" noticias={noticias} />
       <PreguntasFrecuentes preguntas={PREGUNTAS_BEISBOL} />
@@ -70,6 +70,6 @@ export default async function BeisbolPage() {
           </div>
         </div>
       </div>
-    </>
+    </main>
   );
 }

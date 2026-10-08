@@ -41,11 +41,11 @@ export default async function SeriesPage() {
   }
 
   return (
-    <>
+    <main>
       <SeriesCliente />
       <NoticiasDeporte titulo="Series" noticias={noticias} />
       <PreguntasFrecuentes preguntas={PREGUNTAS_SERIES} />
       <EnlacesGuias titulo="Guías de series y cine" enlaces={[{ href: "/como-leer-calificaciones-de-peliculas", texto: "Cómo leer las calificaciones de películas y series" }]} />
-    </>
+    </main>
   );
 }

@@ -30,10 +30,10 @@ const PREGUNTAS_CINE = [
 
 export default function CinePage() {
   return (
-    <>
+    <main>
       <CineCliente />
       <PreguntasFrecuentes preguntas={PREGUNTAS_CINE} />
       <EnlacesGuias titulo="Guías de cine" enlaces={[{ href: "/como-leer-calificaciones-de-peliculas", texto: "Cómo leer las calificaciones de películas y series" }]} />
-    </>
+    </main>
   );
 }

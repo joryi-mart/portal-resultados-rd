@@ -45,11 +45,11 @@ export default async function NBAPage() {
   }
 
   return (
-    <>
+    <main>
       <NBACliente />
       <NoticiasDeporte titulo="Baloncesto y NBA" noticias={noticias} />
       <PreguntasFrecuentes preguntas={PREGUNTAS_NBA} />
       <EnlacesGuias titulo="Guías de baloncesto" enlaces={[{ href: "/como-funciona-la-nba", texto: "Cómo funciona la NBA" }]} />
-    </>
+    </main>
   );
 }
