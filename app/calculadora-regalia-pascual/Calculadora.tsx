@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { enviarEvento, useEventoAlCalcular } from "@/lib/eventoAnalytics";
 
 const COLOR_TEXTO_SECUNDARIO = "#2E3B48";
 const COLOR_VERDE_RD = "#007A33";
@@ -74,6 +75,7 @@ export default function Calculadora({ hoy }: { hoy: string }) {
   const monto = Math.min(montoSinTope, tope);
   const llegoAlTope = montoSinTope > tope;
   const hayResultado = sueldo > 0 && diasTrabajados > 0;
+  useEventoAlCalcular(hayResultado, "regalia");
 
   const diasParaPago = Math.round((aFecha(`${anio}-12-20`) - aFecha(hoy)) / DIA_MS);
 
@@ -212,6 +214,7 @@ export default function Calculadora({ hoy }: { hoy: string }) {
 
           <a
             href={"https://wa.me/?text=" + encodeURIComponent(mensajeWhatsApp)}
+            onClick={function () { enviarEvento("calculadora_whatsapp", { calculadora: "regalia" }); }}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-5 inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold text-white"

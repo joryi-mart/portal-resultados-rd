@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useEventoAlCalcular } from "@/lib/eventoAnalytics";
 
 // Calculadora de prestaciones laborales según el Código de Trabajo de RD (Ley 16-92).
 // Reglas usadas (verificar si se promulga la reforma laboral; a junio de 2026 seguía
@@ -122,6 +123,7 @@ export default function CalculadoraPrestaciones({ hoy }: { hoy: string }) {
   const extraArt95 = sueldo * 6;
 
   const hayResultado = sueldo > 0 && fechasValidas;
+  useEventoAlCalcular(hayResultado, "prestaciones");
 
   return (
     <div>
