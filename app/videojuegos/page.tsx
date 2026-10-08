@@ -11,6 +11,7 @@ export const metadata = {
   description:
     "Últimas noticias del mundo de los videojuegos: PlayStation, Xbox, Nintendo, PC gaming, lanzamientos y esports.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Noticias de Videojuegos: Consolas, Lanzamientos y Esports",
     description: "Últimas noticias de videojuegos, consolas y esports.",
     locale: "es_DO",

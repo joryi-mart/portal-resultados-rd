@@ -14,6 +14,7 @@ export const metadata = {
   description:
     "Aprende qué es la quiniela, el palé y la tripleta en las loterías dominicanas: cómo se juega cada una, qué números escoger y cómo se relacionan con los resultados de hoy.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "¿Cómo Jugar Quiniela, Palé y Tripleta? Guía Completa",
     description: "Qué es la quiniela, el palé y la tripleta, y cómo se relacionan con los resultados de la lotería dominicana.",
     locale: "es_DO",

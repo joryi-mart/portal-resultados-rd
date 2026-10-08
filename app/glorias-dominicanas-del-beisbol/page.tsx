@@ -22,6 +22,7 @@ export const metadata = {
   description:
     "Las historias y logros en MLB y LIDOM de los grandes del béisbol dominicano: del Salón de la Fama (Marichal, Pedro Martínez, Guerrero, Ortiz, Beltré) a las leyendas históricas, los pioneros y las estrellas activas de hoy.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Glorias Dominicanas del Béisbol",
     description: "Del Salón de la Fama a las estrellas activas: la historia completa del béisbol dominicano en la MLB.",
     locale: "es_DO",

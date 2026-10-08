@@ -27,6 +27,7 @@ export const metadata = {
   description:
     "Resultados en vivo de la NBA: marcadores de hoy y de ayer, máximo anotador de cada partido, tabla de posiciones y los jugadores dominicanos en la NBA.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "NBA Hoy: Resultados y Jugadores Dominicanos",
     description: "Marcadores en vivo de la NBA, máximo anotador de cada partido y jugadores dominicanos.",
     locale: "es_DO",

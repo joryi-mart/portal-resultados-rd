@@ -5,6 +5,7 @@ export const metadata = {
   description:
     "Sigue la LIDOM, el béisbol invernal dominicano: Licey, Águilas, Escogido, Estrellas, Toros del Este y Gigantes del Cibao, con posiciones y noticias.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "LIDOM Hoy: Equipos, Posiciones y Noticias",
     description: "Liga de Béisbol Profesional de la República Dominicana: equipos, posiciones y noticias.",
     locale: "es_DO",

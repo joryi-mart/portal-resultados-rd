@@ -5,6 +5,7 @@ export const metadata = {
   description:
     "Qué es la King Lottery de Sint Maarten, a qué hora salen sus dos sorteos diarios y cómo se forma la quiniela a partir del Pick 3 y el Pick 4.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "King Lottery (Sint Maarten): horarios y cómo funciona",
     description: "Guía de la King Lottery: dos sorteos al día y cómo se forma su quiniela.",
     locale: "es_DO",

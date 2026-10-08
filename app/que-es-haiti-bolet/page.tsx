@@ -5,6 +5,7 @@ export const metadata = {
   description:
     "Qué es el Haití Bolet, a qué hora salen sus seis sorteos diarios, cuántos números se sacan en cada uno y dónde ver los resultados y el historial.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Haití Bolet: qué es y horarios de los 6 sorteos",
     description: "Guía del Haití Bolet: seis sorteos al día, tres números de dos cifras en cada uno.",
     locale: "es_DO",

@@ -5,6 +5,7 @@ export const metadata = {
   description:
     "Qué ofrece Loteka y cómo se juega cada producto: Quiniela Loteka, Mega Lotto, Mega Chances, La Repartidera y Toca 3.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "¿Cómo Funcionan los Juegos de Loteka?",
     description: "Guía de los productos de Loteka: Quiniela, Mega Lotto, Mega Chances, La Repartidera y Toca 3.",
     locale: "es_DO",

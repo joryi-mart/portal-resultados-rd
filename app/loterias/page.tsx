@@ -16,6 +16,7 @@ export const metadata = {
   title: "Todas las Loterías Dominicanas y Américas",
   description: "Lista completa de loterías dominicanas y americanas: Leidsa, Nacional, Loteka, Real, Lotedom, La Primera, La Suerte y más, con todos sus productos.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Todas las Loterías Dominicanas y Américas",
     description: "Lista completa de loterías dominicanas e internacionales y sus productos.",
     locale: "es_DO",

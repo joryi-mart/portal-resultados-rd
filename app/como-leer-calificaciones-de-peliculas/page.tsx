@@ -12,6 +12,7 @@ export const metadata = {
   description:
     "Qué significan las calificaciones de IMDb, el Tomatometer de Rotten Tomatoes y el Metascore de Metacritic, cómo se calcula cada una y cuál conviene mirar.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Cómo Leer las Calificaciones de Películas y Series",
     description: "IMDb, Rotten Tomatoes y Metacritic: qué mide cada una y cómo interpretarlas.",
     locale: "es_DO",

@@ -5,6 +5,7 @@ export const metadata = {
   description:
     "Consulta los pícheres probables de cada juego de la MLB para hoy, con sus estadísticas de la temporada actual.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Hoja de Picheo MLB: Pícheres Probables de Hoy",
     description: "Pícheres probables de cada juego de la MLB para hoy, con sus estadísticas de temporada.",
     locale: "es_DO",

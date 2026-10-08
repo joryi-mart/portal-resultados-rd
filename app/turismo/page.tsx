@@ -13,6 +13,7 @@ export const metadata = {
   title: "Turismo en República Dominicana: Guías por Ciudad",
   description: "Guías de qué ver y hacer en los destinos turísticos más visitados de República Dominicana: Punta Cana, Santo Domingo y Puerto Plata.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Turismo en República Dominicana: Guías por Ciudad",
     description: "Qué ver y hacer en Punta Cana, Santo Domingo y Puerto Plata.",
     locale: "es_DO",

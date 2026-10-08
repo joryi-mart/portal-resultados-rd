@@ -5,6 +5,7 @@ export const metadata = {
   description:
     "Qué es la lotería de Anguila (Anguilla Lottery), a qué hora salen sus cuatro sorteos diarios, cuántos números salen y cómo se juega en las bancas dominicanas.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Lotería de Anguila: horarios de sus 4 sorteos al día",
     description: "Guía de la lotería de Anguila: cuatro sorteos diarios, tres números en cada uno.",
     locale: "es_DO",

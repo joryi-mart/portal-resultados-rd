@@ -7,6 +7,7 @@ export const metadata = {
   description:
     "Qué películas están en cartelera, los próximos estrenos y las más populares del momento, con sinopsis, calificación y fecha de estreno actualizadas.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Cartelera de Cine: Estrenos y Películas Populares",
     description: "Películas en cartelera, próximos estrenos y las más populares, con sinopsis y calificación.",
     locale: "es_DO",

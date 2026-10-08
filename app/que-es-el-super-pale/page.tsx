@@ -5,6 +5,7 @@ export const metadata = {
   description:
     "Qué es el Súper Palé, por qué no tiene bolas propias y cómo funciona en Leidsa, Lotería Real y LoteDom: se combinan los resultados de dos sorteos.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "¿Qué es el Súper Palé y cómo se juega?",
     description: "El Súper Palé combina dos sorteos. Así funciona en Leidsa, Lotería Real y LoteDom.",
     locale: "es_DO",

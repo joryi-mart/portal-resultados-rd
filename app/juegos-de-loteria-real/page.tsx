@@ -14,6 +14,7 @@ export const metadata = {
   description:
     "Qué es Lotería Real y cómo se juega cada uno de sus productos: Quiniela Real, Tu Fecha, Loto Pool Real, Nueva Yol Real, Loto Real, Chance Real y Súper Palé Real.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "¿Cómo Funcionan los Juegos de Lotería Real?",
     description: "Guía de los productos de Lotería Real: Quiniela, Tu Fecha, Loto Pool, Nueva Yol, Loto Real, Chance Real y Súper Palé Real.",
     locale: "es_DO",

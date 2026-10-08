@@ -5,6 +5,7 @@ export const metadata = {
   description:
     "Cómo se juega el Powerball: cuántos números se escogen, qué días se sortea, qué es el Power Play y en qué se diferencia de Mega Millions.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Cómo Jugar Powerball en Español",
     description: "Reglas del Powerball, días de sorteo, Power Play y diferencias con Mega Millions.",
     locale: "es_DO",

@@ -12,6 +12,7 @@ export const metadata = {
   description:
     "Explicación sencilla de cómo funcionan las ligas de fútbol, la Champions League y el Mundial de 48 selecciones: puntos, fases, clasificación y eliminatorias.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Cómo Funcionan los Torneos de Fútbol",
     description: "Ligas, Champions League y Mundial, explicados fácil.",
     locale: "es_DO",

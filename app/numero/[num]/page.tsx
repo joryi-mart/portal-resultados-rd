@@ -77,7 +77,7 @@ export async function generateMetadata(props: { params: Promise<{ num: string }>
     title,
     description,
     alternates: { canonical: `https://labankerard.com/numero/${params.num}` },
-    openGraph: { title, description, locale: "es_DO", type: "website" },
+    openGraph: { images: ["/opengraph-image.png"], title, description, locale: "es_DO", type: "website" },
   };
 }
 

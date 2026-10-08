@@ -13,6 +13,7 @@ export const metadata = {
   description:
     "Conoce los seis equipos de la LIDOM: su ciudad, su estadio, el año de fundación y un poco de su historia. Tigres del Licey, Leones del Escogido, Águilas Cibaeñas, Estrellas Orientales, Toros del Este y Gigantes del Cibao.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Los 6 Equipos de la LIDOM",
     description: "Ciudad, estadio y fundación de cada equipo del béisbol invernal dominicano.",
     locale: "es_DO",

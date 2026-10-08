@@ -10,6 +10,7 @@ export const metadata = {
   description:
     "Últimas noticias de la farándula dominicana: artistas, dembow, música urbana y entretenimiento de República Dominicana.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Farándula Dominicana y Dembow: Últimas Noticias",
     description: "Noticias de farándula dominicana, dembow y música urbana.",
     locale: "es_DO",

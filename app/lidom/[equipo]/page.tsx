@@ -25,7 +25,7 @@ export async function generateMetadata(props: { params: Promise<{ equipo: string
   return {
     title: titulo,
     description: descripcion,
-    openGraph: { title: titulo, description: descripcion, locale: "es_DO", type: "website" },
+    openGraph: { images: ["/opengraph-image.png"], title: titulo, description: descripcion, locale: "es_DO", type: "website" },
     alternates: { canonical: `https://labankerard.com/lidom/${params.equipo}` },
   };
 }

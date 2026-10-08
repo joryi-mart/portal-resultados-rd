@@ -12,6 +12,7 @@ export const metadata = {
   title: "Precio del Combustible Hoy en República Dominicana",
   description: "Precios semanales de gasolina, gasoil y GLP en República Dominicana, según el Ministerio de Industria, Comercio y Mipymes (MICM).",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Precio del Combustible Hoy en República Dominicana",
     description: "Precios semanales de gasolina, gasoil y GLP según el MICM.",
     locale: "es_DO",

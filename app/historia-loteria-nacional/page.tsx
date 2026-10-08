@@ -14,6 +14,7 @@ export const metadata = {
   description:
     "De la caridad del Padre Billini en 1882 a la Lotería Nacional de hoy: la historia completa de la lotería más antigua de República Dominicana.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Historia de la Lotería Nacional Dominicana",
     description: "La historia de la Lotería Nacional, desde 1882 hasta hoy.",
     locale: "es_DO",

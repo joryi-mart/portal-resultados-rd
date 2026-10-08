@@ -12,6 +12,7 @@ export const metadata = {
   description:
     "Guía para padres y jugadores: qué significan las letras E, E10+, T, M y AO que aparecen en las cajas de los videojuegos y cómo usarlas para escoger juegos adecuados.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Qué Significan las Clasificaciones de los Videojuegos (ESRB)",
     description: "E, E10+, T, M y AO: qué edad recomienda cada clasificación.",
     locale: "es_DO",

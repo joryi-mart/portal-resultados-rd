@@ -5,6 +5,7 @@ export const metadata = {
   description:
     "Qué ofrece La Primera y cómo se juega cada producto: Quiniela La Primera (día y noche), Quinielón y Loto 5.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "¿Cómo Funcionan los Juegos de La Primera?",
     description: "Guía de los productos de La Primera: Quiniela, Quinielón y Loto 5.",
     locale: "es_DO",

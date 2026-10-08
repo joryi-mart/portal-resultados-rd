@@ -5,6 +5,7 @@ export const metadata = {
   description:
     "Qué sorteos tiene la Lotería Nacional Dominicana, a qué hora salen y cómo se juega cada uno: Gana Más, Juega + Pega + y la Quiniela Nacional de la noche.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "¿Cómo Funcionan los Juegos de la Lotería Nacional?",
     description: "Guía de Gana Más, Juega + Pega + y la Quiniela Nacional, con sus horarios.",
     locale: "es_DO",

@@ -13,6 +13,7 @@ export const metadata = {
   description:
     "Aprende las reglas básicas del béisbol paso a paso: cuántas entradas tiene un juego, qué es un out, cuántos strikes y bolas hay, cómo se anota una carrera y qué significan el promedio de bateo y la efectividad.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Reglas Básicas del Béisbol Explicadas Fácil",
     description: "Entradas, outs, strikes, bolas, carreras y estadísticas básicas, en lenguaje sencillo.",
     locale: "es_DO",

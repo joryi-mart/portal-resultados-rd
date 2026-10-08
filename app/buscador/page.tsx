@@ -22,7 +22,7 @@ export async function generateMetadata(props: { searchParams: Promise<{ numero?:
     return {
       title: titulo,
       description: descripcion,
-      openGraph: { title: titulo, description: descripcion, locale: "es_DO", type: "website" },
+      openGraph: { images: ["/opengraph-image.png"], title: titulo, description: descripcion, locale: "es_DO", type: "website" },
       alternates: { canonical: `https://labankerard.com/buscador?numero=${numero}` },
     };
   }
@@ -31,6 +31,7 @@ export async function generateMetadata(props: { searchParams: Promise<{ numero?:
     title: "Buscador de Números — ¿Cuándo Salió Tu Número?",
     description: "Busca un número y descubre cuándo fue la última vez que salió, en qué lotería y en qué posición, en República Dominicana.",
     openGraph: {
+      images: ["/opengraph-image.png"],
       title: "Buscador de Números de Lotería",
       description: "Busca un número y descubre cuándo fue la última vez que salió, en qué lotería y en qué posición.",
       locale: "es_DO",

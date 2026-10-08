@@ -104,7 +104,7 @@ export async function generateMetadata(props: { params: Promise<{ ciudad: string
   return {
     title: titulo,
     description: ciudad.resumen,
-    openGraph: { title: `${titulo} | La Bankera RD`, description: ciudad.resumen, locale: "es_DO", type: "website" },
+    openGraph: { images: ["/opengraph-image.png"], title: `${titulo} | La Bankera RD`, description: ciudad.resumen, locale: "es_DO", type: "website" },
     alternates: { canonical: `https://labankerard.com/turismo/${params.ciudad}` },
   };
 }

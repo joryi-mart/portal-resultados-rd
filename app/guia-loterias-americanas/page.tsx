@@ -5,6 +5,7 @@ export const metadata = {
   description:
     "Qué son las loterías americanas que se juegan en bancas dominicanas, cómo se forma la quiniela de New York y Florida con Pick 3 y Pick 4, y dónde ver los resultados.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Loterías Americanas en RD: New York, Florida, New Jersey y Georgia",
     description: "Cómo funcionan las loterías americanas en las bancas dominicanas y cómo se forma su quiniela.",
     locale: "es_DO",

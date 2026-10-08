@@ -13,6 +13,7 @@ export const metadata = {
   title: "Días Feriados en República Dominicana 2026",
   description: "Calendario completo de los 12 días feriados oficiales de República Dominicana en 2026, con las fechas trasladadas al lunes según la Ley 139-97.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Días Feriados en República Dominicana 2026",
     description: "Calendario oficial de feriados dominicanos 2026, actualizado con los traslados de ley.",
     locale: "es_DO",

@@ -5,6 +5,7 @@ export const metadata = {
   description:
     "Qué ofrece LoteDom y cómo se juega cada producto: Quiniela LoteDom, Quemaito Mayor, Agarra 4 y Súper Palé.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "¿Cómo Funcionan los Juegos de LoteDom?",
     description: "Guía de los productos de LoteDom: Quiniela, Quemaito, Agarra 4 y Súper Palé.",
     locale: "es_DO",

@@ -12,6 +12,7 @@ export const metadata = {
   description:
     "Explicación sencilla de cómo funciona la NBA: cuántos equipos y juegos hay, qué es el play-in, cómo son los playoffs y cómo funciona el draft y su lotería.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Cómo Funciona la NBA",
     description: "Temporada regular, play-in, playoffs y draft de la NBA, explicados fácil.",
     locale: "es_DO",

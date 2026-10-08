@@ -15,6 +15,7 @@ export const metadata = {
   title: "Resumen de Resultados de Loterías Dominicanas",
   description: "Resumen de todos los resultados de lotería publicados hoy en República Dominicana, agrupados por lotería: Leidsa, Nacional, Real, Loteka y más.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "Resumen de Resultados de Loterías Dominicanas",
     description: "Resumen de todos los resultados de lotería publicados hoy, agrupados por lotería.",
     locale: "es_DO",

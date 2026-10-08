@@ -14,6 +14,7 @@ export const metadata = {
   description:
     "Qué es Leidsa y cómo se juega cada uno de sus productos: Loto Más, Quiniela Palé, Súper Palé, Pega 3 Más, Loto Pool y Super Kino TV.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "¿Cómo Funcionan los Juegos de Leidsa?",
     description: "Guía de los productos de Leidsa: Loto Más, Súper Palé, Pega 3 Más, Loto Pool y Super Kino TV.",
     locale: "es_DO",

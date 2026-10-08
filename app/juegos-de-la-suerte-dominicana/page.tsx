@@ -5,6 +5,7 @@ export const metadata = {
   description:
     "Cómo se juega La Suerte Dominicana: sus dos sorteos diarios de quiniela (mediodía y tarde) y las modalidades de palé y tripleta.",
   openGraph: {
+    images: ["/opengraph-image.png"],
     title: "¿Cómo Funcionan los Juegos de La Suerte Dominicana?",
     description: "Guía de La Suerte Dominicana: quiniela de mediodía y de tarde, palé y tripleta.",
     locale: "es_DO",
