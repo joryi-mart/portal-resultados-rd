@@ -282,7 +282,9 @@ def generar_video(titulo, subtitulo, enlace, juegos, salida, voz_mp3=None, durac
     ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
     salida_sin_audio = salida + ".sinaudio.mp4"
     cmd = [ffmpeg_exe, "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
-           "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-preset", "veryfast", salida_sin_audio]
+           "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-preset", "veryfast",
+           # Facebook pide un fotograma clave cada 2 s (GOP cerrado de 2 a 5 s).
+           "-g", str(FPS * 2), "-keyint_min", str(FPS * 2), "-sc_threshold", "0", salida_sin_audio]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     for i in range(n_frames):
         proc.stdin.write(render(i / FPS).tobytes())
@@ -291,6 +293,12 @@ def generar_video(titulo, subtitulo, enlace, juegos, salida, voz_mp3=None, durac
 
     agregar_melodia_anuncio(ffmpeg_exe, salida_sin_audio, salida, dur, voz_mp3)
     os.remove(salida_sin_audio)
+
+
+# Requisitos de audio de los Reels de Facebook: AAC estereo a 48 kHz. Con el
+# audio a 24 kHz mono (lo que sale de la voz) Facebook puede procesar mal el reel.
+# faststart pone el indice del video al principio del archivo, como pide Meta.
+AUDIO_FACEBOOK = ["-ar", "48000", "-ac", "2", "-movflags", "+faststart"]
 
 
 def agregar_melodia_anuncio(ffmpeg_exe, video_sin_audio, salida, duracion_video, voz_mp3=None):
@@ -353,12 +361,12 @@ def agregar_melodia_anuncio(ffmpeg_exe, video_sin_audio, salida, duracion_video,
             [ffmpeg_exe, "-y", "-i", video_sin_audio, "-i", melodia_wav, "-i", voz_mp3,
              "-filter_complex",
              "[1:a]volume=0.22[fondo];[2:a]adelay=400|400,volume=1.6[voz];[fondo][voz]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[a]",
-             "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-shortest", salida],
+             "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", *AUDIO_FACEBOOK, "-shortest", salida],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True,
         )
     else:
         subprocess.run(
-            [ffmpeg_exe, "-y", "-i", video_sin_audio, "-i", melodia_wav, "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-shortest", salida],
+            [ffmpeg_exe, "-y", "-i", video_sin_audio, "-i", melodia_wav, "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", *AUDIO_FACEBOOK, "-shortest", salida],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True,
         )
     os.remove(notas_wav)
