@@ -22,6 +22,7 @@ export const DEPORTES: Record<TipoDeporte, Config> = {
     obtenerJuegos: obtenerJuegosMLB,
     caption: (fechaTexto) =>
       `⚾ Grandes Ligas — Así terminaron los juegos del ${fechaTexto}\n\n` +
+      `👉 Síguenos para recibir los resultados cada mañana.\n\n` +
       `Ve el béisbol completo en https://labankerard.com/beisbol\n\n` +
       `Página informativa de La Bankera RD.\n\n#MLB #GrandesLigas #BeisbolDominicano`,
   },
@@ -32,6 +33,7 @@ export const DEPORTES: Record<TipoDeporte, Config> = {
     obtenerJuegos: obtenerJuegosNBA,
     caption: (fechaTexto) =>
       `🏀 NBA — Así terminaron los juegos del ${fechaTexto}\n\n` +
+      `👉 Síguenos para recibir los resultados cada mañana.\n\n` +
       `Ve todo sobre la NBA en https://labankerard.com/nba\n\n` +
       `Página informativa de La Bankera RD.\n\n#NBA #Baloncesto`,
   },

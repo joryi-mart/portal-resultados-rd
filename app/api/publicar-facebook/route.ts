@@ -50,12 +50,21 @@ function claveParte(slugBase: string, indiceParte: number) {
   return indiceParte === 0 ? slugBase : `${slugBase}-parte${indiceParte + 1}`;
 }
 
+// Invitacion a seguir la pagina. Se ignora al comparar textos (ver mismoContenido)
+// para que agregarla o cambiarla no haga borrar y volver a publicar lo de hoy.
+const INVITACION = "👉 Síguenos para recibir los resultados apenas salen.\n\n";
+
+function mismoContenido(a: string, b: string) {
+  return a.replace(INVITACION, "") === b.replace(INVITACION, "");
+}
+
 function construirCaption(loteriaNombre: string, loteriaSlug: string, fecha: string, resultados: ResultadoDeHoy[], numeroParte: number) {
   const lineas = resultados.map(function (r) { return `${r.sorteoNombre}: ${r.numeros}`; }).join("\n");
   const hashtag = HASHTAG_LOTERIA[loteriaSlug] || "";
   const tituloParte = numeroParte > 1 ? ` (parte ${numeroParte})` : "";
   return (
     `🎱 ${loteriaNombre} — Resultados del ${fechaTitulo(fecha)}${tituloParte}\n\n${lineas}\n\n` +
+    INVITACION +
     `Ve más resultados en https://labankerard.com/${loteriaSlug}\n\n` +
     `Página informativa. No vendemos jugadas ni aceptamos apuestas.\n\n` +
     `#LoteriaDominicana #ResultadosHoy ${hashtag}`.trim()
@@ -188,7 +197,7 @@ export async function GET(request: Request) {
               .insert({ loteria_slug: slugParte, fecha: hoy, post_id: idPublicacion, mensaje: captionNueva });
             if (errorInsert) throw new Error(errorInsert.message);
             resumen.creadas.push(nombreConParte);
-          } else if (publicacionExistente.mensaje !== captionNueva) {
+          } else if (!mismoContenido(publicacionExistente.mensaje || "", captionNueva)) {
             // Una parte sellada no deberia cambiar nunca; si pasa (ej. se
             // corrigio un numero a mano), tambien se actualiza para reflejarlo.
             // Facebook no deja reemplazar la imagen de una publicacion ya

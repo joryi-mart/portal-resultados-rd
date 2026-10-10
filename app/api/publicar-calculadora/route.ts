@@ -39,7 +39,7 @@ function mensaje(diasParaPago: number, semana: number) {
       `Calcula cuánto te toca en 1 segundo 👉 ${URL_CALCULADORA}\n\n` +
       `📅 ${faltan} para el 20 de diciembre.`,
   ];
-  return textos[semana % textos.length] + `\n\n#RegaliaPascual #DobleSueldo #RepublicaDominicana`;
+  return textos[semana % textos.length] + `\n\n👉 Síguenos para más información útil de RD.\n\n#RegaliaPascual #DobleSueldo #RepublicaDominicana`;
 }
 
 export async function GET(request: Request) {
