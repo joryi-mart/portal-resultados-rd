@@ -179,6 +179,11 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
   const fechaAyer = sumarDias(params.fecha, -1);
   const fechaManana = sumarDias(params.fecha, 1);
   const noMostrarManana = fechaManana > hoy;
+  // Antes del primer dia con datos solo hay paginas vacias (noindex): sin este
+  // limite Google seguia "dia anterior" hacia atras sin fin y gastaba sus
+  // visitas en ellas en vez de en las paginas con resultados.
+  const PRIMER_DIA_DE_DATOS = "2026-08-31";
+  const noMostrarAyer = fechaAyer < PRIMER_DIA_DE_DATOS;
 
   const { data: loteria, error } = await supabase
     .from("loterias")
@@ -232,7 +237,6 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
     })
     .filter(function (l): l is string { return !!l; });
 
-  const PRIMER_DIA_DE_DATOS = "2026-08-31";
   const otrosDias: string[] = [];
   for (let i = 1; i <= 7; i++) {
     const f = sumarDias(params.fecha, -i);
@@ -261,12 +265,14 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
 
       <main className="mx-auto max-w-3xl px-6 py-10 sm:px-10">
         <div className="mb-8 flex items-center justify-between">
-          <a
-            href={"/" + params.slug + "/" + fechaAyer}
-            className="rounded-full border border-[#10203A]/20 px-4 py-1.5 font-mono text-xs font-semibold text-[#10203A] hover:bg-[#10203A]/5"
-          >
-            ← Día anterior
-          </a>
+          {!noMostrarAyer ? (
+            <a
+              href={"/" + params.slug + "/" + fechaAyer}
+              className="rounded-full border border-[#10203A]/20 px-4 py-1.5 font-mono text-xs font-semibold text-[#10203A] hover:bg-[#10203A]/5"
+            >
+              ← Día anterior
+            </a>
+          ) : <span />}
           {!noMostrarManana ? (
             <a
               href={"/" + params.slug + "/" + fechaManana}

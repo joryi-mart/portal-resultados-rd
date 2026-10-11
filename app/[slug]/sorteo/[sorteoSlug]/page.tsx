@@ -131,9 +131,15 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
   };
   const nombreCortoLoteria = NOMBRE_CORTO_TITULO[loteria.slug] || loteria.nombre.replace(/^Lotería\s+/i, "");
   const sorteoYaIncluyeLoteria = sorteo.nombre.toLowerCase().includes(nombreCortoLoteria.toLowerCase());
-  const titulo = sorteoYaIncluyeLoteria
-    ? `${sorteo.nombre} — ${horaTexto}`
-    : `${sorteo.nombre} (${nombreCortoLoteria}) — ${horaTexto}`;
+  // Titulos escritos con las palabras exactas que la gente busca en Google
+  // (sacadas de Search Console), para los sorteos con muchas impresiones.
+  const TITULOS_ESPECIALES: Record<string, string> = {
+    "real/loto-pool-noche": "Loto Pool Real Noche (8:00 PM) — Resultados de hoy",
+  };
+  const titulo = TITULOS_ESPECIALES[`${params.slug}/${params.sorteoSlug}`]
+    || (sorteoYaIncluyeLoteria
+      ? `${sorteo.nombre} — ${horaTexto}`
+      : `${sorteo.nombre} (${nombreCortoLoteria}) — ${horaTexto}`);
   const descripcion = `Número ganador de ${sorteo.nombre} (${loteria.nombre}) en vivo y en directo, sorteo de las ${horaTexto} de hoy. Resultado actualizado al instante en La Bankera RD.`;
 
   return {
