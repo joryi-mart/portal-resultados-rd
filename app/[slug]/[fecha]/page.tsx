@@ -249,7 +249,7 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
       ) : null}
       <header className="bg-[#10203A] px-6 py-8 sm:px-10">
         <div className="mx-auto max-w-3xl">
-          <a href={"/" + params.slug + "/historial"} className="font-mono text-sm text-[#E7A63C] hover:underline">← Ver historial completo de {loteriaData.nombre}</a>
+          <a href={"/" + params.slug} className="font-mono text-sm text-[#E7A63C] hover:underline">← Ver todos los resultados de {loteriaData.nombre}</a>
           <h1 className="mt-3 font-[family-name:var(--font-display)] text-2xl font-bold text-[#FBF7EE] sm:text-4xl">
             Resultados de {loteriaData.nombre} {esHoy ? "hoy" : "del " + fechaLarga}
           </h1>
@@ -372,6 +372,8 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
       </main>
 
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">
+        <a href={"/" + params.slug} className="font-mono text-sm text-[#1E4D8C] hover:underline">Resultados de {loteriaData.nombre} hoy</a>
+        <span className="mx-2 text-[#10203A]/20">·</span>
         <a href={"/" + params.slug + "/historial"} className="font-mono text-sm text-[#1E4D8C] hover:underline">← Ver historial completo de {loteriaData.nombre}</a>
         <span className="mx-2 text-[#10203A]/20">·</span>
         <a href="/" className="font-mono text-sm text-[#1E4D8C] hover:underline">Ver todas las loterías</a>

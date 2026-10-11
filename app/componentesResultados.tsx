@@ -581,7 +581,9 @@ export function PizarronDelDia(props: { loterias: Loteria[]; fechaSeleccionada: 
   function renderTarjeta(t: TarjetaLoteria, i: number) {
     return (
       <div key={i} className="mb-3 break-inside-avoid rounded-xl border border-[#10203A]/10 bg-white p-4">
-        <p className="mb-2 inline-block truncate rounded px-2 py-0.5 text-base font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{t.loteria}</p>
+        {/* El nombre lleva a la pagina principal de la loteria (ej. /leidsa), que es la
+            que debe salir en Google para "resultados leidsa"; los numeros llevan al dia. */}
+        <a href={"/" + t.loteriaSlug} className="mb-2 inline-block truncate rounded px-2 py-0.5 text-base font-bold text-white hover:underline" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{t.loteria}</a>
         <div className="flex flex-col gap-3">
           {t.filas.map(function (fila, j) {
             const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[fila.sorteoId];
@@ -727,7 +729,7 @@ export function TablaResultadosDelDia(props: { loterias: Loteria[]; fechaSelecci
   function renderGrupo([slug, g]: (typeof gruposBase)[number], gi: number) {
     return (
       <div key={slug} className={gi > 0 ? "border-t-4 border-[#10203A]/10" : ""}>
-        <p className="mx-5 mt-4 inline-block rounded px-2 py-0.5 text-sm font-bold text-white" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{g.loteriaNombre}</p>
+        <a href={"/" + slug} className="mx-5 mt-4 inline-block rounded px-2 py-0.5 text-sm font-bold text-white hover:underline" style={{ backgroundColor: COLOR_VERDE_PRESIDENTE }}>{g.loteriaNombre}</a>
         <div className="flex flex-col">
           {g.filas.map(function (fila, i) {
             const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[fila.sorteoId];
