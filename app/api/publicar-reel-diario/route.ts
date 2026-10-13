@@ -140,6 +140,58 @@ async function publicarDeporte(deporte: string, token: string) {
   return { deporte, slug: meta.slug, videoId, resultado, historia };
 }
 
+// Sube el video de resumen deportivo (varios deportes concatenados, 3+ min)
+// como video normal de Facebook, no como reel: el programa de monetizacion
+// por anuncios en video pide ese formato, no reels.
+async function publicarVideoNormal(fileUrl: string, titulo: string, descripcion: string, token: string) {
+  const res = await fetch(`https://graph.facebook.com/v21.0/me/videos`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ file_url: fileUrl, title: titulo, description: descripcion, access_token: token }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || "Error publicando el video de resumen deportivo");
+  return data;
+}
+
+async function publicarResumenDeportivo(token: string) {
+  const metaRes = await fetch(`https://labankerard.com/resumen-deportivo.json`, { cache: "no-store" });
+  const tipo = metaRes.headers.get("content-type") || "";
+  if (!metaRes.ok || !tipo.includes("json")) {
+    return { resultado: "sin resumen para hoy" };
+  }
+  let meta: { slug: string; caption: string; fecha: string };
+  try {
+    meta = await metaRes.json();
+  } catch {
+    return { resultado: "sin resumen para hoy" };
+  }
+
+  const { data: yaPublicado, error: errorConsulta } = await supabase
+    .from("publicaciones_facebook")
+    .select("id, post_id")
+    .eq("loteria_slug", meta.slug)
+    .limit(1);
+  if (errorConsulta) throw new Error(errorConsulta.message);
+  if (yaPublicado && yaPublicado.length > 0) {
+    return { slug: meta.slug, resultado: "ya publicado antes", post_id: yaPublicado[0].post_id };
+  }
+
+  const resultado = await publicarVideoNormal(
+    `https://labankerard.com/resumen-deportivo.mp4`,
+    "Resumen deportivo del día",
+    meta.caption,
+    token
+  );
+
+  const { error: errorInsert } = await supabase
+    .from("publicaciones_facebook")
+    .insert({ loteria_slug: meta.slug, fecha: meta.fecha, post_id: resultado.id, mensaje: meta.caption });
+  if (errorInsert) throw new Error(errorInsert.message);
+
+  return { slug: meta.slug, resultado };
+}
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
   if (!claveValida(url.searchParams.get("clave"))) {
@@ -156,5 +208,12 @@ export async function GET(request: Request) {
       resultados.push({ deporte, error: "Error publicando este reel en Facebook", detalle: error.message });
     }
   }
+
+  try {
+    resultados.push({ tipo: "resumen-deportivo", ...(await publicarResumenDeportivo(token)) });
+  } catch (error: any) {
+    resultados.push({ tipo: "resumen-deportivo", error: "Error publicando el resumen deportivo", detalle: error.message });
+  }
+
   return NextResponse.json({ resultados });
 }

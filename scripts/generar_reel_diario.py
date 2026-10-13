@@ -293,6 +293,7 @@ def generar_video(titulo, subtitulo, enlace, juegos, salida, voz_mp3=None, durac
 
     agregar_melodia_anuncio(ffmpeg_exe, salida_sin_audio, salida, dur, voz_mp3)
     os.remove(salida_sin_audio)
+    return dur
 
 
 # Requisitos de audio de los Reels de Facebook: AAC estereo a 48 kHz. Con el
@@ -427,6 +428,51 @@ def construir_caption(titulo, subtitulo, fecha, enlace, hashtags):
 TODOS_LOS_SLUGS = ["lidom", "mlb", "futbol", "nba"]
 
 
+def construir_caption_resumen(titulos, fecha):
+    return (
+        f"Resumen deportivo: {unir(titulos)}\n\nResultados de {fecha_larga(fecha)}.\n\n"
+        f"👉 Síguenos para recibir los resultados cada mañana.\n\n"
+        f"Más en https://labankerard.com\n\nPágina informativa de La Bankera RD.\n\n"
+        f"#Deportes #ResumenDeportivo #RepublicaDominicana"
+    )
+
+
+# Une los videos individuales (ya generados arriba) en un solo video mas
+# largo, para el programa de monetizacion de Facebook que pide videos
+# normales de 3+ minutos (los reels no aplican para ese programa). Se
+# concatena con copia directa de flujos (sin recodificar): los 4 videos
+# salen siempre del mismo generar_video(), con el mismo codec/resolucion/fps,
+# asi que es seguro.
+def generar_resumen_deportivo(elegidos, duraciones, fecha):
+    import imageio_ffmpeg
+    ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
+
+    lista_path = os.path.join(PUBLIC, "resumen_concat_tmp.txt")
+    with open(lista_path, "w", encoding="utf-8") as f:
+        for slug, *_ in elegidos:
+            ruta = os.path.join(PUBLIC, f"reel-{slug}.mp4").replace("\\", "/")
+            f.write(f"file '{ruta}'\n")
+
+    salida = os.path.join(PUBLIC, "resumen-deportivo.mp4")
+    subprocess.run(
+        [ffmpeg_exe, "-y", "-f", "concat", "-safe", "0", "-i", lista_path, "-c", "copy", salida],
+        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    )
+    os.remove(lista_path)
+
+    duracion_total = sum(duraciones.values())
+    titulos = [titulo for _, titulo, *_ in elegidos]
+    caption = construir_caption_resumen(titulos, fecha)
+    slug_publicacion = f"resumen-deportivo-{fecha.isoformat()}"
+    with open(os.path.join(PUBLIC, "resumen-deportivo.json"), "w", encoding="utf-8") as f:
+        json.dump(
+            {"slug": slug_publicacion, "caption": caption, "fecha": fecha.isoformat(), "duracion": duracion_total},
+            f, ensure_ascii=False,
+        )
+
+    print(f"  Resumen deportivo generado: {salida} ({duracion_total:.0f}s), slug: {slug_publicacion}")
+
+
 def main():
     fecha = ayer_rd()
     elegidos = elegir_deportes(fecha)
@@ -443,15 +489,20 @@ def main():
 
     if not elegidos:
         print("Sin resultados reales de ningun deporte para " + fecha.isoformat() + ". No se genera nada.")
+        # Sin deportes hoy tampoco hay resumen combinado que publicar.
+        ruta_resumen_json = os.path.join(PUBLIC, "resumen-deportivo.json")
+        if os.path.exists(ruta_resumen_json):
+            os.remove(ruta_resumen_json)
         return
 
+    duraciones = {}
     for slug, titulo, enlace, hashtags, juegos in elegidos:
         subtitulo = "¿Quién ganó ayer?" if slug != "futbol" else "Así quedó la jornada"
         print(f"Generando {slug} ({len(juegos)} juegos)...")
 
         salida_video = os.path.join(PUBLIC, f"reel-{slug}.mp4")
         voz_mp3, duracion_voz = generar_voz(texto_narracion(slug, juegos), os.path.join(PUBLIC, f"voz-{slug}.tmp.mp3"))
-        generar_video(titulo, subtitulo, enlace, juegos, salida_video, voz_mp3, duracion_voz)
+        duraciones[slug] = generar_video(titulo, subtitulo, enlace, juegos, salida_video, voz_mp3, duracion_voz)
         if voz_mp3 and os.path.exists(voz_mp3):
             os.remove(voz_mp3)
 
@@ -461,6 +512,17 @@ def main():
             json.dump({"slug": slug_publicacion, "caption": caption, "fecha": fecha.isoformat()}, f, ensure_ascii=False)
 
         print(f"  Listo: {salida_video} ({os.path.getsize(salida_video)} bytes), slug: {slug_publicacion}")
+
+    # El resumen combinado solo tiene sentido con 2+ deportes (con 1 solo
+    # seria identico al reel individual de ese deporte).
+    ruta_resumen_json = os.path.join(PUBLIC, "resumen-deportivo.json")
+    if len(elegidos) >= 2:
+        try:
+            generar_resumen_deportivo(elegidos, duraciones, fecha)
+        except Exception as error:
+            print(f"  (aviso) no se pudo generar el resumen deportivo combinado: {error}", file=sys.stderr)
+    elif os.path.exists(ruta_resumen_json):
+        os.remove(ruta_resumen_json)
 
 
 if __name__ == "__main__":
