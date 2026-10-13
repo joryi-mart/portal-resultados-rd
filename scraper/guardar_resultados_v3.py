@@ -96,6 +96,10 @@ def hoy_rd():
     return (datetime.now(timezone.utc) - timedelta(hours=4)).strftime("%Y-%m-%d")
 
 
+def ayer_rd():
+    return (datetime.now(timezone.utc) - timedelta(hours=4, days=1)).strftime("%Y-%m-%d")
+
+
 def parsear_fecha(texto_fecha):
     try:
         partes = texto_fecha.strip().split()
@@ -155,7 +159,7 @@ def extraer_resultados():
     return resultados
 
 
-def guardar_en_supabase(sorteo_id, fecha, numeros):
+def guardar_en_supabase(sorteo_id, fecha, numeros, solo_si_falta=False):
     headers = {
         "apikey": SUPABASE_SERVICE_KEY,
         "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
@@ -178,6 +182,8 @@ def guardar_en_supabase(sorteo_id, fecha, numeros):
         "fuente": "scraper-html",
     }
 
+    if existentes and solo_si_falta:
+        return None
     if existentes:
         id_existente = existentes[0]["id"]
         r = requests.patch(
@@ -207,20 +213,28 @@ def main():
     guardados = []
     sin_mapear_actualizados = []
     hoy = hoy_rd()
+    ayer = ayer_rd()
 
     for r in resultados:
         # Algunas tarjetas (ej. Super Kino TV, un juego tipo Kino) nunca traen
         # la insignia "Actualizado" en el sitio fuente, aunque sí muestran un
         # resultado real y vigente. Por eso también aceptamos la tarjeta si su
         # fecha coincide con la de hoy en Republica Dominicana.
-        if not r["actualizado"] and r["fecha"] != hoy:
+        # Las tarjetas de AYER se aceptan solo para rellenar lo que falte: si el
+        # scraper dejo de correr de noche (paso con Leidsa el 05/oct/2026, sorteo
+        # de las 8:55 PM), a la manana siguiente recupera ese resultado. Nunca
+        # sobrescribe lo ya guardado, y Facebook no lo publica (solo publica hoy).
+        de_ayer = r["fecha"] == ayer and not r["actualizado"]
+        if not r["actualizado"] and r["fecha"] != hoy and not de_ayer:
             continue
 
         clave = (r["loteria_slug"], r["sorteo_nombre"])
         if clave in MAPEO_SORTEOS and r["fecha"]:
             sorteo_id = MAPEO_SORTEOS[clave]
             try:
-                accion = guardar_en_supabase(sorteo_id, r["fecha"], r["numeros"])
+                accion = guardar_en_supabase(sorteo_id, r["fecha"], r["numeros"], solo_si_falta=de_ayer)
+                if accion is None:
+                    continue
                 print(f"  ✅ {clave[0]}/{clave[1]} → sorteo_id {sorteo_id}: {r['numeros']} ({accion})")
                 guardados.append(clave)
             except Exception as e:
