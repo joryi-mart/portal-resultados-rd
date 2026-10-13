@@ -111,7 +111,7 @@ function ItemDesplegable(props: { item: ItemMenu }) {
   );
 }
 
-type MenuId = "loterias" | "beisbol" | "nba" | "futbol" | "calculadoras" | "variedades" | null;
+type MenuId = "loterias" | "beisbol" | "nba" | "futbol" | "cine" | "calculadoras" | "variedades" | null;
 
 /**
  * Un pill con dos zonas clicables:
@@ -231,19 +231,18 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
     { etiqueta: "⚖️ Prestaciones laborales", href: "/calcular-prestaciones-rd" },
   ];
 
-  const itemsVariedades: ItemMenu[] = [
-    { etiqueta: "💭 Números por sueños", href: "/numeros-por-suenos" },
-    { etiqueta: "📊 Números más salidos", href: "/numeros-mas-salidos" },
-    { etiqueta: "🔢 Busca un número", href: "/numero" },
-    { etiqueta: "🇩🇴 Efemérides dominicanas", href: "/efemerides" },
+  const itemsCine: ItemMenu[] = [
+    { etiqueta: "Ver todo (resumen)", href: "/cine" },
     { etiqueta: "📺 Series", href: "/series" },
     { etiqueta: "🎮 Videojuegos", href: "/videojuegos" },
+  ];
+
+  const itemsVariedades: ItemMenu[] = [
     { etiqueta: "🏝️ Turismo", href: "/turismo" },
     { etiqueta: "⛽ Precio del combustible", href: "/precios-combustibles" },
-    { etiqueta: "🎄 Calculadora de regalía", href: "/calculadora-regalia-pascual" },
-    { etiqueta: "⚖️ Calcular prestaciones", href: "/calcular-prestaciones-rd" },
     { etiqueta: "📍 Códigos postales", href: "/codigos-postales" },
     { etiqueta: "📅 Días feriados 2026", href: "/dias-feriados" },
+    { etiqueta: "🇩🇴 Efemérides dominicanas", href: "/efemerides" },
   ];
 
   return (
@@ -289,6 +288,10 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
                     ) : null}
                   </>
                 ) : null}
+                <div className="my-1 border-t border-white/10" />
+                <a href="/numero" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">🔢 Busca un número</a>
+                <a href="/numeros-mas-salidos" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">📊 Números más salidos</a>
+                <a href="/numeros-por-suenos" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">💭 Números por sueños</a>
               </>
             );
           })()}
@@ -330,13 +333,17 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
           })}
         </PillCategoria>
 
-        <a
+        <PillCategoria
           href="/cine"
-          className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-[#007A33] py-2.5 px-5 text-base font-bold text-white hover:bg-[#00994A]"
+          icono={<IconoCine />}
+          etiqueta="Cine"
+          activo={menuAbierto === "cine"}
+          onAlternar={function () { alternar("cine"); }}
         >
-          <IconoCine />
-          Cine
-        </a>
+          {itemsCine.map(function (item, i) {
+            return <ItemDesplegable key={i} item={item} />;
+          })}
+        </PillCategoria>
 
         <PillCategoria
           href="/calculadora-regalia-pascual"
@@ -361,7 +368,7 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
         <PillCategoria
           href="/turismo"
           icono={<IconoVariedades />}
-          etiqueta="TiempoLibre"
+          etiqueta="Vida en RD"
           activo={menuAbierto === "variedades"}
           onAlternar={function () { alternar("variedades"); }}
           alinearDerecha
