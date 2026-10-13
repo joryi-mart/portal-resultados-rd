@@ -71,7 +71,7 @@ def obtener_json(url):
 
 
 def juegos_lidom(fecha_iso):
-    d = obtener_json(f"https://statsapi.mlb.com/api/v1/schedule?sportId=17&date={fecha_iso}&hydrate=team")
+    d = obtener_json(f"https://statsapi.mlb.com/api/v1/schedule?sportId=17&date={fecha_iso}&hydrate=team,decisions")
     fechas = d.get("dates") or []
     juegos = fechas[0]["games"] if fechas else []
     resultado = []
@@ -83,13 +83,25 @@ def juegos_lidom(fecha_iso):
             continue
         if a.get("score") is None:
             continue
-        resultado.append((NOMBRES_LIDOM[a["team"]["id"]], a["score"], NOMBRES_LIDOM[h["team"]["id"]], h["score"]))
+        visitante, local = NOMBRES_LIDOM[a["team"]["id"]], NOMBRES_LIDOM[h["team"]["id"]]
+        juego = (visitante, a["score"], local, h["score"])
+        resultado.append(juego)
+        # LIDOM usa la misma API que MLB (sportId distinto): se reutiliza el
+        # mismo resumen narrado (ganador, lanzador ganador/salvamento, jonrones).
+        # No tiene seriesStatus hidratado, asi que esa parte simplemente no sale.
+        try:
+            RESUMEN_BEISBOL[juego] = resumen_juego_mlb(g, visitante, local)
+        except Exception as error:
+            print(f"  Sin resumen de LIDOM para {juego}: {error}")
     return resultado
 
 
-# Frases del resumen de cada juego de MLB para la voz (ganador, jonrones, serie).
-# En pantalla solo salen los marcadores; esto lo cuenta la narración.
-RESUMEN_MLB = {}
+# Frases del resumen de cada juego para la voz (ganador, jonrones/goles,
+# lideres de puntos, series), una por deporte. En pantalla solo salen los
+# marcadores; esto lo cuenta la narracion, como lo haria un cronista.
+RESUMEN_BEISBOL = {}  # MLB y LIDOM comparten formato (misma API)
+RESUMEN_NBA = {}
+RESUMEN_FUTBOL = {}
 
 
 def apellido(nombre_completo):
@@ -156,12 +168,72 @@ def juegos_mlb(fecha_iso):
         juego = (nombre(a), a["score"], nombre(h), h["score"])
         resultado.append(juego)
         try:
-            RESUMEN_MLB[juego] = resumen_juego_mlb(g, nombre(a), nombre(h))
+            RESUMEN_BEISBOL[juego] = resumen_juego_mlb(g, nombre(a), nombre(h))
         except Exception as error:
             print(f"  Sin resumen para {juego}: {error}")
     # Con muchos juegos, se priorizan los mas renidos para un reel corto.
     resultado.sort(key=lambda x: abs(x[1] - x[3]))
     return resultado[:6]
+
+
+def lider_puntos_nba(competidor):
+    for categoria in competidor.get("leaders") or []:
+        if categoria.get("name") == "points" and categoria.get("leaders"):
+            l = categoria["leaders"][0]
+            return apellido(l["athlete"]["fullName"]), l["displayValue"]
+    return None, None
+
+
+def resumen_juego_nba(competidor_visitante, competidor_local, visitante, local, pv, pl):
+    ganador, perdedor, pg, pp = (visitante, local, pv, pl) if pv > pl else (local, visitante, pl, pv)
+    diferencia = pg - pp
+    if diferencia <= 5:
+        frase_resultado = f"{ganador} se llevó un partido muy reñido, {pg}-{pp} sobre {perdedor}."
+    elif diferencia >= 20:
+        frase_resultado = f"{ganador} arrasó {pg}-{pp} a {perdedor}."
+    else:
+        frase_resultado = f"{ganador} venció {pg}-{pp} a {perdedor}."
+    frases = [frase_resultado]
+
+    nombre_v, pts_v = lider_puntos_nba(competidor_visitante)
+    nombre_l, pts_l = lider_puntos_nba(competidor_local)
+    lideres = []
+    if nombre_v:
+        lideres.append(f"{nombre_v} con {pts_v} puntos por {visitante}")
+    if nombre_l:
+        lideres.append(f"{nombre_l} con {pts_l} puntos por {local}")
+    if lideres:
+        frases.append(f"Lideró {unir(lideres)}." if len(lideres) == 1 else f"Lideraron {unir(lideres)}.")
+    return " ".join(frases)
+
+
+def resumen_juego_futbol(detalles, ids_equipos, visitante, local, pv, pl):
+    goles = [
+        ev for ev in (detalles or [])
+        if ev.get("scoringPlay") and (ev.get("type") or {}).get("text") == "Goal"
+    ]
+    goles.sort(key=lambda ev: (ev.get("clock") or {}).get("value") or 0)
+
+    if pv == pl:
+        frase_resultado = f"{visitante} y {local} empataron {pv}-{pl}."
+    else:
+        ganador, perdedor, pg, pp = (visitante, local, pv, pl) if pv > pl else (local, visitante, pl, pv)
+        frase_resultado = (
+            f"{ganador} goleó {pg}-{pp} a {perdedor}." if pg - pp >= 3
+            else f"{ganador} venció {pg}-{pp} a {perdedor}."
+        )
+    frases = [frase_resultado]
+
+    if goles:
+        descripciones = []
+        for ev in goles:
+            jugadores = ev.get("athletesInvolved") or []
+            nombre = apellido(jugadores[0]["displayName"]) if jugadores else "un jugador"
+            minuto = (ev.get("clock") or {}).get("displayValue", "")
+            equipo = visitante if (ev.get("team") or {}).get("id") == ids_equipos.get("away") else local
+            descripciones.append(f"{nombre} ({minuto}, {equipo})")
+        frases.append(f"Gol de {unir(descripciones)}." if len(descripciones) == 1 else f"Goles de {unir(descripciones)}.")
+    return " ".join(frases)
 
 
 def juegos_futbol(fecha_iso_compacta):
@@ -170,10 +242,19 @@ def juegos_futbol(fecha_iso_compacta):
     for e in d.get("events", []):
         if e["status"]["type"]["state"] != "post":
             continue
-        c = e["competitions"][0]["competitors"]
+        comp = e["competitions"][0]
+        c = comp["competitors"]
         h = next(x for x in c if x["homeAway"] == "home")
         a = next(x for x in c if x["homeAway"] == "away")
-        resultado.append((a["team"]["shortDisplayName"], int(a["score"]), h["team"]["shortDisplayName"], int(h["score"])))
+        visitante, local = a["team"]["shortDisplayName"], h["team"]["shortDisplayName"]
+        pv, pl = int(a["score"]), int(h["score"])
+        juego = (visitante, pv, local, pl)
+        resultado.append(juego)
+        try:
+            ids_equipos = {"away": a["team"]["id"], "home": h["team"]["id"]}
+            RESUMEN_FUTBOL[juego] = resumen_juego_futbol(comp.get("details"), ids_equipos, visitante, local, pv, pl)
+        except Exception as error:
+            print(f"  Sin resumen de futbol para {juego}: {error}")
     return resultado
 
 
@@ -186,7 +267,14 @@ def juegos_nba(fecha_iso_compacta):
         c = e["competitions"][0]["competitors"]
         h = next(x for x in c if x["homeAway"] == "home")
         a = next(x for x in c if x["homeAway"] == "away")
-        resultado.append((a["team"]["shortDisplayName"], int(a["score"]), h["team"]["shortDisplayName"], int(h["score"])))
+        visitante, local = a["team"]["shortDisplayName"], h["team"]["shortDisplayName"]
+        pv, pl = int(a["score"]), int(h["score"])
+        juego = (visitante, pv, local, pl)
+        resultado.append(juego)
+        try:
+            RESUMEN_NBA[juego] = resumen_juego_nba(a, h, visitante, local, pv, pl)
+        except Exception as error:
+            print(f"  Sin resumen de NBA para {juego}: {error}")
     return resultado
 
 
@@ -379,12 +467,16 @@ VOZ = "es-MX-DaliaNeural"  # voz elegida por el dueño para todos los reels (ale
 NOMBRE_HABLADO = {"lidom": "la pelota invernal dominicana", "mlb": "Grandes Ligas", "futbol": "LaLiga española", "nba": "la NBA"}
 
 
+RESUMENES_POR_DEPORTE = {"mlb": RESUMEN_BEISBOL, "lidom": RESUMEN_BEISBOL, "nba": RESUMEN_NBA, "futbol": RESUMEN_FUTBOL}
+
+
 def texto_narracion(slug, juegos):
     partes = [f"Esto fue lo que pasó ayer en {NOMBRE_HABLADO.get(slug, slug)}."]
+    resumen_deporte = RESUMENES_POR_DEPORTE.get(slug, {})
     for juego in juegos:
         visitante, pv, local, pl = juego
-        if slug == "mlb" and juego in RESUMEN_MLB:
-            partes.append(RESUMEN_MLB[juego])
+        if juego in resumen_deporte:
+            partes.append(resumen_deporte[juego])
         elif pv == pl:
             partes.append(f"{visitante} y {local} empataron a {pv}.")
         elif pv > pl:
