@@ -485,6 +485,18 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
       <PreguntasFrecuentes
         preguntas={[
           {
+            pregunta: `¿Cuáles son los resultados de ${loteriaData.nombre} de hoy?`,
+            respuesta: `Los resultados de hoy de ${loteriaData.nombre} están arriba en esta misma página, se actualizan automáticamente apenas sale cada sorteo.`,
+          },
+          {
+            pregunta: `¿Qué salió hoy en ${loteriaData.nombre}?`,
+            respuesta: `Puedes ver los números que salieron hoy en ${loteriaData.nombre} en la parte de arriba de esta página, junto con la hora de cada sorteo.`,
+          },
+          {
+            pregunta: `¿Dónde veo los resultados de ${loteriaData.nombre} en vivo?`,
+            respuesta: `Aquí mismo: esta página se actualiza sola apenas se publica un resultado nuevo de ${loteriaData.nombre}, no hace falta recargarla.`,
+          },
+          {
             pregunta: `¿A qué hora juega ${loteriaData.nombre}?`,
             respuesta:
               sorteos.length > 0
