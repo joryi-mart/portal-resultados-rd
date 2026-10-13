@@ -153,7 +153,7 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
   if (!data) return { title: "Lotería no encontrada" };
   const loteria = data as unknown as { nombre: string; sorteos: { id: number; nombre: string }[] };
 
-  const titulo = `Resultados de ${loteria.nombre} hoy y horarios`;
+  const titulo = `${loteria.nombre}: Resultados en Vivo, Horarios y Sorteos`;
 
   // La descripcion nombra los juegos reales de cada loteria (es lo que la gente
   // busca) y se recorta para no pasar de ~160 caracteres.
@@ -174,7 +174,13 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
     title: titulo,
     description: descripcion,
     openGraph: { images: ["/opengraph-image.png"], title: `${titulo} | La Bankera RD`, description: descripcion, locale: "es_DO", type: "website" },
-    alternates: { canonical: `https://labankerard.com/${params.slug}` },
+    alternates: {
+      canonical: `https://labankerard.com/${params.slug}`,
+      // Haiti Bolet tiene version en frances: se le indica a Google (hreflang).
+      ...(params.slug === "haiti"
+        ? { languages: { es: "https://labankerard.com/haiti", fr: "https://labankerard.com/fr/haiti", "x-default": "https://labankerard.com/haiti" } }
+        : {}),
+    },
   };
 }
 
@@ -231,6 +237,12 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
       <header className="bg-[#10203A] px-6 py-8 sm:px-10">
         <div className="mx-auto max-w-3xl">
           <a href="/" className="font-mono text-sm text-[#E7A63C] hover:underline">← Ver todas las loterías</a>
+          {params.slug === "haiti" ? (
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm font-semibold">
+              <span className="rounded-full bg-[#E7A63C] px-3 py-1 text-[#10203A]">🇩🇴 Español</span>
+              <a href="/fr/haiti" hrefLang="fr" className="rounded-full border border-white/25 px-3 py-1 text-[#FBF7EE] hover:bg-white/10">🇫🇷 Français</a>
+            </div>
+          ) : null}
           <h1 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-bold text-[#FBF7EE] sm:text-4xl">
             Resultados de {loteriaData.nombre} hoy
           </h1>

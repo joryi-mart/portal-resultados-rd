@@ -152,8 +152,13 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
     ? `Números ganadores de ${loteria.nombre} del ${fechaLarga}: ${lineasNumeros.join(" · ")}. Información no oficial de La Bankera RD.`
     : `Consulta los números ganadores de ${loteria.nombre} del ${fechaLarga} en República Dominicana. Información no oficial de La Bankera RD.`;
 
-  // Una fecha sin ningun resultado registrado (y que no es hoy) es una pagina
-  // vacia: se marca noindex para no llenar Google de paginas sin contenido.
+  // Una fecha sin ningun resultado registrado es una pagina vacia: se marca
+  // noindex para no llenar Google de paginas sin contenido. La fecha de hoy
+  // tambien se marca noindex siempre: su contenido es casi identico al de la
+  // pagina principal de la loteria, y Google las trataba como duplicadas
+  // (la principal perdia el ranking contra las paginas de fecha). Ahora la
+  // principal es la unica que compite por "hoy"; las fechas pasadas con
+  // resultados siguen indexadas igual que antes (es lo que mejor rankea).
   const hayResultados = (loteria.sorteos || []).some(function (s) {
     return (s.resultados || []).some(function (r) { return r.fecha === params.fecha; });
   });
@@ -161,7 +166,7 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
   return {
     title: titulo,
     description: descripcion,
-    ...(!hayResultados && !esHoy ? { robots: { index: false, follow: true } } : {}),
+    ...(!hayResultados || esHoy ? { robots: { index: false, follow: true } } : {}),
     openGraph: { images: ["/opengraph-image.png"], title: `${titulo} | La Bankera RD`, description: descripcion, locale: "es_DO", type: "website" },
     alternates: { canonical: `https://labankerard.com/${params.slug}/${params.fecha}` },
   };

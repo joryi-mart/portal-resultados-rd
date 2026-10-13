@@ -130,7 +130,14 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
     "loterias-americanas": "Americanas",
   };
   const nombreCortoLoteria = NOMBRE_CORTO_TITULO[loteria.slug] || loteria.nombre.replace(/^Lotería\s+/i, "");
-  const sorteoYaIncluyeLoteria = sorteo.nombre.toLowerCase().includes(nombreCortoLoteria.toLowerCase());
+  // Loterias Americanas agrupa sorteos de varios estados (Georgia, New
+  // Jersey...); la gente busca por el nombre del estado, nunca por
+  // "Americanas", asi que ese nombre nunca debe ir en el titulo (ej. buscan
+  // "georgia noche", no "georgia noche americanas").
+  const OMITIR_NOMBRE_LOTERIA_EN_TITULO = ["loterias-americanas"];
+  const sorteoYaIncluyeLoteria =
+    sorteo.nombre.toLowerCase().includes(nombreCortoLoteria.toLowerCase()) ||
+    OMITIR_NOMBRE_LOTERIA_EN_TITULO.includes(loteria.slug);
   // Titulos escritos con las palabras exactas que la gente busca en Google
   // (sacadas de Search Console), para los sorteos con muchas impresiones.
   const TITULOS_ESPECIALES: Record<string, string> = {

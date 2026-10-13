@@ -48,6 +48,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
+      url: `${SITIO}/fr/haiti`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.7,
+    },
+    {
       url: `${SITIO}/loterias`,
       lastModified: new Date(),
       changeFrequency: "daily",
@@ -367,6 +373,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // visitas desde Google, y hasta ahora solo se descubrian siguiendo enlaces.
   const DIAS_FECHAS_EN_SITEMAP = 14;
   const hoyRD = new Date(Date.now() - 4 * 60 * 60 * 1000);
+  const hoyISOSitemap = hoyRD.toISOString().slice(0, 10);
   const desdeISO = new Date(hoyRD.getTime() - DIAS_FECHAS_EN_SITEMAP * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
   const { data: loteriasConFechas } = await supabase
     .from("loterias")
@@ -374,10 +381,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .eq("activa", true)
     .gte("sorteos.resultados.fecha", desdeISO);
   const paginasFechas: MetadataRoute.Sitemap = ((loteriasConFechas || []) as unknown as { slug: string; sorteos: { resultados: { fecha: string }[] }[] }[]).flatMap(function (l) {
+    // La fecha de hoy no se manda: esa pagina quedo marcada noindex (su
+    // contenido compite con la pagina principal de la loteria), asi que no
+    // tiene sentido pedirle a Google que la indexe desde el sitemap.
     const fechas = new Set<string>();
     (l.sorteos || []).forEach(function (s) {
       (s.resultados || []).forEach(function (r) {
-        if (r.fecha >= desdeISO) fechas.add(r.fecha);
+        if (r.fecha >= desdeISO && r.fecha !== hoyISOSitemap) fechas.add(r.fecha);
       });
     });
     return Array.from(fechas).sort().reverse().map(function (f) {
