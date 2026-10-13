@@ -1,5 +1,6 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
 import NavPildoras from "@/app/NavPildoras";
+import PreguntasFrecuentes from "@/app/PreguntasFrecuentes";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
@@ -180,6 +181,25 @@ export default function EfemeridesPage() {
           .
         </p>
       </main>
+
+      <PreguntasFrecuentes
+        preguntas={[
+          {
+            pregunta: "¿Qué pasó hoy en la historia de República Dominicana?",
+            respuesta: deHoy.length > 0
+              ? deHoy.map(function (e) { return e.texto; }).join(" ")
+              : `No tenemos un hecho confirmado para el ${diaHoy} de ${NOMBRES_MES[mesHoy - 1]} en esta lista todavía — revisa el calendario completo por mes más arriba.`,
+          },
+          {
+            pregunta: "¿De dónde sacan la información de las efemérides?",
+            respuesta: "De fuentes como el Instituto Duartiano, Diario Libre, Hoy, El Caribe y Conéctate. Cada fecha está verificada contra al menos una fuente antes de agregarla.",
+          },
+          {
+            pregunta: "¿Puedo reportar un error o una fecha faltante?",
+            respuesta: "Sí, escríbenos desde la página de contacto y lo revisamos.",
+          },
+        ]}
+      />
 
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">
         <a href="/" className="font-mono text-sm text-[#1E4D8C] hover:underline">← Volver a La Bankera RD</a>

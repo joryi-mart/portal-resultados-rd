@@ -1,6 +1,7 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
 import Image from "next/image";
 import NavPildoras from "../NavPildoras";
+import PreguntasFrecuentes from "../PreguntasFrecuentes";
 import { CIUDADES } from "./datos";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
@@ -106,6 +107,23 @@ export default function TurismoPage() {
           })}
         </div>
       </main>
+
+      <PreguntasFrecuentes
+        preguntas={[
+          {
+            pregunta: "¿Cuáles son los mejores destinos turísticos de República Dominicana?",
+            respuesta: `Arriba en esta página tienes guías de ${CIUDADES.map(function (c) { return c.nombre; }).join(", ")}, con qué ver y hacer en cada uno.`,
+          },
+          {
+            pregunta: "¿Cuál es el destino turístico destacado de hoy?",
+            respuesta: `Hoy destacamos ${destacado.nombre}. El destino cambia cada día — vuelve mañana para ver otro.`,
+          },
+          {
+            pregunta: "¿Qué incluyen las guías de cada ciudad?",
+            respuesta: "Qué ver y hacer, dónde alojarte y opciones de ecoturismo en cada destino, además de fotos del lugar.",
+          },
+        ]}
+      />
 
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">
         <a href="/" className="font-mono text-sm text-[#1E4D8C] hover:underline">← Volver a La Bankera RD</a>

@@ -2,6 +2,7 @@ import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
 import { supabase } from "@/lib/supabase";
 import { Bolita } from "@/app/componentesResultados";
 import NavPildoras from "../NavPildoras";
+import PreguntasFrecuentes from "../PreguntasFrecuentes";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
@@ -187,6 +188,23 @@ export default async function NumerosMasSalidosPage() {
           .
         </p>
       </main>
+
+      <PreguntasFrecuentes
+        preguntas={[
+          {
+            pregunta: "¿Cuáles son los números que más han salido en la lotería dominicana?",
+            respuesta: "Varía por lotería: arriba en esta página tienes el top 10 de Lotería Nacional, Lotería Real, Leidsa y Loteka, calculado con nuestro propio historial guardado día a día.",
+          },
+          {
+            pregunta: "¿Jugar los números que más salen aumenta las posibilidades de ganar?",
+            respuesta: "No. Cada sorteo es completamente al azar y no depende de lo que haya salido antes. Esta página es solo informativa y curiosa, no una fórmula para ganar.",
+          },
+          {
+            pregunta: "¿Cómo calculan los números más salidos?",
+            respuesta: "Cada vez que una lotería publica un resultado, lo guardamos. Con ese historial contamos cuántas veces ha salido cada número en cada lotería, y entre más tiempo pase, más preciso se vuelve el conteo.",
+          },
+        ]}
+      />
 
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">
         <a href="/" className="font-mono text-sm text-[#1E4D8C] hover:underline">← Volver a La Bankera RD</a>

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import NavPildoras from "../NavPildoras";
+import PreguntasFrecuentes from "../PreguntasFrecuentes";
 import datos from "@/lib/codigos-postales.json";
 
 type Localidad = { nombre: string; codigo: string; provincia: string };
@@ -71,6 +72,23 @@ export default function Buscador() {
           </p>
         )}
       </div>
+
+      <PreguntasFrecuentes
+        preguntas={[
+          {
+            pregunta: "¿Cómo busco el código postal de mi sector?",
+            respuesta: "Escribe el nombre de tu sector, barrio o provincia en el buscador de arriba y aparece su código de 5 dígitos al instante.",
+          },
+          {
+            pregunta: "¿De dónde salen estos datos?",
+            respuesta: "De INPOSDOM (Instituto Postal Dominicano), a través del repositorio público localidades-postales-rd.",
+          },
+          {
+            pregunta: "¿Cuántas localidades tiene la lista?",
+            respuesta: `Más de ${(datos as Localidad[]).length.toLocaleString("es-DO")} localidades de todo el país.`,
+          },
+        ]}
+      />
     </main>
   );
 }

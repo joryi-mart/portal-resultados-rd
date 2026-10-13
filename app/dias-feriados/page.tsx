@@ -1,5 +1,6 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
 import NavPildoras from "../NavPildoras";
+import PreguntasFrecuentes from "../PreguntasFrecuentes";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
@@ -127,6 +128,25 @@ export default function DiasFeriadosPage() {
           trasladan aunque caigan entre semana.
         </p>
       </main>
+
+      <PreguntasFrecuentes
+        preguntas={[
+          {
+            pregunta: "¿Cuántos días feriados hay en República Dominicana en 2026?",
+            respuesta: "12 días feriados nacionales, listados arriba en esta página con sus fechas ya trasladadas según la Ley 139-97.",
+          },
+          {
+            pregunta: "¿Cuál es el próximo día feriado en República Dominicana?",
+            respuesta: proximo
+              ? `El próximo es ${proximo.nombre}, el ${formatearFechaLarga(proximo.fecha)} (en ${diasHasta(proximo.fecha, hoy)} día${diasHasta(proximo.fecha, hoy) === 1 ? "" : "s"}).`
+              : "Puedes ver el calendario completo del año arriba en esta página.",
+          },
+          {
+            pregunta: "¿Los feriados que caen entre semana se trasladan al lunes?",
+            respuesta: "Los que caen entre martes y viernes sí se trasladan al lunes más cercano, según la Ley 139-97. Los de fecha fija (como Independencia, Restauración, Mercedes y Navidad) no se trasladan aunque caigan entre semana.",
+          },
+        ]}
+      />
 
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">
         <a href="/" className="font-mono text-sm text-[#1E4D8C] hover:underline">← Volver a La Bankera RD</a>

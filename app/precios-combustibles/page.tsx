@@ -1,5 +1,6 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
 import NavPildoras from "../NavPildoras";
+import PreguntasFrecuentes from "../PreguntasFrecuentes";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
@@ -85,6 +86,23 @@ export default function PreciosCombustiblesPage() {
           Ver el aviso oficial más reciente en micm.gob.do →
         </a>
       </main>
+
+      <PreguntasFrecuentes
+        preguntas={[
+          {
+            pregunta: "¿Cuánto está la gasolina hoy en República Dominicana?",
+            respuesta: `Los precios vigentes de esta semana (${SEMANA_VIGENTE}) están arriba en esta página, por galón, según el aviso oficial del MICM.`,
+          },
+          {
+            pregunta: "¿Cada cuánto cambian los precios de los combustibles en RD?",
+            respuesta: "El Ministerio de Industria, Comercio y Mipymes (MICM) publica un aviso nuevo cada semana, normalmente el viernes o sábado, con los precios que rigen los próximos siete días.",
+          },
+          {
+            pregunta: "¿Dónde veo el aviso oficial de precios del MICM?",
+            respuesta: "Puedes consultarlo directamente en micm.gob.do, en el enlace que está debajo de la tabla de precios de esta página.",
+          },
+        ]}
+      />
 
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">
         <a href="/" className="font-mono text-sm text-[#1E4D8C] hover:underline">← Volver a La Bankera RD</a>
