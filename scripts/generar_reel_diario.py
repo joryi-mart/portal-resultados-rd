@@ -343,6 +343,38 @@ def fade_slide(alpha_t, dur=0.5, slide=30):
     return a, y_off
 
 
+def dibujar_icono_deporte(im, centro, radio, tipo, color, ancho_linea=5):
+    """Dibuja el icono del deporte a mano (circulo + detalles), en vez de un
+    emoji: el emoji no siempre tiene glifo en la fuente/servidor y sale como
+    un cuadro vacio (mismo problema que ya se arreglo en el CTA)."""
+    cx, cy = centro
+    layer = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    dl = ImageDraw.Draw(layer)
+    caja = (cx - radio, cy - radio, cx + radio, cy + radio)
+    dl.ellipse(caja, outline=color, width=ancho_linea)
+
+    if tipo == "beisbol":
+        # Las dos costuras curvas de la pelota de beisbol.
+        r2 = radio * 1.9
+        dl.arc((cx - r2, cy - radio * 0.65, cx - r2 + radio * 1.6, cy + radio * 0.65), start=-55, end=55, fill=color, width=ancho_linea)
+        dl.arc((cx + r2 - radio * 1.6, cy - radio * 0.65, cx + r2, cy + radio * 0.65), start=125, end=235, fill=color, width=ancho_linea)
+    elif tipo == "basquet":
+        dl.line((cx, cy - radio, cx, cy + radio), fill=color, width=ancho_linea)
+        dl.line((cx - radio, cy, cx + radio, cy), fill=color, width=ancho_linea)
+        r2 = radio * 2.3
+        dl.arc((cx - r2, cy - radio, cx - r2 + radio * 1.9, cy + radio), start=-40, end=40, fill=color, width=ancho_linea)
+        dl.arc((cx + r2 - radio * 1.9, cy - radio, cx + r2, cy + radio), start=140, end=220, fill=color, width=ancho_linea)
+    else:  # futbol
+        p = radio * 0.42
+        pentagono = [(cx, cy - p), (cx + p * 0.95, cy - p * 0.31), (cx + p * 0.59, cy + p * 0.81),
+                     (cx - p * 0.59, cy + p * 0.81), (cx - p * 0.95, cy - p * 0.31)]
+        dl.polygon(pentagono, outline=color, width=max(2, ancho_linea - 2))
+        for punto in pentagono:
+            dl.line([(cx, cy), punto], fill=color, width=1)
+
+    im.alpha_composite(layer)
+
+
 def blend_text(base_img, xy, text, font, color, alpha, anchor="mm", y_off=0):
     if alpha <= 0.001:
         return
@@ -455,8 +487,11 @@ def generar_video(titulo, subtitulo, enlace, juegos, salida, voz_mp3=None, durac
             im.alpha_composite(layer)
             im.alpha_composite(layer_final)
 
-        d.text((W // 2, 190), "⚾" if "béisbol" in titulo.lower() or "lidom" in titulo.lower() or "mlb" in titulo.lower()
-                else ("🏀" if "nba" in titulo.lower() else "⚽"), font=b(90), fill=GOLD, anchor="mm")
+        tipo_deporte = (
+            "beisbol" if "béisbol" in titulo.lower() or "lidom" in titulo.lower() or "mlb" in titulo.lower()
+            else ("basquet" if "nba" in titulo.lower() else "futbol")
+        )
+        dibujar_icono_deporte(im, (W // 2, 190), 42, tipo_deporte, GOLD)
         d.text((W // 2, 310), titulo, font=b(60 if len(titulo) < 14 else 46), fill=WHITE, anchor="mm")
         d.text((W // 2, 385), subtitulo, font=b(46), fill=GOLD, anchor="mm")
         d.line((260, 440, W - 260, 440), fill=(30, 77, 140), width=4)
