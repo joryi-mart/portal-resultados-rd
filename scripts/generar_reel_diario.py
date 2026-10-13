@@ -12,13 +12,14 @@ Salida (por cada deporte con resultados, <slug> = lidom|mlb|futbol|nba):
 
 Se necesita: pip install pillow imageio_ffmpeg edge-tts
 """
+import io
 import json
 import os
 import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FUENTES = os.path.join(RAIZ, "lib", "fuentes")
@@ -68,6 +69,19 @@ def obtener_json(url):
     # aceptan las de curl.
     resultado = subprocess.run(["curl", "-s", "-m", "20", url], capture_output=True, check=True)
     return json.loads(resultado.stdout.decode("utf-8"))
+
+
+def descargar_imagen(url):
+    """Descarga una foto de jugador (PNG) para el fondo animado. Si falla (404,
+    timeout, etc.) devuelve None y ese tramo del video simplemente no tiene
+    foto - no se interrumpe la generacion por esto."""
+    if not url:
+        return None
+    try:
+        resultado = subprocess.run(["curl", "-sf", "-m", "15", url], capture_output=True, check=True)
+        return Image.open(io.BytesIO(resultado.stdout)).convert("RGBA")
+    except Exception:
+        return None
 
 
 def juegos_lidom(fecha_iso):
@@ -132,11 +146,14 @@ def resumen_juego_mlb(g, visitante, local):
 
     box = obtener_json(f"https://statsapi.mlb.com/api/v1/game/{g['gamePk']}/boxscore")
     jonroneros = []
+    foto_id = None
     for lado in ("away", "home"):
         for p in (box.get("teams", {}).get(lado, {}).get("players") or {}).values():
             hr = (p.get("stats", {}).get("batting") or {}).get("homeRuns") or 0
             if hr:
                 jonroneros.append(apellido(p["person"]["fullName"]) + (" dos veces" if hr == 2 else (f" {hr} veces" if hr > 2 else "")))
+                if foto_id is None:
+                    foto_id = p["person"]["id"]
     if jonroneros:
         frases.append(f"Jonrón de {unir(jonroneros)}." if len(jonroneros) == 1 else f"Dieron jonrón {unir(jonroneros)}.")
 
@@ -150,7 +167,9 @@ def resumen_juego_mlb(g, visitante, local):
             frases.append(f"¡Los {lider} ganan la serie {w} a {l}!")
         elif lider:
             frases.append(f"Los {lider} están arriba {w} a {l} en la serie.")
-    return " ".join(frases)
+
+    foto = f"https://midfield.mlbstatic.com/v1/people/{foto_id}/headshot/67/current" if foto_id else None
+    return " ".join(frases), foto
 
 
 def juegos_mlb(fecha_iso):
@@ -180,8 +199,8 @@ def lider_puntos_nba(competidor):
     for categoria in competidor.get("leaders") or []:
         if categoria.get("name") == "points" and categoria.get("leaders"):
             l = categoria["leaders"][0]
-            return apellido(l["athlete"]["fullName"]), l["displayValue"]
-    return None, None
+            return apellido(l["athlete"]["fullName"]), l["displayValue"], l["value"], l["athlete"].get("headshot")
+    return None, None, 0, None
 
 
 def resumen_juego_nba(competidor_visitante, competidor_local, visitante, local, pv, pl):
@@ -195,8 +214,8 @@ def resumen_juego_nba(competidor_visitante, competidor_local, visitante, local, 
         frase_resultado = f"{ganador} venció {pg}-{pp} a {perdedor}."
     frases = [frase_resultado]
 
-    nombre_v, pts_v = lider_puntos_nba(competidor_visitante)
-    nombre_l, pts_l = lider_puntos_nba(competidor_local)
+    nombre_v, pts_v, valor_v, foto_v = lider_puntos_nba(competidor_visitante)
+    nombre_l, pts_l, valor_l, foto_l = lider_puntos_nba(competidor_local)
     lideres = []
     if nombre_v:
         lideres.append(f"{nombre_v} con {pts_v} puntos por {visitante}")
@@ -204,7 +223,10 @@ def resumen_juego_nba(competidor_visitante, competidor_local, visitante, local, 
         lideres.append(f"{nombre_l} con {pts_l} puntos por {local}")
     if lideres:
         frases.append(f"Lideró {unir(lideres)}." if len(lideres) == 1 else f"Lideraron {unir(lideres)}.")
-    return " ".join(frases)
+
+    # Se usa la foto del maximo anotador del juego (entre ambos lideres).
+    foto = foto_v if valor_v >= valor_l else foto_l
+    return " ".join(frases), foto
 
 
 def resumen_juego_futbol(detalles, ids_equipos, visitante, local, pv, pl):
@@ -224,6 +246,7 @@ def resumen_juego_futbol(detalles, ids_equipos, visitante, local, pv, pl):
         )
     frases = [frase_resultado]
 
+    foto = None
     if goles:
         descripciones = []
         for ev in goles:
@@ -232,8 +255,13 @@ def resumen_juego_futbol(detalles, ids_equipos, visitante, local, pv, pl):
             minuto = (ev.get("clock") or {}).get("displayValue", "")
             equipo = visitante if (ev.get("team") or {}).get("id") == ids_equipos.get("away") else local
             descripciones.append(f"{nombre} ({minuto}, {equipo})")
+            # ESPN no siempre tiene foto de jugadores de futbol (sobre todo
+            # ligas fuera de las top): si no existe, descargar_imagen() la
+            # salta sola mas adelante, sin romper nada.
+            if foto is None and jugadores:
+                foto = f"https://a.espncdn.com/i/headshots/soccer/players/full/{jugadores[0]['id']}.png"
         frases.append(f"Gol de {unir(descripciones)}." if len(descripciones) == 1 else f"Goles de {unir(descripciones)}.")
-    return " ".join(frases)
+    return " ".join(frases), foto
 
 
 def juegos_futbol(fecha_iso_compacta):
@@ -324,17 +352,109 @@ def blend_text(base_img, xy, text, font, color, alpha, anchor="mm", y_off=0):
     base_img.alpha_composite(layer)
 
 
-def generar_video(titulo, subtitulo, enlace, juegos, salida, voz_mp3=None, duracion_voz=0.0):
+# Convierte una foto de jugador en un fondo de baja opacidad: la foto en
+# escala de grises (mezclada con el navy de marca) cubriendo todo el canvas,
+# a 30% de opacidad, para que de movimiento al video sin competir con el
+# texto que se dibuja encima. Esto es lo que evita que el video sea una sola
+# imagen estatica (Facebook no monetiza contenido estatico/slideshow).
+OPACIDAD_FOTO_FONDO = 0.30
+
+
+def preparar_fondo_foto(imagen):
+    ancho, alto = imagen.size
+    escala = max(W / ancho, H / alto)
+    redimensionada = imagen.resize((int(ancho * escala) + 1, int(alto * escala) + 1))
+    x0 = max(0, (redimensionada.width - W) // 2)
+    # Las caras suelen quedar en el tercio superior de una foto de perfil; se
+    # recorta un poco mas arriba del centro para no perderlas.
+    y0 = max(0, (redimensionada.height - H) // 3)
+    recorte = redimensionada.crop((x0, y0, x0 + W, y0 + H))
+    gris = recorte.convert("L").convert("RGBA")
+    tinte = Image.new("RGBA", gris.size, NAVY + (255,))
+    fondo = Image.blend(tinte, gris, 0.55)
+    fondo.putalpha(int(255 * OPACIDAD_FOTO_FONDO))
+    return fondo
+
+
+def calcular_ventanas_fotos(partes, duracion_voz):
+    """Estima en que momento del audio empieza y termina cada tramo narrado,
+    repartiendo la duracion real de la voz segun cuantos caracteres tiene
+    cada tramo (aproximacion suficiente: edge-tts habla a ritmo bastante
+    constante). Solo se quedan los tramos que tienen foto."""
+    total_chars = sum(len(p["texto"]) for p in partes) or 1
+    ventanas = []
+    acumulado = 0
+    for p in partes:
+        inicio = acumulado / total_chars * duracion_voz
+        acumulado += len(p["texto"])
+        fin = acumulado / total_chars * duracion_voz
+        if p["foto"]:
+            ventanas.append((inicio, fin, p["foto"]))
+    return ventanas
+
+
+def generar_video(titulo, subtitulo, enlace, juegos, salida, voz_mp3=None, duracion_voz=0.0, partes=None):
     b = lambda s: ImageFont.truetype(os.path.join(FUENTES, "Manrope-ExtraBold.ttf"), s)
     r = lambda s: ImageFont.truetype(os.path.join(FUENTES, "Manrope-Regular.ttf"), s)
 
     dur = max(20 + len(juegos) * 0.55 + 4, duracion_voz + 2.0)
     n_frames = int(FPS * dur)
 
+    # Se descarga cada foto una sola vez (no por fotograma) y se deja lista
+    # como fondo translucido. Si una foto no se puede descargar (jugador sin
+    # headshot, API caida, etc.) ese tramo simplemente se queda sin fondo
+    # animado - no rompe el video.
+    fotos_fondo = {}
+    ventanas_fotos = []
+    if partes and duracion_voz > 0:
+        ventanas_fotos = calcular_ventanas_fotos(partes, duracion_voz)
+        for _, _, url in ventanas_fotos:
+            if url in fotos_fondo:
+                continue
+            imagen = descargar_imagen(url)
+            if imagen:
+                try:
+                    fotos_fondo[url] = preparar_fondo_foto(imagen)
+                except Exception:
+                    pass
+
     def render(t):
         im = Image.new("RGBA", (W, H), NAVY + (255,))
+        for inicio, fin, url in ventanas_fotos:
+            fondo = fotos_fondo.get(url)
+            if fondo is None or not (inicio - 0.6 <= t <= fin + 0.3):
+                continue
+            a_entrada, _ = fade_slide(t - inicio, dur=0.6, slide=0)
+            a_salida, _ = fade_slide((fin + 0.3) - t, dur=0.6, slide=0)
+            alpha = min(a_entrada, a_salida)
+            if alpha > 0.01:
+                capa = fondo.copy()
+                canal_alfa = capa.getchannel("A").point(lambda px: int(px * alpha))
+                capa.putalpha(canal_alfa)
+                im.alpha_composite(capa)
         d = ImageDraw.Draw(im)
         d.rounded_rectangle((36, 60, W - 36, H - 60), radius=28, outline=GOLD, width=4)
+
+        # CTA de "Síguenos" fuerte y arriba del todo, apuntando al boton real
+        # de Seguir de Facebook (que queda encima del video en el feed). Solo
+        # se ve en los primeros ~3.5s: la mayoria del publico decide si sigue
+        # viendo en ese margen, y es cuando mas vale pedirle el follow.
+        a_cta, _ = fade_slide(3.5 - t, dur=0.6, slide=0) if t < 4.1 else (0.0, 0)
+        if a_cta > 0.01:
+            # Flecha dibujada a mano (no emoji): el emoji de "apuntar arriba"
+            # no siempre tiene glifo en la fuente/servidor y sale como un
+            # cuadro vacio - un triangulo se ve igual en cualquier maquina.
+            layer = Image.new("RGBA", im.size, (0, 0, 0, 0))
+            dl = ImageDraw.Draw(layer)
+            op = int(255 * a_cta)
+            dl.rounded_rectangle((W // 2 - 240, 86, W // 2 + 240, 146), radius=30, fill=(231, 166, 60, op))
+            dl.polygon([(W // 2 - 200, 70), (W // 2 - 182, 70), (W // 2 - 191, 48)], fill=(231, 166, 60, op))
+            layer_final = Image.new("RGBA", im.size, (0, 0, 0, 0))
+            dft = ImageDraw.Draw(layer_final)
+            dft.text((W // 2, 116), "SÍGUENOS ARRIBA", font=b(34), fill=(11, 31, 58, op), anchor="mm")
+            im.alpha_composite(layer)
+            im.alpha_composite(layer_final)
+
         d.text((W // 2, 190), "⚾" if "béisbol" in titulo.lower() or "lidom" in titulo.lower() or "mlb" in titulo.lower()
                 else ("🏀" if "nba" in titulo.lower() else "⚽"), font=b(90), fill=GOLD, anchor="mm")
         d.text((W // 2, 310), titulo, font=b(60 if len(titulo) < 14 else 46), fill=WHITE, anchor="mm")
@@ -470,21 +590,35 @@ NOMBRE_HABLADO = {"lidom": "la pelota invernal dominicana", "mlb": "Grandes Liga
 RESUMENES_POR_DEPORTE = {"mlb": RESUMEN_BEISBOL, "lidom": RESUMEN_BEISBOL, "nba": RESUMEN_NBA, "futbol": RESUMEN_FUTBOL}
 
 
-def texto_narracion(slug, juegos):
-    partes = [f"Esto fue lo que pasó ayer en {NOMBRE_HABLADO.get(slug, slug)}."]
+# Devuelve la narracion dividida en tramos {"texto", "foto"} - uno por juego
+# (mas intro/cierre sin foto) - para poder sincronizar la foto del jugador
+# destacado con el momento exacto en que se habla de su juego.
+def partes_narracion(slug, juegos):
+    # El CTA va temprano (no solo al final): la mayoria de la gente no ve el
+    # reel completo, asi que pedir el follow solo al cierre pierde a quien se
+    # va antes.
+    partes = [{
+        "texto": f"Esto fue lo que pasó ayer en {NOMBRE_HABLADO.get(slug, slug)}. Sígueme para no perderte ningún resultado.",
+        "foto": None,
+    }]
     resumen_deporte = RESUMENES_POR_DEPORTE.get(slug, {})
     for juego in juegos:
         visitante, pv, local, pl = juego
         if juego in resumen_deporte:
-            partes.append(resumen_deporte[juego])
+            texto, foto = resumen_deporte[juego]
+            partes.append({"texto": texto, "foto": foto})
         elif pv == pl:
-            partes.append(f"{visitante} y {local} empataron a {pv}.")
+            partes.append({"texto": f"{visitante} y {local} empataron a {pv}.", "foto": None})
         elif pv > pl:
-            partes.append(f"{visitante} {pv}, {local} {pl}.")
+            partes.append({"texto": f"{visitante} {pv}, {local} {pl}.", "foto": None})
         else:
-            partes.append(f"{local} {pl}, {visitante} {pv}.")
-    partes.append("¿Y tú, quién crees que gana hoy? Déjalo en los comentarios, y síguenos para tener los resultados cada mañana.")
-    return " ".join(partes)
+            partes.append({"texto": f"{local} {pl}, {visitante} {pv}.", "foto": None})
+    partes.append({"texto": "¿Y tú, quién crees que gana hoy? Déjalo en los comentarios, y síguenos para tener los resultados cada mañana.", "foto": None})
+    return partes
+
+
+def texto_narracion(slug, juegos):
+    return " ".join(p["texto"] for p in partes_narracion(slug, juegos))
 
 
 def generar_voz(texto, salida_mp3):
@@ -593,8 +727,10 @@ def main():
         print(f"Generando {slug} ({len(juegos)} juegos)...")
 
         salida_video = os.path.join(PUBLIC, f"reel-{slug}.mp4")
-        voz_mp3, duracion_voz = generar_voz(texto_narracion(slug, juegos), os.path.join(PUBLIC, f"voz-{slug}.tmp.mp3"))
-        duraciones[slug] = generar_video(titulo, subtitulo, enlace, juegos, salida_video, voz_mp3, duracion_voz)
+        partes = partes_narracion(slug, juegos)
+        texto_completo = " ".join(p["texto"] for p in partes)
+        voz_mp3, duracion_voz = generar_voz(texto_completo, os.path.join(PUBLIC, f"voz-{slug}.tmp.mp3"))
+        duraciones[slug] = generar_video(titulo, subtitulo, enlace, juegos, salida_video, voz_mp3, duracion_voz, partes)
         if voz_mp3 and os.path.exists(voz_mp3):
             os.remove(voz_mp3)
 
