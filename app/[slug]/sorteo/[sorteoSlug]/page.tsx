@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { slugSorteo } from "@/lib/slug";
 import { COLOR_POR_POSICION_SORTEOS } from "@/app/componentesResultados";
 import { notFound } from "next/navigation";
+import PreguntasFrecuentes from "@/app/PreguntasFrecuentes";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
@@ -277,6 +278,27 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
           </div>
         ) : null}
       </main>
+
+      <PreguntasFrecuentes
+        preguntas={[
+          {
+            pregunta: `¿Qué número salió hoy en ${sorteo.nombre}?`,
+            respuesta: numeros.length > 0
+              ? `El resultado de hoy de ${sorteo.nombre} fue ${resultadoHoy!.numeros}. Lo puedes ver arriba en esta página, se actualiza automáticamente.`
+              : `Todavía no ha salido el resultado de hoy de ${sorteo.nombre}. En cuanto se publique, aparece arriba en esta página sin necesidad de recargarla.`,
+          },
+          {
+            pregunta: `¿A qué hora es el sorteo de ${sorteo.nombre}?`,
+            respuesta: sorteo.hora_sorteo
+              ? `${sorteo.nombre} sortea a las ${formatearHora12(horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, hoy))} (hora de República Dominicana), ${formatearDias(sorteo.dias_semana).toLowerCase()}.`
+              : `Consulta el horario de ${sorteo.nombre} en la página de ${loteria.nombre}.`,
+          },
+          {
+            pregunta: `¿Dónde veo el resultado de ${sorteo.nombre} en vivo?`,
+            respuesta: `Aquí mismo: esta página se actualiza sola apenas se publica el resultado de ${sorteo.nombre}, no hace falta recargarla.`,
+          },
+        ]}
+      />
 
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">
         <a href={"/" + params.slug} className="font-mono text-sm text-[#1E4D8C] hover:underline">← Volver a {loteria.nombre}</a>
