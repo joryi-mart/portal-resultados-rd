@@ -50,6 +50,56 @@ async function publicarReel(videoId: string, descripcion: string, token: string)
   return data;
 }
 
+// Historias de la pagina: mismo flujo de 3 pasos que el reel, pero en
+// /video_stories. Facebook no deja reusar el video del reel, asi que se sube
+// otra vez desde la misma URL. Las historias no aceptan videos de mas de 60 s.
+async function publicarHistoria(fileUrl: string, token: string) {
+  const inicio = await fetch(`https://graph.facebook.com/v21.0/me/video_stories?upload_phase=start&access_token=${token}`, { method: "POST" });
+  const datosInicio = await inicio.json();
+  if (!inicio.ok) throw new Error(datosInicio.error?.message || "Error iniciando la carga de la historia");
+  const videoId = datosInicio.video_id as string;
+
+  await subirVideo(videoId, fileUrl, token);
+
+  const res = await fetch(`https://graph.facebook.com/v21.0/me/video_stories`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ upload_phase: "finish", video_id: videoId, access_token: token }),
+  });
+  const data = await res.json();
+  if (!res.ok || !data.success) throw new Error(data.error?.message || "Error publicando la historia");
+  return { videoId, post_id: data.post_id as string | undefined };
+}
+
+// Publica el reel del deporte tambien como historia, una sola vez por reel
+// (se marca en publicaciones_facebook con el slug + "-historia"). Si falla,
+// no afecta al reel: el error sale aparte en la respuesta.
+async function historiaDeporte(deporte: string, meta: { slug: string; caption: string; fecha: string }, token: string) {
+  const slugHistoria = `${meta.slug}-historia`;
+  const { data: yaPublicada, error: errorConsulta } = await supabase
+    .from("publicaciones_facebook")
+    .select("id")
+    .eq("loteria_slug", slugHistoria)
+    .limit(1);
+  if (errorConsulta) throw new Error(errorConsulta.message);
+  if (yaPublicada && yaPublicada.length > 0) return "ya publicada antes";
+
+  const historia = await publicarHistoria(`https://labankerard.com/reel-${deporte}.mp4`, token);
+  const { error: errorInsert } = await supabase
+    .from("publicaciones_facebook")
+    .insert({ loteria_slug: slugHistoria, fecha: meta.fecha, post_id: historia.post_id || historia.videoId, mensaje: "Historia: " + meta.caption });
+  if (errorInsert) throw new Error(errorInsert.message);
+  return historia;
+}
+
+async function intentarHistoria(deporte: string, meta: { slug: string; caption: string; fecha: string }, token: string) {
+  try {
+    return await historiaDeporte(deporte, meta, token);
+  } catch (error: any) {
+    return { error: "Error publicando la historia en Facebook", detalle: error.message };
+  }
+}
+
 async function publicarDeporte(deporte: string, token: string) {
   // Si todavia no existe el reel de este deporte (o la web devuelve su pagina
   // normal en vez de un 404 limpio para el archivo faltante), se trata igual:
@@ -73,7 +123,8 @@ async function publicarDeporte(deporte: string, token: string) {
     .limit(1);
   if (errorConsulta) throw new Error(errorConsulta.message);
   if (yaPublicado && yaPublicado.length > 0) {
-    return { deporte, slug: meta.slug, resultado: "ya publicado antes", post_id: yaPublicado[0].post_id };
+    const historia = await intentarHistoria(deporte, meta, token);
+    return { deporte, slug: meta.slug, resultado: "ya publicado antes", post_id: yaPublicado[0].post_id, historia };
   }
 
   const videoId = await iniciarSesion(token);
@@ -85,7 +136,8 @@ async function publicarDeporte(deporte: string, token: string) {
     .insert({ loteria_slug: meta.slug, fecha: meta.fecha, post_id: resultado.post_id || videoId, mensaje: meta.caption });
   if (errorInsert) throw new Error(errorInsert.message);
 
-  return { deporte, slug: meta.slug, videoId, resultado };
+  const historia = await intentarHistoria(deporte, meta, token);
+  return { deporte, slug: meta.slug, videoId, resultado, historia };
 }
 
 export async function GET(request: Request) {
