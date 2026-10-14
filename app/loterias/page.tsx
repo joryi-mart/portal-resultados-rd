@@ -13,8 +13,8 @@ import {
 } from "../componentesResultados";
 
 export const metadata = {
-  title: "Todas las Loterías Dominicanas y Américas",
-  description: "Lista completa de loterías dominicanas y americanas: Leidsa, Nacional, Loteka, Real, Lotedom, La Primera, La Suerte y más, con todos sus productos.",
+  title: "Loterías Dominicanas: Resultados de Hoy, Horarios y Juegos",
+  description: "Todas las loterías dominicanas y americanas: resultados de hoy de Leidsa, Nacional, Loteka, Real, Lotedom, La Primera y más, con horarios y juegos.",
   openGraph: {
     images: ["/opengraph-image.png"],
     title: "Todas las Loterías Dominicanas y Américas",
@@ -126,7 +126,7 @@ export default async function LoteriasPage(props: { searchParams: Promise<{ fech
         <a href="/" className="mb-4 inline-block font-mono text-sm text-[#1E4D8C] hover:underline">← Volver a la portada</a>
 
         <div className="mb-6 flex items-baseline justify-between">
-          <h1 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Loterías</h1>
+          <h1 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Loterías dominicanas: resultados, horarios y juegos</h1>
           <span className="font-mono text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{listaLoterias.length} activas</span>
         </div>
 
@@ -161,6 +161,75 @@ export default async function LoteriasPage(props: { searchParams: Promise<{ fech
         )}
 
         <TablaHorarios loterias={listaLoterias} fechaSeleccionada={fechaSeleccionada} />
+
+        {/* Guia como la de Conectate: secciones con lo que mas se busca de las
+            loterias. Solo datos ya confirmados en el sitio (horarios especiales
+            de componentesResultados.tsx). */}
+        <div className="mx-auto mt-10 max-w-3xl space-y-8 text-base leading-relaxed" style={{ color: "#2E3B48" }}>
+          <section>
+            <h2 className="mb-2 font-[family-name:var(--font-display)] text-2xl font-bold text-[#10203A]">Resultados de las loterías dominicanas en directo</h2>
+            <p>
+              Cada día salen más de 50 sorteos entre las loterías dominicanas y las americanas que se juegan en el país. Si quieres verlos
+              en el orden en que van saliendo, entra a <a href="/en-directo" className="underline" style={{ color: COLOR_AZUL }}>resultados en directo</a>:
+              se actualiza sola cada minuto y te dice cuál es el próximo sorteo.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="mb-2 font-[family-name:var(--font-display)] text-2xl font-bold text-[#10203A]">Quinielas, palés y tripletas</h2>
+            <p>
+              Son las formas más comunes de jugar en las loterías dominicanas, con números del 00 al 99. En la <strong>quiniela</strong> se juega un
+              solo número; en el <strong>palé</strong>, dos números combinados; y en la <strong>tripleta</strong>, tres números juntos. Cada sorteo
+              saca tres números: el primero, el segundo y el tercero. Más detalles en{" "}
+              <a href="/como-jugar-loteria" className="underline" style={{ color: COLOR_AZUL }}>cómo jugar quiniela, palé y tripleta</a> y{" "}
+              <a href="/que-es-el-super-pale" className="underline" style={{ color: COLOR_AZUL }}>qué es el Súper Palé</a>.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="mb-2 font-[family-name:var(--font-display)] text-2xl font-bold text-[#10203A]">Estadísticas y números más calientes</h2>
+            <p>
+              En la página de cada lotería verás los números <strong>calientes</strong> (los que más han salido) y <strong>fríos</strong> (los que
+              menos) de cada juego. También puedes ver los <a href="/numeros-mas-salidos" className="underline" style={{ color: COLOR_AZUL }}>números más salidos</a>,
+              buscar cuándo salió un número en el <a href="/buscador" className="underline" style={{ color: COLOR_AZUL }}>buscador</a> o revisar
+              todos los <a href="/resultados-2026" className="underline" style={{ color: COLOR_AZUL }}>resultados de 2026</a>. Recuerda que cada sorteo
+              es independiente y al azar: las estadísticas son solo información.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="mb-2 font-[family-name:var(--font-display)] text-2xl font-bold text-[#10203A]">Loterías internacionales</h2>
+            <p>
+              Además de las dominicanas, en el país se siguen mucho loterías de fuera: <a href="/new-york" className="underline" style={{ color: COLOR_AZUL }}>New York</a>,{" "}
+              <a href="/florida" className="underline" style={{ color: COLOR_AZUL }}>Florida</a>, Georgia y New Jersey (en{" "}
+              <a href="/loterias-americanas" className="underline" style={{ color: COLOR_AZUL }}>loterías americanas</a>),{" "}
+              <a href="/anguila" className="underline" style={{ color: COLOR_AZUL }}>Anguila</a>,{" "}
+              <a href="/haiti" className="underline" style={{ color: COLOR_AZUL }}>Haití Bolet</a>,{" "}
+              <a href="/sxm" className="underline" style={{ color: COLOR_AZUL }}>King Lottery de Sint Maarten</a>,{" "}
+              <a href="/powerball" className="underline" style={{ color: COLOR_AZUL }}>Powerball</a> y{" "}
+              <a href="/mega-millions" className="underline" style={{ color: COLOR_AZUL }}>Mega Millions</a>.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="mb-2 font-[family-name:var(--font-display)] text-2xl font-bold text-[#10203A]">Sorteos especiales: domingos y Navidad</h2>
+            <p>
+              Algunos sorteos cambian de hora. Los <strong>domingos</strong>, Leidsa sortea la Quiniela Palé, Pega 3 Más, Loto Pool y Super Kino TV a
+              las 3:55 p.m. (no a las 8:55 p.m.), y la Quiniela Nacional de la noche sale a las 6:00 p.m. En <strong>Navidad y Año Nuevo</strong>{" "}
+              (24, 25 y 31 de diciembre y 1 de enero) la Lotería Nacional, Leidsa y Anguila no sortean, y Loteka, Lotedom y Florida Noche cambian de
+              hora. En los <a href="/dias-feriados" className="underline" style={{ color: COLOR_AZUL }}>días feriados</a> confirma siempre en los
+              canales oficiales.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="mb-2 font-[family-name:var(--font-display)] text-2xl font-bold text-[#10203A]">Nota legal</h2>
+            <p>
+              La Bankera RD es un portal informativo y no representa a ninguna lotería. No vendemos jugadas ni aceptamos apuestas. Los resultados
+              se publican tal como salen en las fuentes; confirma siempre en los sitios oficiales antes de cobrar un premio.
+            </p>
+          </section>
+        </div>
       </main>
     </div>
   );

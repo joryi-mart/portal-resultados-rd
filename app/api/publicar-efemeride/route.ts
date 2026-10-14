@@ -78,7 +78,7 @@ export async function GET(request: Request) {
       `¿Lo sabías? Cuéntanos en los comentarios 👇\n\n` +
       `👉 Síguenos para tu dosis de historia todos los días.\n\n` +
       (propia ? "" : "Fuente: Wikipedia.\n\n") +
-      `Más efemérides en https://labankerard.com/efemerides\n\nPágina informativa de La Bankera RD.\n\n` +
+      `Más efemérides en https://labankerard.com/efemerides\n\n🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n` +
       `#UnDiaComoHoy #EfemeridesRD ${dominicana ? "#HistoriaDominicana" : "#Historia"}`;
     const imagen = await generarImagenDato(texto, "Síguenos para más historia todos los días", titulo);
     const idPublicacion = await crearPublicacion(caption, imagen);

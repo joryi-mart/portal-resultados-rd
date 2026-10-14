@@ -16,7 +16,7 @@ export const DATOS: Dato[] = [
       "La Lotería Nacional Dominicana nació el 24 de octubre de 1882, fundada por el padre Francisco Xavier Billini, " +
       "para recaudar fondos y ayudar a los más pobres. Hoy sigue siendo una de las loterías más antiguas de América.\n\n" +
       "Lee la historia completa en https://labankerard.com/historia-loteria-nacional\n\n" +
-      "Página informativa de La Bankera RD.\n\n#LoteriaDominicana #HistoriaDominicana #CuriosidadesRD",
+      "🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n#LoteriaDominicana #HistoriaDominicana #CuriosidadesRD",
   },
   {
     slug: "dato-catedral-primada",
@@ -207,6 +207,6 @@ export function captionDato(dato: Dato) {
     `¿Sabías qué...? 🎓\n\n${dato.texto} ${dato.pie}\n\n` +
     `¿Lo sabías? Cuéntanos en los comentarios 👇\n\n` +
     `👉 Síguenos para aprender algo nuevo de RD cada semana.\n\n` +
-    `Más en ${enlace}\n\nPágina informativa de La Bankera RD.\n\n${hashtags}`
+    `Más en ${enlace}\n\n🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n${hashtags}`
   );
 }

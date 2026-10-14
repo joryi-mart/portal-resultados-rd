@@ -211,6 +211,6 @@ export function captionQuePaso(deporte: DeporteQuePaso, fechaTexto: string, jueg
     `${d.emoji} ¿QUÉ PASÓ AYER EN ${d.nombre.toUpperCase()}?\n${fechaTexto}\n\n${cuerpo}\n\n` +
     `¿Qué te pareció? Te leemos en los comentarios 👇\n\n` +
     `👉 Síguenos para recibir los resultados cada mañana.\n\n` +
-    `Más en ${d.enlace}\n\nPágina informativa de La Bankera RD.\n\n${d.hashtags}`
+    `Más en ${d.enlace}\n\n🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n${d.hashtags}`
   );
 }

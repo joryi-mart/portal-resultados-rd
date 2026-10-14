@@ -108,6 +108,6 @@ export function captionJuegosDeHoy(fechaTexto: string, juegos: JuegoDeHoy[]) {
     `⚾ JUEGOS DE HOY EN MLB${hayDecisivo ? " — ¡HAY JUEGO DECISIVO!" : ""}\n${fechaTexto} · Horas de República Dominicana\n\n${cuerpo}\n\n` +
     `¿Quién crees que gana hoy? Déjalo en los comentarios 👇\n\n` +
     `👉 Síguenos para recibir los juegos y resultados cada día.\n\n` +
-    `Más en https://labankerard.com/beisbol\n\nPágina informativa de La Bankera RD.\n\n#MLB #GrandesLigas #BeisbolDominicano`
+    `Más en https://labankerard.com/beisbol\n\n🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n#MLB #GrandesLigas #BeisbolDominicano`
   );
 }

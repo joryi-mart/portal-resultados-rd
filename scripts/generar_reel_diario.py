@@ -648,7 +648,7 @@ def partes_narracion(slug, juegos):
             partes.append({"texto": f"{visitante} {pv}, {local} {pl}.", "foto": None})
         else:
             partes.append({"texto": f"{local} {pl}, {visitante} {pv}.", "foto": None})
-    partes.append({"texto": "¿Y tú, quién crees que gana hoy? Déjalo en los comentarios, y síguenos para tener los resultados cada mañana.", "foto": None})
+    partes.append({"texto": "¿Y tú, quién crees que gana hoy? Déjalo en los comentarios. Y busca La Bankera RD en Google para tener los resultados cada mañana.", "foto": None})
     return partes
 
 
@@ -682,7 +682,7 @@ def construir_caption(titulo, subtitulo, fecha, enlace, hashtags):
         f"{titulo}: {subtitulo}\n\nResultados de {fecha_larga(fecha)}.\n\n"
         f"¿Y tú, quién crees que gana hoy? Déjalo en los comentarios 👇\n\n"
         f"👉 Síguenos para recibir los resultados cada mañana.\n\n"
-        f"Más en https://{enlace}\n\nPágina informativa de La Bankera RD.\n\n{hashtags}"
+        f"Más en https://{enlace}\n\n🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n{hashtags}"
     )
 
 
@@ -693,7 +693,7 @@ def construir_caption_resumen(titulos, fecha):
     return (
         f"Resumen deportivo: {unir(titulos)}\n\nResultados de {fecha_larga(fecha)}.\n\n"
         f"👉 Síguenos para recibir los resultados cada mañana.\n\n"
-        f"Más en https://labankerard.com\n\nPágina informativa de La Bankera RD.\n\n"
+        f"Más en https://labankerard.com\n\n🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n"
         f"#Deportes #ResumenDeportivo #RepublicaDominicana"
     )
 

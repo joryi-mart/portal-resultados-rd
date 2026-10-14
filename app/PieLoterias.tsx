@@ -33,6 +33,11 @@ export default function PieLoterias() {
             );
           })}
         </ul>
+        <p className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2 text-base font-semibold">
+          <a href="/en-directo" className="text-[#B23B26] hover:underline">🔴 Resultados en directo</a>
+          <a href="/resultados-2026" className="text-[#1E4D8C] hover:underline">Resultados 2026</a>
+          <a href="/loterias" className="text-[#1E4D8C] hover:underline">Todas las loterías</a>
+        </p>
       </div>
     </nav>
   );

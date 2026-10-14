@@ -24,7 +24,7 @@ export const DEPORTES: Record<TipoDeporte, Config> = {
       `⚾ Grandes Ligas — Así terminaron los juegos del ${fechaTexto}\n\n` +
       `👉 Síguenos para recibir los resultados cada mañana.\n\n` +
       `Ve el béisbol completo en https://labankerard.com/beisbol\n\n` +
-      `Página informativa de La Bankera RD.\n\n#MLB #GrandesLigas #BeisbolDominicano`,
+      `🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n#MLB #GrandesLigas #BeisbolDominicano`,
   },
   nba: {
     slug: "nba",
@@ -35,7 +35,7 @@ export const DEPORTES: Record<TipoDeporte, Config> = {
       `🏀 NBA — Así terminaron los juegos del ${fechaTexto}\n\n` +
       `👉 Síguenos para recibir los resultados cada mañana.\n\n` +
       `Ve todo sobre la NBA en https://labankerard.com/nba\n\n` +
-      `Página informativa de La Bankera RD.\n\n#NBA #Baloncesto`,
+      `🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n#NBA #Baloncesto`,
   },
 };
 

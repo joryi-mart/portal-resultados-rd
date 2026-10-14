@@ -50,12 +50,18 @@ function claveParte(slugBase: string, indiceParte: number) {
   return indiceParte === 0 ? slugBase : `${slugBase}-parte${indiceParte + 1}`;
 }
 
-// Invitacion a seguir la pagina. Se ignora al comparar textos (ver mismoContenido)
-// para que agregarla o cambiarla no haga borrar y volver a publicar lo de hoy.
-const INVITACION = "👉 Síguenos para recibir los resultados apenas salen.\n\n";
+// Invitacion a seguir la pagina y a buscar la marca en Google.
+const INVITACION = "👉 Síguenos para recibir los resultados apenas salen.\n🔎 Búscanos en Google como «La Bankera RD».\n\n";
+
+// Una publicacion solo se rehace si cambian los resultados (las lineas
+// "Sorteo: 12-34-56"), no si cambia el resto del texto. Asi se puede ajustar
+// la invitacion o el pie sin borrar y volver a publicar todo lo de hoy.
+function lineasDeResultados(texto: string) {
+  return texto.split("\n").filter(function (l) { return /: \d[\d-]*$/.test(l.trim()); }).join("\n");
+}
 
 function mismoContenido(a: string, b: string) {
-  return a.replace(INVITACION, "") === b.replace(INVITACION, "");
+  return lineasDeResultados(a) === lineasDeResultados(b);
 }
 
 function construirCaption(loteriaNombre: string, loteriaSlug: string, fecha: string, resultados: ResultadoDeHoy[], numeroParte: number) {

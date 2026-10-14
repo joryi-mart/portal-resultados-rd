@@ -246,7 +246,7 @@ def main():
     texto_voz = f"{destino['nombre']}, República Dominicana. {destino['resumen']} "
     if atr:
         texto_voz += f"No te pierdas {' ni '.join(atr)}. "
-    texto_voz += "Descubre más en La Bankera RD."
+    texto_voz += "Busca La Bankera RD en Google para descubrir más."
     voz, dur_voz = reel.generar_voz(texto_voz, os.path.join(carpeta, "voz_turismo_tmp.mp3"))
     duracion = max(16.0, dur_voz + 1.5)
 
@@ -313,7 +313,7 @@ def main():
     caption = (
         f"🌴 {destino['nombre']}, República Dominicana\n\n{destino['resumen']}\n\n"
         f"👉 Descubre qué hacer, dónde quedarte y cómo llegar: https://{enlace}\n\n"
-        f"¿Ya lo conoces? Cuéntanos en los comentarios 👇\n\n{creditos}\n\n"
+        f"¿Ya lo conoces? Cuéntanos en los comentarios 👇\n\n🔎 Búscanos en Google como «La Bankera RD».\n\n{creditos}\n\n"
         f"#RepublicaDominicana #TurismoRD #{destino['nombre'].replace(' ', '')}"
     )
     fecha = (datetime.now(timezone.utc) - timedelta(hours=4)).date().isoformat()
