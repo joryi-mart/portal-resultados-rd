@@ -24,7 +24,8 @@ const PREGUNTAS_BEISBOL = [
 export const revalidate = 900;
 
 export const metadata = {
-  title: "Béisbol y MLB Hoy: Resultados, Marcadores y Dominicanos en las Grandes Ligas",
+  // Corto para que Google no lo corte (~60 caracteres antes de "| La Bankera RD").
+  title: "Béisbol MLB Hoy: Resultados y Dominicanos en Grandes Ligas",
   description:
     "Resultados en vivo de la MLB: marcadores de hoy y ayer, pícher ganador y el rendimiento de los peloteros dominicanos en las Grandes Ligas.",
   openGraph: {

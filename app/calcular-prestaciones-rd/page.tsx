@@ -13,9 +13,10 @@ const COLOR_TEXTO_SECUNDARIO = "#2E3B48";
 export const revalidate = 86400;
 
 export const metadata = {
-  title: "Calcular Prestaciones Laborales RD 2026 (Preaviso, Cesantía, Vacaciones)",
+  // Titulo y descripcion cortos para que Google no los corte.
+  title: "Calcular Prestaciones Laborales RD 2026: Cesantía y Preaviso",
   description:
-    "Calcula gratis tus prestaciones laborales en República Dominicana: preaviso, cesantía, vacaciones y regalía, según el Código de Trabajo. Si te botaron, renunciaste o te despidieron.",
+    "Calcula gratis tus prestaciones en RD: preaviso, cesantía, vacaciones y regalía según el Código de Trabajo, si renunciaste o te despidieron.",
   openGraph: {
     title: "Calcular Prestaciones RD 2026 ⚖️ ¿Cuánto te toca?",
     description: "Escribe tu sueldo y tus fechas y descubre al instante cuánto te deben pagar.",
