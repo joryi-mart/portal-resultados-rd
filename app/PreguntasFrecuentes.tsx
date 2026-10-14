@@ -1,6 +1,6 @@
 type Pregunta = { pregunta: string; respuesta: string };
 
-export default function PreguntasFrecuentes({ preguntas }: { preguntas: Pregunta[] }) {
+export default function PreguntasFrecuentes({ preguntas, titulo = "Preguntas frecuentes" }: { preguntas: Pregunta[]; titulo?: string }) {
   if (!preguntas || preguntas.length === 0) return null;
 
   const datosEstructurados = {
@@ -19,7 +19,7 @@ export default function PreguntasFrecuentes({ preguntas }: { preguntas: Pregunta
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }}
       />
-      <h2 className="mb-3 text-lg font-bold text-[#10203A]">Preguntas frecuentes</h2>
+      <h2 className="mb-3 text-lg font-bold text-[#10203A]">{titulo}</h2>
       <div className="space-y-3">
         {preguntas.map((p) => (
           <div

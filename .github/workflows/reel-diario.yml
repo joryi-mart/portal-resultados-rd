@@ -73,3 +73,26 @@ jobs:
         if: steps.subir.outputs.esperado != ''
         run: |
           curl -sf -m 280 "https://labankerard.com/api/publicar-reel-diario?clave=${{ secrets.CRON_SECRET }}"
+
+      # Reel de turismo "Destinos de RD": un destino distinto cada dia. Aqui solo
+      # se genera y se sube a la pagina; lo publica el calendario a las 2:00 PM
+      # (/api/publicar-reel-turismo). Va al final y aparte para que un fallo
+      # aqui nunca frene los reels de deportes.
+      - name: Generar el reel de turismo de hoy
+        if: always()
+        continue-on-error: true
+        env:
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+        run: |
+          HOY=$(TZ=America/Santo_Domingo date +%Y-%m-%d)
+          if [ -f public/reel-turismo.json ] && grep -q "\"fecha\": \"$HOY\"" public/reel-turismo.json; then
+            echo "El reel de turismo de hoy ya estaba subido."
+            exit 0
+          fi
+          python scripts/generar_reel_turismo.py
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/reel-turismo.mp4 public/reel-turismo.json
+          git commit -m "Reel de turismo del $HOY"
+          git pull --rebase
+          git push
