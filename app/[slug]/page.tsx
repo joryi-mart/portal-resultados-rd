@@ -150,7 +150,8 @@ const SORTEOS_OCULTOS = [73, 78, 119];
 export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
   const { data } = await supabase.from("loterias").select("nombre, sorteos ( id, nombre )").eq("slug", params.slug).maybeSingle();
-  if (!data) return { title: "Lotería no encontrada" };
+  // Direccion que no es una loteria (ej. /abc): 404 con noindex, no "soft 404".
+  if (!data) notFound();
   const loteria = data as unknown as { nombre: string; sorteos: { id: number; nombre: string }[] };
 
   const titulo = `${loteria.nombre}: Resultados en Vivo, Horarios y Sorteos`;
