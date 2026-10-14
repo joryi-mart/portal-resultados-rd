@@ -126,6 +126,23 @@ export default async function Home() {
 
   const fechaTitulo = formatearFechaTitulo(hoy);
 
+  // Lo que viaja al navegador para la parte que cambia con "?fecha=": solo los
+  // campos que usa. creado_en solo se manda en los de hoy (para el resto no se
+  // usa) y se quitan las columnas que el navegador no necesita.
+  const loteriasCliente: Loteria[] = listaLoterias.map(function (l) {
+    return {
+      ...l,
+      sorteos: l.sorteos.map(function (s) {
+        return {
+          ...s,
+          resultados: (s.resultados || []).map(function (r) {
+            return { numeros: r.numeros, fecha: r.fecha, creado_en: r.fecha === hoy ? r.creado_en : "" };
+          }),
+        };
+      }),
+    };
+  });
+
   // Hora del ultimo resultado publicado hoy (hora de RD), para que se vea que
   // los datos estan frescos. creado_en viene en UTC sin zona horaria explicita.
   let horaUltimoResultado = "";
@@ -274,7 +291,7 @@ export default async function Home() {
             </>
           }
         >
-          <ResultadosPortada loterias={listaLoterias} ultimosResultados={ultimosResultados} hoy={hoy} />
+          <ResultadosPortada loterias={loteriasCliente} fechaMasReciente={ultimosResultados[0]?.fecha || hoy} hoy={hoy} />
         </Suspense>
 
         <a

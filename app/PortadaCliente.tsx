@@ -37,16 +37,28 @@ export function PanelSuperiorConFecha(props: { cambios: Cambio[]; hoy: string })
   return <PanelSuperior cambios={props.cambios} fechaActual={fechaSeleccionada} />;
 }
 
-export function ResultadosPortada(props: { loterias: Loteria[]; ultimosResultados: UltimoResultado[]; hoy: string }) {
+// Resultados de un dia sacados de las mismas loterias que usa el pizarron (antes
+// llegaba una segunda lista con todos los resultados de 15 dias solo para esto,
+// y duplicaba el peso de la portada). Por loteria, el sorteo mas tardio primero.
+function resultadosDelDia(loterias: Loteria[], fecha: string): UltimoResultado[] {
+  const salida: UltimoResultado[] = [];
+  loterias.forEach(function (l) {
+    l.sorteos.slice().sort(function (a, b) { return (b.hora_sorteo || "").localeCompare(a.hora_sorteo || ""); }).forEach(function (s) {
+      const r = s.resultados.find(function (x) { return x.fecha === fecha; });
+      if (r) salida.push({ loteriaNombre: l.nombre, loteriaSlug: l.slug, sorteoId: s.id, sorteoNombre: s.nombre, horaSorteo: s.hora_sorteo, numeros: r.numeros, fecha: r.fecha, creadoEn: r.creado_en });
+    });
+  });
+  return salida;
+}
+
+export function ResultadosPortada(props: { loterias: Loteria[]; fechaMasReciente: string; hoy: string }) {
   const fechaSeleccionada = usarFechaSeleccionada(props.hoy);
-  const ultimosResultados = props.ultimosResultados;
 
   // Si el dia elegido todavia no tiene resultados (ej. madrugada, nada ha salido
   // hoy), mostramos el dia mas reciente que si tenga, en vez de dejar el resumen vacio.
-  const fechaResumen = ultimosResultados.some(function (r) { return r.fecha === fechaSeleccionada; })
-    ? fechaSeleccionada
-    : (ultimosResultados[0]?.fecha || fechaSeleccionada);
-  const resumenHoy = ultimosResultados.filter(function (r) { return r.fecha === fechaResumen; });
+  const delDiaElegido = resultadosDelDia(props.loterias, fechaSeleccionada);
+  const fechaResumen = delDiaElegido.length > 0 ? fechaSeleccionada : (props.fechaMasReciente || fechaSeleccionada);
+  const resumenHoy = delDiaElegido.length > 0 ? delDiaElegido : resultadosDelDia(props.loterias, fechaResumen);
   const fechaTitulo = formatearFechaTitulo(fechaSeleccionada);
 
   // Mensaje listo para compartir por WhatsApp: unos pocos resultados destacados
