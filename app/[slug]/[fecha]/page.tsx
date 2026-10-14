@@ -113,8 +113,11 @@ function Bolita(props: { children: React.ReactNode; tamano: string }) {
 export async function generateMetadata(props: { params: Promise<{ slug: string; fecha: string }> }) {
   const params = await props.params;
 
+  // Direcciones que no son una fecha o una loteria real (ej. /leidsa/abc):
+  // notFound() aqui, antes de que empiece la pagina, para que respondan 404 y
+  // Google no las guarde como paginas normales ("soft 404").
   if (!fechaValida(params.fecha)) {
-    return { title: "Fecha no válida" };
+    notFound();
   }
 
   const { data: loteriaCompleta } = await supabase
@@ -122,7 +125,7 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
     .select("nombre, sorteos ( id, nombre, resultados ( numeros, fecha ) )")
     .eq("slug", params.slug)
     .maybeSingle();
-  if (!loteriaCompleta) return { title: "Lotería no encontrada" };
+  if (!loteriaCompleta) notFound();
   const loteria = loteriaCompleta as unknown as {
     nombre: string;
     sorteos: { id: number; nombre: string; resultados: { numeros: string; fecha: string }[] }[];
