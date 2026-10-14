@@ -52,7 +52,11 @@ export default function PoliticaDePrivacidadPage() {
             No pedimos que te registres ni creemos una cuenta para consultar resultados de lotería. La información
             que recogemos es la que se genera automáticamente al navegar el sitio: qué páginas visitas, desde qué
             país o dispositivo, y cuánto tiempo te quedas. Esto lo medimos con <strong>Google Analytics</strong>, una
-            herramienta de Google que nos ayuda a entender qué contenido es más útil y a mejorar el sitio.
+            herramienta de Google que nos ayuda a entender qué contenido es más útil y a mejorar el sitio. También
+            usamos <strong>Microsoft Clarity</strong>, que registra de forma anónima cómo se usa la página (dónde se
+            toca, hasta dónde se baja y grabaciones de la navegación) para detectar partes confusas o que no
+            funcionan. Clarity no guarda lo que escribes en formularios. Más información en la{" "}
+            <a href="https://privacy.microsoft.com/es-es/privacystatement" className="underline">declaración de privacidad de Microsoft</a>.
           </p>
         </Seccion>
 
@@ -60,7 +64,7 @@ export default function PoliticaDePrivacidadPage() {
           <p>
             Una cookie es un archivo pequeño que el navegador guarda en tu computadora o teléfono para recordar
             cierta información, como tus preferencias o si ya visitaste el sitio antes. Labankerard.com usa cookies
-            de Google Analytics con ese fin.
+            de Google Analytics y de Microsoft Clarity con ese fin.
           </p>
           <p>
             Puedes desactivar o borrar las cookies desde la configuración de tu navegador en cualquier momento. Si
@@ -92,7 +96,7 @@ export default function PoliticaDePrivacidadPage() {
         <Seccion titulo="Con quién compartimos información">
           <p>
             Compartimos información de visitas de forma anónima o agrupada con Google (Analytics y, si aplica,
-            AdSense), únicamente para medir el uso del sitio y, en su momento, mostrar publicidad. No vendemos ni
+            AdSense) y con Microsoft (Clarity), únicamente para medir el uso del sitio y, en su momento, mostrar publicidad. No vendemos ni
             compartimos tu información personal con nadie más, y no usamos tus datos para fines distintos a los
             descritos aquí.
           </p>

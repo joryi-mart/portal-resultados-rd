@@ -4,6 +4,8 @@ import { usePathname } from "next/navigation";
 import Script from "next/script";
 
 const GOOGLE_ANALYTICS_ID = "G-S0FTS8VX1J";
+// Microsoft Clarity: grabaciones de sesiones y mapas de calor (gratis).
+const CLARITY_ID = "yxp652wkqa";
 
 // El panel privado (/admin/*) es solo para nosotros, no para el público, así
 // que no debe contarse como visita real en las estadísticas de Analytics.
@@ -32,6 +34,18 @@ export default function GoogleAnalytics() {
           if (!navigator.webdriver && !/bot|crawl|spider|slurp|facebookexternalhit|facebookcatalog|HeadlessChrome|Lighthouse|Google-InspectionTool|Chrome-Lighthouse|PageSpeed/i.test(navigator.userAgent)) {
             gtag('js', new Date());
             gtag('config', '${GOOGLE_ANALYTICS_ID}');
+          }
+        `}
+      </Script>
+      {/* Mismo filtro de robots que Analytics, para que las grabaciones sean de personas. */}
+      <Script id="microsoft-clarity" strategy="lazyOnload">
+        {`
+          if (!navigator.webdriver && !/bot|crawl|spider|slurp|facebookexternalhit|facebookcatalog|HeadlessChrome|Lighthouse|Google-InspectionTool|Chrome-Lighthouse|PageSpeed/i.test(navigator.userAgent)) {
+            (function(c,l,a,r,i,t,y){
+              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "${CLARITY_ID}");
           }
         `}
       </Script>
