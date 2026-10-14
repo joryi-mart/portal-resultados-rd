@@ -302,9 +302,9 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
 
               return (
                 <div key={sorteo.id} className="rounded-xl border border-[#10203A]/15 bg-white p-5">
-                  <p className="mb-1 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">
+                  <h2 className="mb-1 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">
                     {sorteo.nombre}
-                  </p>
+                  </h2>
                   <p className="mb-4 font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Sorteo: {formatearHora12(horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, params.fecha))}</p>
 
                   {numeros.length > 0 ? (

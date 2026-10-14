@@ -359,13 +359,17 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
                 <div key={sorteo.id} className="rounded-xl border border-[#10203A]/15 bg-white p-5">
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <div>
-                      <a
-                        href={"/" + params.slug + "/sorteo/" + slugSorteo(sorteo.nombre)}
-                        className="font-[family-name:var(--font-display)] text-lg font-bold hover:underline"
-                        style={{ color: COLOR_AZUL }}
-                      >
-                        {sorteo.nombre}
-                      </a>
+                      {/* Cada juego como subtitulo (h2): la gente busca cada sorteo por su
+                          nombre ("loto pool real noche") y Google le da mas peso a un titulo. */}
+                      <h2 className="text-lg font-bold">
+                        <a
+                          href={"/" + params.slug + "/sorteo/" + slugSorteo(sorteo.nombre)}
+                          className="font-[family-name:var(--font-display)] hover:underline"
+                          style={{ color: COLOR_AZUL }}
+                        >
+                          {sorteo.nombre}
+                        </a>
+                      </h2>
                       <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
                         {sorteo.hora_sorteo ? formatearHora12(horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, hoy)) : "Hora por confirmar"} · {formatearDias(sorteo.dias_semana)}
                       </p>

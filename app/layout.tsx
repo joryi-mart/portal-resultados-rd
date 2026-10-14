@@ -48,19 +48,38 @@ export const viewport = {
   themeColor: "#10203A",
 };
 
+// WebSite + Organization: la organizacion (nombre, logo y redes) ayuda a que
+// Google reconozca la marca "La Bankera RD" como una entidad propia.
 const datosEstructurados = {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "La Bankera RD",
-  url: "https://labankerard.com",
-  description:
-    "Resultados en vivo de las loterías dominicanas, Béisbol/MLB, NBA, Fútbol y Cine.",
-  inLanguage: "es-DO",
-  potentialAction: {
-    "@type": "SearchAction",
-    target: "https://labankerard.com/buscador?numero={search_term_string}",
-    "query-input": "required name=search_term_string",
-  },
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://labankerard.com/#organizacion",
+      name: "La Bankera RD",
+      alternateName: "La Bankera",
+      url: "https://labankerard.com",
+      logo: { "@type": "ImageObject", url: "https://labankerard.com/logo-icon.png", width: 512, height: 512 },
+      description: "Portal informativo de República Dominicana: resultados de loterías, deportes, calculadoras laborales y datos útiles.",
+      areaServed: { "@type": "Country", name: "República Dominicana" },
+      sameAs: ["https://www.facebook.com/profile.php?id=1315560834976047"],
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://labankerard.com/#sitio",
+      name: "La Bankera RD",
+      url: "https://labankerard.com",
+      description:
+        "Resultados en vivo de las loterías dominicanas, Béisbol/MLB, NBA, Fútbol y Cine.",
+      inLanguage: "es-DO",
+      publisher: { "@id": "https://labankerard.com/#organizacion" },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: "https://labankerard.com/buscador?numero={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ],
 };
 
 export default function RootLayout({
