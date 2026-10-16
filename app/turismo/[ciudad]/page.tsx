@@ -13,6 +13,12 @@ const COLOR_VERDE_RD = "#007A33";
 const COLOR_AZUL = "#1E4D8C";
 const COLOR_TEAL = "#0D9488";
 
+// Los lugares cercanos (Overpass/OpenStreetMap) casi no cambian - sin esto,
+// cada visita volvia a consultar esa API externa (lenta y gratuita) en vivo,
+// y la pagina tardaba 30-48 segundos en cargar. Con 30 dias de cache, solo
+// la primera visita del mes paga ese costo.
+export const revalidate = 2592000;
+
 type LugarCercano = { id: number; nombre: string; categoria: string; distanciaKm: number; lat: number; lon: number };
 
 const CATEGORIAS_TOURISM: Record<string, string> = {
@@ -64,7 +70,7 @@ async function buscarLugaresCercanos(lat: number, lon: number): Promise<LugarCer
         "Accept": "*/*",
         "User-Agent": "la-bankera-rd/1.0",
       },
-      cache: "no-store",
+      next: { revalidate: 2592000 },
     });
     if (!res.ok) return [];
 
