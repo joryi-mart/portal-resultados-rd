@@ -3,7 +3,10 @@ import { inicioSorteoISO } from "@/lib/eventoSorteo";
 import Image from "next/image";
 import { Suspense } from "react";
 
-export const revalidate = 60;
+// 180s en vez de 60s: la portada no tiene refresco automatico como
+// /en-directo, asi que nadie nota 3 minutos de diferencia, pero reduce
+// bastante las escrituras ISR (Vercel Hobby, limite de 200,000/mes).
+export const revalidate = 180;
 
 export const metadata = {
   title: "La Bankera RD | Resultados de Loterías Dominicanas en Vivo",
