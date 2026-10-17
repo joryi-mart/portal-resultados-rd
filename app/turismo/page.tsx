@@ -2,6 +2,7 @@ import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
 import Image from "next/image";
 import NavPildoras from "../NavPildoras";
 import PreguntasFrecuentes from "../PreguntasFrecuentes";
+import VideoDelDia from "../VideoDelDia";
 import { CIUDADES } from "./datos";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
@@ -54,6 +55,8 @@ export default function TurismoPage() {
         >
           🎱 ¿Ya viste los resultados de la lotería de hoy? Consulta Nacional, Leidsa, Real y más.
         </a>
+
+        <VideoDelDia slug="turismo" titulo="Video del destino de hoy" />
 
         <a
           href={"/turismo/" + destacado.slug}

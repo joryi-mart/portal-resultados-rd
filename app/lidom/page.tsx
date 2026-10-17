@@ -1,4 +1,5 @@
 import LidomCliente from "./LidomCliente";
+import VideoDelDia from "../VideoDelDia";
 
 export const metadata = {
   title: "LIDOM Hoy: Equipos, Posiciones y Noticias del Béisbol Invernal Dominicano",
@@ -18,6 +19,7 @@ export default function LidomPage() {
   return (
     <main>
       <LidomCliente />
+      <VideoDelDia slug="lidom" titulo="Resumen narrado de ayer en LIDOM" />
       <div className="bg-[#FBF7EE] px-4 pb-10 sm:px-8">
         <div className="mx-auto max-w-6xl border-t border-[#10203A]/10 pt-6">
           <p className="mb-2 text-sm font-bold text-[#10203A]">Guías de la LIDOM</p>

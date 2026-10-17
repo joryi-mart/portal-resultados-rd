@@ -2,6 +2,7 @@ import FutbolCliente from "./FutbolCliente";
 import NoticiasDeporte from "../NoticiasDeporte";
 import PreguntasFrecuentes from "../PreguntasFrecuentes";
 import EnlacesGuias from "../EnlacesGuias";
+import VideoDelDia from "../VideoDelDia";
 import { obtenerNoticiasFutbol } from "@/lib/noticiasDeportes";
 
 const PREGUNTAS_FUTBOL = [
@@ -48,6 +49,7 @@ export default async function FutbolPage() {
   return (
     <main>
       <FutbolCliente />
+      <VideoDelDia slug="futbol" titulo="Resumen narrado de la jornada" />
       <NoticiasDeporte titulo="Fútbol" noticias={noticias} />
       <PreguntasFrecuentes preguntas={PREGUNTAS_FUTBOL} />
       <EnlacesGuias titulo="Guías de fútbol" enlaces={[{ href: "/como-funcionan-los-torneos-de-futbol", texto: "Cómo funcionan los torneos de fútbol más seguidos" }]} />

@@ -1,6 +1,7 @@
 import BeisbolCliente from "./BeisbolCliente";
 import NoticiasDeporte from "../NoticiasDeporte";
 import PreguntasFrecuentes from "../PreguntasFrecuentes";
+import VideoDelDia from "../VideoDelDia";
 import { obtenerNoticiasMLB } from "@/lib/noticiasDeportes";
 
 const PREGUNTAS_BEISBOL = [
@@ -50,6 +51,7 @@ export default async function BeisbolPage() {
   return (
     <main>
       <BeisbolCliente />
+      <VideoDelDia slug="mlb" titulo="Resumen narrado de ayer en la MLB" />
       <NoticiasDeporte titulo="Béisbol y MLB" noticias={noticias} />
       <PreguntasFrecuentes preguntas={PREGUNTAS_BEISBOL} />
       <div className="bg-[#FBF7EE] px-4 pb-10 sm:px-8">

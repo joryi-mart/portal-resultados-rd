@@ -2,6 +2,7 @@ import NBACliente from "./NBACliente";
 import NoticiasDeporte from "../NoticiasDeporte";
 import PreguntasFrecuentes from "../PreguntasFrecuentes";
 import EnlacesGuias from "../EnlacesGuias";
+import VideoDelDia from "../VideoDelDia";
 import { obtenerNoticiasBaloncesto } from "@/lib/noticiasDeportes";
 
 const PREGUNTAS_NBA = [
@@ -47,6 +48,7 @@ export default async function NBAPage() {
   return (
     <main>
       <NBACliente />
+      <VideoDelDia slug="nba" titulo="Resumen narrado de ayer en la NBA" />
       <NoticiasDeporte titulo="Baloncesto y NBA" noticias={noticias} />
       <PreguntasFrecuentes preguntas={PREGUNTAS_NBA} />
       <EnlacesGuias titulo="Guías de baloncesto" enlaces={[{ href: "/como-funciona-la-nba", texto: "Cómo funciona la NBA" }]} />
