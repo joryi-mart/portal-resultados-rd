@@ -106,6 +106,7 @@ export function IconoBalanza() {
 
 const TARJETAS = [
   {
+    clave: "efemerides",
     href: "/efemerides",
     color: COLOR_AZUL,
     icono: <IconoEfemerides />,
@@ -113,6 +114,7 @@ const TARJETAS = [
     descripcion: "Qué pasó un día como hoy en la historia de RD y el mundo",
   },
   {
+    clave: "mlb",
     href: "/beisbol",
     color: "#B23B26",
     icono: <IconoBeisbol />,
@@ -120,6 +122,7 @@ const TARJETAS = [
     descripcion: "Resultados y resumen de ayer en las Grandes Ligas",
   },
   {
+    clave: "nba",
     href: "/nba",
     color: "#E7A63C",
     icono: <IconoBaloncesto />,
@@ -127,6 +130,7 @@ const TARJETAS = [
     descripcion: "Resultados y resumen de ayer en la NBA",
   },
   {
+    clave: "turismo",
     href: "/turismo",
     color: "#007A33",
     icono: <IconoTurismo />,
@@ -135,7 +139,32 @@ const TARJETAS = [
   },
 ];
 
-export default function SeccionExplorar() {
+type TarjetasGeneradas = Record<string, { url?: string } | string | undefined>;
+
+async function leerTarjetasGeneradas(): Promise<TarjetasGeneradas> {
+  try {
+    const res = await fetch("https://labankerard.com/tarjetas-explorar.json", { next: { revalidate: 3600 } });
+    if (!res.ok) return {};
+    return await res.json();
+  } catch {
+    return {};
+  }
+}
+
+function diasDesde(fechaISO: string) {
+  const hoyRD = new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const a = new Date(hoyRD + "T00:00:00");
+  const b = new Date(fechaISO + "T00:00:00");
+  return Math.round((a.getTime() - b.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+export default async function SeccionExplorar() {
+  const generadas = await leerTarjetasGeneradas();
+  const fecha = typeof generadas.fecha === "string" ? generadas.fecha : null;
+  // Imagen generada solo si es de hoy o ayer; si no, se usa el icono normal
+  // (evita mostrar, por ejemplo, el destino de turismo de hace una semana).
+  const vigente = fecha !== null && diasDesde(fecha) <= 1;
+
   return (
     <section className="mb-8">
       <h2 className="mb-3 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">
@@ -143,13 +172,24 @@ export default function SeccionExplorar() {
       </h2>
       <div className="grid gap-3 sm:grid-cols-2">
         {TARJETAS.map(function (t) {
+          const dato = generadas[t.clave];
+          const urlImagen = vigente && dato && typeof dato === "object" ? dato.url : null;
           return (
             <a
-              key={t.href}
+              key={t.clave}
               href={t.href}
               className="flex items-center gap-4 rounded-xl border border-[#10203A]/12 bg-white px-4 py-4 shadow-[0_1px_3px_rgba(16,32,58,0.08)] transition hover:shadow-md"
             >
-              <IconoFondo color={t.color}>{t.icono}</IconoFondo>
+              {urlImagen ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={urlImagen}
+                  alt=""
+                  className="h-14 w-14 shrink-0 rounded-xl object-cover"
+                />
+              ) : (
+                <IconoFondo color={t.color}>{t.icono}</IconoFondo>
+              )}
               <div className="min-w-0">
                 <p className="font-[family-name:var(--font-display)] text-base font-bold text-[#10203A]">{t.titulo}</p>
                 <p className="text-sm leading-snug" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{t.descripcion}</p>
