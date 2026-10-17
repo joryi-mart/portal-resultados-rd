@@ -1,5 +1,8 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
 import NavPildoras from "../NavPildoras";
+import PreguntasFrecuentes from "../PreguntasFrecuentes";
+import BuscadorLista from "./BuscadorLista";
+import { NUMEROS_POR_NOMBRE, NUMEROS_POR_PROFESION } from "./datosNombresProfesiones";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
@@ -9,9 +12,9 @@ const COLOR_AZUL = "#1E4D8C";
 const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 
 export const metadata = {
-  title: "Números de la Suerte Según tus Sueños (Charada China)",
+  title: "Números de la Suerte Según tus Sueños, Nombres y Profesiones",
   description:
-    "Diccionario de sueños y números de lotería: qué número jugar según lo que soñaste, basado en la tradicional charada china usada en República Dominicana, Cuba y Puerto Rico.",
+    "Diccionario de sueños, nombres y profesiones con su número de lotería: la charada china, más qué número corresponde a cada nombre de persona y a cada oficio, tradición popular de República Dominicana, Cuba y Puerto Rico.",
   alternates: { canonical: "https://labankerard.com/numeros-por-suenos" },
 };
 
@@ -62,6 +65,19 @@ function numeroDosDigitos(n: number) {
 }
 
 export default function NumerosPorSuenosPage() {
+  const faqNombresYProfesiones = [
+    {
+      pregunta: "¿Qué número le corresponde a mi nombre?",
+      respuesta:
+        "Busca tu nombre en la tabla de 'Sueños con nombres' de esta página. Es la misma tradición de la charada, pero agrupada por nombre de persona en vez de por animales u objetos.",
+    },
+    {
+      pregunta: "¿Qué número es una profesión u oficio?",
+      respuesta:
+        "En la tabla de 'Sueños con profesiones' puedes buscar el oficio o profesión que soñaste (médico, maestro, policía, etc.) y ver el número que la tradición le asigna.",
+    },
+  ];
+
   const datosEstructurados = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -71,7 +87,15 @@ export default function NumerosPorSuenosPage() {
         name: `¿Qué número es soñar con ${c.significa.toLowerCase()}?`,
         acceptedAnswer: { "@type": "Answer", text: `Según la charada china, soñar con ${c.significa.toLowerCase()} corresponde al número ${numeroDosDigitos(c.numero)}.` },
       };
-    }),
+    }).concat(
+      faqNombresYProfesiones.map(function (f) {
+        return {
+          "@type": "Question",
+          name: f.pregunta,
+          acceptedAnswer: { "@type": "Answer", text: f.respuesta },
+        };
+      })
+    ),
   };
 
   return (
@@ -81,7 +105,7 @@ export default function NumerosPorSuenosPage() {
       <header className="bg-[#10203A] px-6 py-8 sm:px-10">
         <div className="mx-auto max-w-3xl">
           <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold text-[#FBF7EE] sm:text-4xl">
-            Números de la Suerte Según tus Sueños
+            Números de la Suerte: Sueños, Nombres y Profesiones
           </h1>
           <p className="mt-2 font-mono text-sm font-extrabold uppercase tracking-wide text-[#E7A63C] sm:text-base">
             Página informativa no oficial de lotería
@@ -97,7 +121,8 @@ export default function NumerosPorSuenosPage() {
           En República Dominicana, Cuba y Puerto Rico es muy común relacionar lo que soñaste con un número para
           jugar a la lotería. Esta costumbre viene de la <strong>charada china</strong>, un sistema de números y
           significados que llegó al Caribe con los trabajadores chinos que emigraron a partir de 1847, y que se
-          sigue usando hoy en día. Aquí tienes los 36 números originales y qué representa cada uno.
+          sigue usando hoy en día. Aquí tienes los 36 números originales y qué representa cada uno, además de las
+          tablas de nombres de persona y de profesiones u oficios, otra forma muy común de elegir número.
         </p>
 
         <div className="mb-8 flex flex-wrap gap-2">
@@ -140,17 +165,39 @@ export default function NumerosPorSuenosPage() {
           })}
         </div>
 
+        <h2 className="mb-3 font-[family-name:var(--font-display)] text-2xl font-bold" style={{ color: COLOR_AZUL }}>
+          Sueños con nombres de persona
+        </h2>
+        <p className="mb-4 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          Otra tradición muy usada: a cada nombre también se le asigna un número. Busca el nombre que soñaste.
+        </p>
+        <div className="mb-8">
+          <BuscadorLista datos={NUMEROS_POR_NOMBRE} placeholder="Busca un nombre, por ejemplo: Pedro" />
+        </div>
+
+        <h2 className="mb-3 font-[family-name:var(--font-display)] text-2xl font-bold" style={{ color: COLOR_AZUL }}>
+          Sueños con profesiones u oficios
+        </h2>
+        <p className="mb-4 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+          Soñar con alguien ejerciendo un oficio o profesión también tiene su número en la tradición popular.
+        </p>
+        <div className="mb-8">
+          <BuscadorLista datos={NUMEROS_POR_PROFESION} placeholder="Busca una profesión, por ejemplo: Médico" />
+        </div>
+
         <div className="mb-8 rounded-xl border border-[#10203A]/12 bg-white p-5">
           <h2 className="mb-2 font-[family-name:var(--font-display)] text-lg font-bold" style={{ color: COLOR_AZUL }}>
             ¿Es un sistema oficial?
           </h2>
           <p className="text-sm leading-relaxed">
-            No. La charada china es una <strong>tradición popular</strong>, no un método probado ni algo reconocido
-            por ninguna lotería. Ninguna lotería dominicana usa estos significados para elegir sus números
-            ganadores — los sorteos son completamente al azar. Esta página es solo informativa y cultural, no una
-            garantía de ningún tipo.
+            No. La charada china y las tablas de nombres y profesiones son <strong>tradición popular</strong>, no un
+            método probado ni algo reconocido por ninguna lotería. Ninguna lotería dominicana usa estos significados
+            para elegir sus números ganadores — los sorteos son completamente al azar. Esta página es solo
+            informativa y cultural, no una garantía de ningún tipo.
           </p>
         </div>
+
+        <PreguntasFrecuentes preguntas={faqNombresYProfesiones} />
 
         <p className="mb-8 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
           Para ver los resultados reales de hoy, visita nuestra{" "}
