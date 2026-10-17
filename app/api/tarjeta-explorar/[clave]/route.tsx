@@ -112,6 +112,30 @@ function Calendario() {
   );
 }
 
+function Regalo() {
+  return (
+    <svg width="340" height="340" viewBox="0 0 24 24" style={{ position: "absolute", right: "120px", top: "145px" }}>
+      <rect x="3.5" y="9.5" width="17" height="10.5" rx="1.2" fill="#13294D" stroke={ROJO} strokeWidth="0.9" />
+      <rect x="2.5" y="6" width="19" height="4" rx="1" fill="#13294D" stroke={ROJO} strokeWidth="0.9" />
+      <line x1="12" y1="6" x2="12" y2="20" stroke={ROJO} strokeWidth="0.9" />
+      <path d="M12 6C12 6 9.5 1.5 7 3C5 4.2 7 6 12 6Z" fill="#13294D" stroke={ROJO} strokeWidth="0.8" />
+      <path d="M12 6C12 6 14.5 1.5 17 3C19 4.2 17 6 12 6Z" fill="#13294D" stroke={ROJO} strokeWidth="0.8" />
+    </svg>
+  );
+}
+
+function Balanza() {
+  return (
+    <svg width="340" height="340" viewBox="0 0 24 24" style={{ position: "absolute", right: "120px", top: "145px" }}>
+      <line x1="12" y1="3" x2="12" y2="19" stroke={GOLD} strokeWidth="0.9" strokeLinecap="round" />
+      <line x1="5" y1="6.5" x2="19" y2="6.5" stroke={GOLD} strokeWidth="0.9" strokeLinecap="round" />
+      <line x1="9" y1="19" x2="15" y2="19" stroke={GOLD} strokeWidth="0.9" strokeLinecap="round" />
+      <path d="M5 6.5L2.5 11.5C2.5 13 4.1 14 5.5 14C6.9 14 8.5 13 8.5 11.5L5 6.5Z" fill="#13294D" stroke={GOLD} strokeWidth="0.8" />
+      <path d="M19 6.5L16.5 11.5C16.5 13 18.1 14 19.5 14C20.9 14 22.5 13 22.5 11.5L19 6.5Z" fill="#13294D" stroke={GOLD} strokeWidth="0.8" />
+    </svg>
+  );
+}
+
 async function renderEfemerides() {
   const { mes, dia } = hoyRD();
   const de_hoy = EFEMERIDES.find((e) => e.mes === mes && e.dia === dia);
@@ -185,6 +209,20 @@ export async function GET(_request: Request, props: { params: Promise<{ clave: s
   if (clave === "efemerides") elemento = await renderEfemerides();
   else if (clave === "mlb" || clave === "nba") elemento = await renderDeporte(clave);
   else if (clave === "turismo") elemento = await renderTurismo();
+  else if (clave === "regalia")
+    elemento = (
+      <Marco>
+        <Regalo />
+        <Texto etiqueta="CALCULADORA" titulo="Regalía pascual" subtitulo="¿Cuánto te toca de doble sueldo? Calcúlalo en segundos" />
+      </Marco>
+    );
+  else if (clave === "prestaciones")
+    elemento = (
+      <Marco>
+        <Balanza />
+        <Texto etiqueta="CALCULADORA" titulo="Prestaciones laborales" subtitulo="¿Te botaron o renunciaste? Saca tus cuentas según el Código de Trabajo" />
+      </Marco>
+    );
   else return new Response("No encontrado", { status: 404 });
 
   return new ImageResponse(elemento, { width: ANCHO, height: ALTO, fonts: fuentes });

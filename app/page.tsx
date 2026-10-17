@@ -23,7 +23,7 @@ export const metadata = {
 };
 import { supabase } from "@/lib/supabase";
 import NavPildoras from "./NavPildoras";
-import SeccionExplorar, { IconoCalculadora, IconoRegalo, IconoBalanza } from "./SeccionExplorar";
+import SeccionExplorar, { IconoCalculadora } from "./SeccionExplorar";
 import { PildoraEstado, PanelSuperiorConFecha, ResultadosPortada } from "./PortadaCliente";
 import {
   hoyISO,
@@ -336,36 +336,34 @@ export default async function Home() {
               <p className="text-base text-[#2E3B48]">Saca tus cuentas según el Código de Trabajo</p>
             </div>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             <a
               href="/calculadora-regalia-pascual"
-              className="flex items-center justify-between gap-2 rounded-lg border border-[#10203A]/12 bg-[#FBF7EE] px-4 py-3 transition hover:shadow-md"
+              className="overflow-hidden rounded-xl border border-[#10203A]/12 bg-[#FBF7EE] transition hover:shadow-md"
             >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: "#B23B261A" }}>
-                  <IconoRegalo />
-                </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/api/tarjeta-explorar/regalia" alt="Regalía pascual" className="aspect-[1.9/1] w-full object-cover" />
+              <div className="flex items-center justify-between px-4 py-3">
                 <div>
                   <p className="text-lg font-bold text-[#10203A]">Regalía pascual</p>
                   <p className="text-base text-[#2E3B48]">¿Cuánto te toca de doble sueldo?</p>
                 </div>
+                <span className="font-mono text-sm font-semibold text-[#007A33]">→</span>
               </div>
-              <span className="font-mono text-sm font-semibold text-[#007A33]">→</span>
             </a>
             <a
               href="/calcular-prestaciones-rd"
-              className="flex items-center justify-between gap-2 rounded-lg border border-[#10203A]/12 bg-[#FBF7EE] px-4 py-3 transition hover:shadow-md"
+              className="overflow-hidden rounded-xl border border-[#10203A]/12 bg-[#FBF7EE] transition hover:shadow-md"
             >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: "#1E4D8C1A" }}>
-                  <IconoBalanza />
-                </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/api/tarjeta-explorar/prestaciones" alt="Prestaciones laborales" className="aspect-[1.9/1] w-full object-cover" />
+              <div className="flex items-center justify-between px-4 py-3">
                 <div>
                   <p className="text-lg font-bold text-[#10203A]">Prestaciones laborales</p>
                   <p className="text-base text-[#2E3B48]">¿Te botaron o renunciaste?</p>
                 </div>
+                <span className="font-mono text-sm font-semibold text-[#007A33]">→</span>
               </div>
-              <span className="font-mono text-sm font-semibold text-[#007A33]">→</span>
             </a>
           </div>
         </div>

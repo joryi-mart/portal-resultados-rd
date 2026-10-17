@@ -24,30 +24,6 @@ export function IconoCalculadora() {
   );
 }
 
-export function IconoRegalo() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-      <rect x="3.5" y="9.5" width="17" height="10.5" rx="1.2" stroke="#B23B26" strokeWidth="1.8" fill="#FBF7EE" />
-      <rect x="2.5" y="6" width="19" height="4" rx="1" stroke="#B23B26" strokeWidth="1.8" fill="#FBF7EE" />
-      <line x1="12" y1="6" x2="12" y2="20" stroke="#B23B26" strokeWidth="1.8" />
-      <path d="M12 6C12 6 9.5 1.5 7 3C5 4.2 7 6 12 6Z" stroke="#B23B26" strokeWidth="1.6" fill="#FBF7EE" />
-      <path d="M12 6C12 6 14.5 1.5 17 3C19 4.2 17 6 12 6Z" stroke="#B23B26" strokeWidth="1.6" fill="#FBF7EE" />
-    </svg>
-  );
-}
-
-export function IconoBalanza() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-      <line x1="12" y1="3" x2="12" y2="19" stroke="#1E4D8C" strokeWidth="1.8" strokeLinecap="round" />
-      <line x1="5" y1="6.5" x2="19" y2="6.5" stroke="#1E4D8C" strokeWidth="1.8" strokeLinecap="round" />
-      <line x1="9" y1="19" x2="15" y2="19" stroke="#1E4D8C" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M5 6.5L2.5 11.5C2.5 13 4.1 14 5.5 14C6.9 14 8.5 13 8.5 11.5L5 6.5Z" stroke="#1E4D8C" strokeWidth="1.6" fill="#FBF7EE" />
-      <path d="M19 6.5L16.5 11.5C16.5 13 18.1 14 19.5 14C20.9 14 22.5 13 22.5 11.5L19 6.5Z" stroke="#1E4D8C" strokeWidth="1.6" fill="#FBF7EE" />
-    </svg>
-  );
-}
-
 const TARJETAS = [
   { clave: "efemerides", href: "/efemerides", titulo: "Efeméride de hoy", descripcion: "Qué pasó un día como hoy en la historia de RD y el mundo" },
   { clave: "mlb", href: "/beisbol", titulo: "Béisbol MLB", descripcion: "Resultados y resumen de ayer en las Grandes Ligas" },
