@@ -18,9 +18,13 @@ export const metadata = {
   alternates: { canonical: "https://labankerard.com/numeros-por-suenos" },
 };
 
-// Los 36 numeros originales de la "charada china", el sistema tradicional de
-// sueños y numeros que llego al Caribe con trabajadores chinos a partir de 1847
-// y que se sigue usando hoy en Cuba, Puerto Rico y Republica Dominicana.
+// Los primeros 36 numeros son la "charada china" original, llegada al Caribe
+// con trabajadores chinos a partir de 1847. Del 37 al 100 es la ampliacion
+// popular conocida como "charada cubana", que agrego mas significados con
+// el tiempo. Cada numero de la fuente trae varios significados posibles
+// (ej. "62: Matrimonio, Robo, Asesinato, Crimen"); aqui se eligio uno solo
+// por numero, el mas neutral/familiar, para mantener el tono de la pagina.
+// El numero 100 de la charada equivale al 00 en una loteria de dos cifras.
 export const CHARADA: { numero: number; significa: string }[] = [
   { numero: 1, significa: "Caballo" },
   { numero: 2, significa: "Mariposa" },
@@ -58,6 +62,70 @@ export const CHARADA: { numero: number; significa: string }[] = [
   { numero: 34, significa: "Mono" },
   { numero: 35, significa: "Araña" },
   { numero: 36, significa: "Cachimba (pipa de fumar)" },
+  { numero: 37, significa: "Hormiga" },
+  { numero: 38, significa: "Carro" },
+  { numero: 39, significa: "Conejo" },
+  { numero: 40, significa: "Cura (sacerdote)" },
+  { numero: 41, significa: "Lagartijo" },
+  { numero: 42, significa: "Pato" },
+  { numero: 43, significa: "Alacrán" },
+  { numero: 44, significa: "Caldero" },
+  { numero: 45, significa: "Tiburón" },
+  { numero: 46, significa: "Guagua (autobús)" },
+  { numero: 47, significa: "Pájaro chiquito" },
+  { numero: 48, significa: "Cucaracha" },
+  { numero: 49, significa: "Fogón" },
+  { numero: 50, significa: "Policía" },
+  { numero: 51, significa: "Soldado" },
+  { numero: 52, significa: "Bicicleta" },
+  { numero: 53, significa: "Luz eléctrica" },
+  { numero: 54, significa: "Flores" },
+  { numero: 55, significa: "Cangrejo" },
+  { numero: 56, significa: "Reina" },
+  { numero: 57, significa: "Cama" },
+  { numero: 58, significa: "Retrato" },
+  { numero: 59, significa: "Langosta" },
+  { numero: 60, significa: "Payaso" },
+  { numero: 61, significa: "Caballo grande" },
+  { numero: 62, significa: "Matrimonio" },
+  { numero: 63, significa: "Bandolero" },
+  { numero: 64, significa: "Escándalo" },
+  { numero: 65, significa: "Comida" },
+  { numero: 66, significa: "Beso" },
+  { numero: 67, significa: "Hospital" },
+  { numero: 68, significa: "Cementerio" },
+  { numero: 69, significa: "Pozo" },
+  { numero: 70, significa: "Coco" },
+  { numero: 71, significa: "Río" },
+  { numero: 72, significa: "Lluvia" },
+  { numero: 73, significa: "Maleta" },
+  { numero: 74, significa: "Papalote" },
+  { numero: 75, significa: "Guitarra" },
+  { numero: 76, significa: "Bailarina" },
+  { numero: 77, significa: "Billetes de banco" },
+  { numero: 78, significa: "Rey" },
+  { numero: 79, significa: "Lagarto" },
+  { numero: 80, significa: "Paraguas" },
+  { numero: 81, significa: "Teatro" },
+  { numero: 82, significa: "León" },
+  { numero: 83, significa: "Bastón" },
+  { numero: 84, significa: "Banquero" },
+  { numero: 85, significa: "Espejo" },
+  { numero: 86, significa: "Tijeras" },
+  { numero: 87, significa: "Plátano" },
+  { numero: 88, significa: "Espejuelos (gafas)" },
+  { numero: 89, significa: "Casa vieja" },
+  { numero: 90, significa: "Caramelos" },
+  { numero: 91, significa: "Alpargata" },
+  { numero: 92, significa: "Avión" },
+  { numero: 93, significa: "Sortija" },
+  { numero: 94, significa: "Machete" },
+  { numero: 95, significa: "Perro grande" },
+  { numero: 96, significa: "Zapato viejo" },
+  { numero: 97, significa: "Mosquito" },
+  { numero: 98, significa: "Piano" },
+  { numero: 99, significa: "Serrucho" },
+  { numero: 0, significa: "Automóvil" },
 ];
 
 function numeroDosDigitos(n: number) {
@@ -121,8 +189,8 @@ export default function NumerosPorSuenosPage() {
           En República Dominicana, Cuba y Puerto Rico es muy común relacionar lo que soñaste con un número para
           jugar a la lotería. Esta costumbre viene de la <strong>charada china</strong>, un sistema de números y
           significados que llegó al Caribe con los trabajadores chinos que emigraron a partir de 1847, y que se
-          sigue usando hoy en día. Aquí tienes los 36 números originales y qué representa cada uno, además de las
-          tablas de nombres de persona y de profesiones u oficios, otra forma muy común de elegir número.
+          sigue usando hoy en día. Aquí tienes los 100 números, del 00 al 99, con lo que representa cada uno, además
+          de las tablas de nombres de persona y de profesiones u oficios, otra forma muy común de elegir número.
         </p>
 
         <div className="mb-8 flex flex-wrap gap-2">
@@ -144,8 +212,13 @@ export default function NumerosPorSuenosPage() {
           </a>
         </div>
 
+        <h2 className="mb-3 font-[family-name:var(--font-display)] text-2xl font-bold" style={{ color: COLOR_AZUL }}>
+          La charada completa (00 al 99)
+        </h2>
         <div className="mb-8 grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {CHARADA.map(function (c) {
+          {CHARADA.slice()
+            .sort(function (a, b) { return a.numero - b.numero; })
+            .map(function (c) {
             return (
               <div
                 key={c.numero}
