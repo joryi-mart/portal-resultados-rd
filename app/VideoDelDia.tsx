@@ -38,9 +38,15 @@ export default async function VideoDelDia(props: { slug: string; titulo: string 
       </p>
       <video
         src={`/reel-${props.slug}.mp4`}
+        // Los navegadores solo dejan autorreproducir si empieza en silencio
+        // (sobre todo en movil); el usuario le da al icono de volumen del
+        // propio reproductor si quiere oirlo.
+        autoPlay
+        muted
+        loop
         controls
         playsInline
-        preload="metadata"
+        preload="auto"
         className="w-full rounded-xl border border-[#10203A]/12 shadow-sm"
         style={{ aspectRatio: "9 / 16" }}
       />
