@@ -290,6 +290,7 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
                 ) : null}
                 <div className="my-1 border-t border-white/10" />
                 <a href="/numero" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">🔢 Busca un número</a>
+                <a href="/ultima-vez-que-gano-un-numero" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">🕓 Última vez que ganó cada número</a>
                 <a href="/numeros-mas-salidos" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">📊 Números más salidos</a>
                 <a href="/numeros-por-suenos" className="block px-4 py-2.5 font-mono text-sm text-white/90 hover:bg-white/10">💭 Números por sueños</a>
               </>
