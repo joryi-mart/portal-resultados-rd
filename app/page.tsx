@@ -23,7 +23,7 @@ export const metadata = {
 };
 import { supabase } from "@/lib/supabase";
 import NavPildoras from "./NavPildoras";
-import SeccionExplorar, { IconoCalculadora } from "./SeccionExplorar";
+import SeccionExplorar, { IconoCalculadora, IconoRegalo, IconoBalanza } from "./SeccionExplorar";
 import { PildoraEstado, PanelSuperiorConFecha, ResultadosPortada } from "./PortadaCliente";
 import {
   hoyISO,
@@ -354,9 +354,14 @@ export default async function Home() {
               href="/calculadora-regalia-pascual"
               className="flex items-center justify-between gap-2 rounded-lg border border-[#10203A]/12 bg-[#FBF7EE] px-4 py-3 transition hover:shadow-md"
             >
-              <div>
-                <p className="text-lg font-bold text-[#10203A]">🎄 Regalía pascual</p>
-                <p className="text-base text-[#2E3B48]">¿Cuánto te toca de doble sueldo?</p>
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: "#B23B261A" }}>
+                  <IconoRegalo />
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-[#10203A]">Regalía pascual</p>
+                  <p className="text-base text-[#2E3B48]">¿Cuánto te toca de doble sueldo?</p>
+                </div>
               </div>
               <span className="font-mono text-sm font-semibold text-[#007A33]">→</span>
             </a>
@@ -364,9 +369,14 @@ export default async function Home() {
               href="/calcular-prestaciones-rd"
               className="flex items-center justify-between gap-2 rounded-lg border border-[#10203A]/12 bg-[#FBF7EE] px-4 py-3 transition hover:shadow-md"
             >
-              <div>
-                <p className="text-lg font-bold text-[#10203A]">⚖️ Prestaciones laborales</p>
-                <p className="text-base text-[#2E3B48]">¿Te botaron o renunciaste?</p>
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: "#1E4D8C1A" }}>
+                  <IconoBalanza />
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-[#10203A]">Prestaciones laborales</p>
+                  <p className="text-base text-[#2E3B48]">¿Te botaron o renunciaste?</p>
+                </div>
               </div>
               <span className="font-mono text-sm font-semibold text-[#007A33]">→</span>
             </a>
