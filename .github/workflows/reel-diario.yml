@@ -96,28 +96,3 @@ jobs:
           git commit -m "Reel de turismo del $HOY"
           git pull --rebase
           git push
-
-      # Tarjetas con imagen de "Mas de La Bankera RD" en la portada (Templated.io).
-      # Va al final y aparte: si Templated no esta configurado o falla, no afecta
-      # nada de lo anterior (la web usa el icono normal si no hay tarjeta de hoy).
-      - name: Generar las tarjetas de la portada
-        if: always()
-        continue-on-error: true
-        env:
-          TEMPLATED_API_KEY: ${{ secrets.TEMPLATED_API_KEY }}
-          TEMPLATED_TEMPLATE_EFEMERIDES: ${{ secrets.TEMPLATED_TEMPLATE_EFEMERIDES }}
-          TEMPLATED_TEMPLATE_MLB: ${{ secrets.TEMPLATED_TEMPLATE_MLB }}
-          TEMPLATED_TEMPLATE_NBA: ${{ secrets.TEMPLATED_TEMPLATE_NBA }}
-          TEMPLATED_TEMPLATE_TURISMO: ${{ secrets.TEMPLATED_TEMPLATE_TURISMO }}
-        run: |
-          python scripts/generar_tarjetas_explorar.py
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/tarjetas-explorar.json
-          if git diff --cached --quiet; then
-            echo "Las tarjetas de hoy ya estaban subidas."
-          else
-            git commit -m "Tarjetas de la portada del $(TZ=America/Santo_Domingo date +%Y-%m-%d)"
-            git pull --rebase
-            git push
-          fi
