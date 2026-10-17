@@ -23,6 +23,7 @@ export const metadata = {
 };
 import { supabase } from "@/lib/supabase";
 import NavPildoras from "./NavPildoras";
+import SeccionExplorar, { IconoCalculadora } from "./SeccionExplorar";
 import { PildoraEstado, PanelSuperiorConFecha, ResultadosPortada } from "./PortadaCliente";
 import {
   hoyISO,
@@ -297,6 +298,8 @@ export default async function Home() {
           <ResultadosPortada loterias={loteriasCliente} fechaMasReciente={ultimosResultados[0]?.fecha || hoy} hoy={hoy} />
         </Suspense>
 
+        <SeccionExplorar />
+
         <a
           href="https://www.facebook.com/profile.php?id=1315560834976047"
           target="_blank"
@@ -337,8 +340,15 @@ export default async function Home() {
         </a>
 
         <div className="mb-8 rounded-xl border border-[#10203A]/12 bg-white px-5 py-4 shadow-[0_1px_3px_rgba(16,32,58,0.08)]">
-          <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">🧮 Calculadoras laborales RD</p>
-          <p className="mb-3 text-base text-[#2E3B48]">Saca tus cuentas según el Código de Trabajo</p>
+          <div className="mb-3 flex items-center gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: "#007A331A" }}>
+              <IconoCalculadora />
+            </div>
+            <div>
+              <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Calculadoras laborales RD</p>
+              <p className="text-base text-[#2E3B48]">Saca tus cuentas según el Código de Trabajo</p>
+            </div>
+          </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <a
               href="/calculadora-regalia-pascual"
