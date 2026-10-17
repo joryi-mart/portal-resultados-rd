@@ -9,11 +9,11 @@ import { Suspense } from "react";
 export const revalidate = 180;
 
 export const metadata = {
-  title: "La Bankera RD | Resultados de Loterías Dominicanas en Vivo",
-  description: "Resultados de hoy y de ayer de Leidsa, Lotería Nacional, Loteka, Lotería Real y más, con horarios y tipo de cambio.",
+  title: { absolute: "Resultados de Loterías Dominicanas Hoy en Vivo | La Bankera RD" },
+  description: "Números ganadores de hoy de Leidsa, Lotería Nacional, Loteka, Real y +50 sorteos al día, actualizados en vivo.",
   openGraph: {
-    title: "La Bankera RD 🇩🇴 | Resultados de Loterías Dominicanas en Vivo",
-    description: "Consulta los resultados de las principales loterías dominicanas e internacionales, actualizados en vivo.",
+    title: "Resultados de Loterías Dominicanas Hoy en Vivo | La Bankera RD 🇩🇴",
+    description: "Números ganadores de hoy de Leidsa, Lotería Nacional, Loteka, Real y +50 sorteos al día, actualizados en vivo.",
     siteName: "La Bankera RD",
     locale: "es_DO",
     type: "website",

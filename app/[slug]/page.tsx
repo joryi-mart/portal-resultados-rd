@@ -147,6 +147,17 @@ function Bolita(props: { children: React.ReactNode; tamano: string; opaca?: bool
 // Sorteos que la fuente de datos ya no ofrece (descontinuados o renombrados).
 const SORTEOS_OCULTOS = [73, 78, 119];
 
+const TITULOS_LOTERIA: Record<string, string> = {
+  nacional: "Lotería Nacional: Gana Más y Nacional Noche en Vivo",
+  real: "Lotería Real: Números de la Real y Loto Pool en Vivo",
+  leidsa: "Leidsa: Resultados de Super Kino TV, Loto y Pega 3 en Vivo",
+  loteka: "Loteka: Quiniela de las 7:55 y Mega Chances en Vivo",
+  haiti: "Bolet Haití: Resultados de los 6 Sorteos en Vivo",
+  "new-york": "New York Tarde y Noche: Resultados en Vivo",
+  anguila: "Anguila en Vivo: Sorteos de las 10, 1, 6 y 9",
+  florida: "Florida Día y Noche: Resultados en Vivo",
+};
+
 export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
   const { data } = await supabase.from("loterias").select("nombre, sorteos ( id, nombre )").eq("slug", params.slug).maybeSingle();
@@ -154,7 +165,9 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
   if (!data) notFound();
   const loteria = data as unknown as { nombre: string; sorteos: { id: number; nombre: string }[] };
 
-  const titulo = `${loteria.nombre}: Resultados en Vivo, Horarios y Sorteos`;
+  // Titulos con las frases que la gente escribe en Google (Search Console, oct-2026).
+  // Sin "hoy": ese titulo lo usa la pagina del dia (/slug/fecha) y no deben competir.
+  const titulo = TITULOS_LOTERIA[params.slug] ?? `${loteria.nombre}: Resultados en Vivo, Horarios y Sorteos`;
 
   // La descripcion nombra los juegos reales de cada loteria (es lo que la gente
   // busca) y se recorta para no pasar de ~160 caracteres.
@@ -163,13 +176,13 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
     .map(function (s) { return s.nombre; })
     .slice(0, 4);
   const armar = function (lista: string[]) {
-    return `Resultados de ${loteria.nombre} de hoy y de ayer: ${lista.join(", ")}. Horarios de sorteos y números ganadores al instante.`;
+    return `Números ganadores de ${loteria.nombre} de hoy y de ayer: ${lista.join(", ")}. Horarios de sorteos y resultados al instante.`;
   };
   let lista = juegos;
   while (lista.length > 1 && armar(lista).length > 160) lista = lista.slice(0, -1);
   const descripcion = lista.length > 0
     ? armar(lista)
-    : `Resultados de ${loteria.nombre} de hoy y de ayer, horarios de sorteos y números ganadores al instante en República Dominicana.`;
+    : `Números ganadores de ${loteria.nombre} de hoy y de ayer, horarios de sorteos y resultados al instante en República Dominicana.`;
 
   return {
     title: titulo,

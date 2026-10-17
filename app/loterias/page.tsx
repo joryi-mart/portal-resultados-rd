@@ -126,7 +126,7 @@ export default async function LoteriasPage(props: { searchParams: Promise<{ fech
         <a href="/" className="mb-4 inline-block font-mono text-sm text-[#1E4D8C] hover:underline">← Volver a la portada</a>
 
         <div className="mb-6 flex items-baseline justify-between">
-          <h1 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Loterías dominicanas: resultados, horarios y juegos</h1>
+          <h1 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Loterías dominicanas: resultados, números ganadores, horarios y juegos</h1>
           <span className="font-mono text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{listaLoterias.length} activas</span>
         </div>
 

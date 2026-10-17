@@ -71,6 +71,9 @@ async function buscarLugaresCercanos(lat: number, lon: number): Promise<LugarCer
         "User-Agent": "la-bankera-rd/1.0",
       },
       next: { revalidate: 2592000 },
+      // Overpass a veces no responde; sin limite la pagina pasaba de 60 s y Vercel
+      // cancelaba el build completo (17-oct-2026, /turismo/guayacanes).
+      signal: AbortSignal.timeout(15000),
     });
     if (!res.ok) return [];
 
