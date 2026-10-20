@@ -6,8 +6,7 @@
 import { ImageResponse } from "next/og";
 import { readFileSync } from "fs";
 import path from "path";
-import { EFEMERIDES } from "@/app/efemerides/page";
-import { CIUDADES } from "@/app/turismo/datos";
+import { datosEfemerides, datosDeporte, datosTurismo } from "@/lib/datosTarjetasExplorar";
 
 export const revalidate = 21600; // 6 horas
 
@@ -32,33 +31,6 @@ function miniaturaWikimedia(url: string, ancho: number) {
   const original = url.match(/^(.*\/commons\/)([0-9a-f])\/([0-9a-f]{2})\/([^/]+)$/);
   if (original) return `${original[1]}thumb/${original[2]}/${original[3]}/${original[4]}/${ancho}px-${original[4]}`;
   return url;
-}
-
-function hoyRD() {
-  const ahoraRD = new Date(Date.now() - 4 * 60 * 60 * 1000);
-  return { anio: ahoraRD.getUTCFullYear(), mes: ahoraRD.getUTCMonth() + 1, dia: ahoraRD.getUTCDate() };
-}
-
-function fechaISOayer() {
-  const ayer = new Date(Date.now() - 4 * 60 * 60 * 1000 - 24 * 60 * 60 * 1000);
-  return ayer.toISOString().slice(0, 10);
-}
-
-function fechaLarga() {
-  const ahoraRD = new Date(Date.now() - 4 * 60 * 60 * 1000 - 24 * 60 * 60 * 1000);
-  const dias = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
-  const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
-  return `${dias[ahoraRD.getUTCDay()]}, ${ahoraRD.getUTCDate()} de ${meses[ahoraRD.getUTCMonth()]}`;
-}
-
-async function leerJsonPublico(nombre: string) {
-  try {
-    const res = await fetch(`https://labankerard.com/${nombre}`, { next: { revalidate: 3600 } });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
 }
 
 function Marco({ children }: { children: React.ReactNode }) {
@@ -149,28 +121,18 @@ function Balanza() {
 }
 
 async function renderEfemerides() {
-  const { mes, dia } = hoyRD();
-  const de_hoy = EFEMERIDES.find((e) => e.mes === mes && e.dia === dia);
+  const { titulo, subtitulo } = await datosEfemerides();
   return (
     <Marco>
       <Calendario />
-      <Texto
-        etiqueta="EFEMÉRIDES"
-        titulo={de_hoy ? de_hoy.texto : "Un día como hoy en la historia de RD"}
-        subtitulo="Qué pasó un día como hoy en la historia de República Dominicana"
-      />
+      <Texto etiqueta="EFEMÉRIDES" titulo={titulo} subtitulo={subtitulo} />
     </Marco>
   );
 }
 
 async function renderDeporte(slug: "mlb" | "nba") {
-  const datos = await leerJsonPublico(`reel-${slug}.json`);
-  const hayDatos = datos && datos.fecha === fechaISOayer();
+  const { titulo, subtitulo } = await datosDeporte(slug);
   const etiqueta = slug === "mlb" ? "MLB" : "NBA";
-  const titulo = hayDatos ? `Resultados de ${fechaLarga()}` : `Repaso de ${etiqueta}`;
-  const subtitulo = hayDatos
-    ? `Resumen de ayer en ${slug === "mlb" ? "las Grandes Ligas" : "la NBA"}`
-    : `Vuelve cada mañana para el resumen de ${etiqueta}`;
   return (
     <Marco>
       {slug === "mlb" ? <Pelota /> : <Balon />}
@@ -180,8 +142,7 @@ async function renderDeporte(slug: "mlb" | "nba") {
 }
 
 async function renderTurismo() {
-  const reel = await leerJsonPublico("reel-turismo.json");
-  const ciudad = reel?.destino ? CIUDADES.find((c) => c.slug === reel.destino) : null;
+  const { ciudad } = await datosTurismo();
   // El area de la foto se achica a proposito (antes 440px): una foto real
   // ocupa mucho mas espacio que un PNG se comprime mal, y la tarjeta llegaba
   // a pesar casi 1 MB (se veia en blanco en el celular mientras cargaba).
