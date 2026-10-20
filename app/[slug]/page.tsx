@@ -291,6 +291,11 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
               Sortea {sorteos.map(function (s) { return s.hora_sorteo ? formatearHora12(s.hora_sorteo) : null; }).filter(Boolean).join(" · ")}
             </p>
           ) : null}
+          {["new-york", "florida", "loterias-americanas"].includes(params.slug) && sorteos.length > 0 ? (
+            <p className="mt-3 max-w-xl font-mono text-sm font-bold text-[#E7A63C]">
+              {sorteos.map(function (s) { return s.hora_sorteo ? `${s.nombre}: ${formatearHora12(s.hora_sorteo)}` : null; }).filter(Boolean).join(" · ")}
+            </p>
+          ) : null}
         </div>
       </header>
 
@@ -575,6 +580,20 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
                   respuesta: s.hora_sorteo
                     ? `El sorteo de Anguila ${hora} (${formatearHora12(s.hora_sorteo)}, hora de República Dominicana) es "${s.nombre}". El resultado de hoy está arriba en esta página.`
                     : `Consulta el horario de este sorteo de Anguila más arriba en esta página.`,
+                };
+              })
+            : []),
+          // New York, Florida y Loterías Americanas ya tienen el horario en
+          // el propio nombre del sorteo ("Georgia Noche", "New York Tarde"),
+          // que es justo como la gente busca — una pregunta por sorteo con
+          // ese nombre tal cual responde eso directo.
+          ...(["new-york", "florida", "loterias-americanas"].includes(params.slug)
+            ? sorteos.map(function (s) {
+                return {
+                  pregunta: `¿A qué hora es el sorteo de ${s.nombre}?`,
+                  respuesta: s.hora_sorteo
+                    ? `${s.nombre} sortea a las ${formatearHora12(s.hora_sorteo)} (hora de República Dominicana). El resultado de hoy está arriba en esta página.`
+                    : `Consulta el horario de ${s.nombre} más arriba en esta página.`,
                 };
               })
             : []),
