@@ -22,6 +22,18 @@ const DIM = "#9FB2CC";
 const ROJO = "#D94F3D";
 const VERDE = "#1E7A4C";
 
+// Las fotos de turismo (app/turismo/datos.ts) a veces usan el archivo
+// original de Wikimedia sin redimensionar (puede pesar varios MB); esto pide
+// una miniatura del ancho que de verdad se necesita, para que la tarjeta no
+// pese casi 1 MB y se quede en blanco mientras carga en el celular.
+function miniaturaWikimedia(url: string, ancho: number) {
+  const yaEsMiniatura = url.match(/^(.*\/commons\/thumb\/.+\/)(\d+)px-([^/]+)$/);
+  if (yaEsMiniatura) return `${yaEsMiniatura[1]}${ancho}px-${yaEsMiniatura[3]}`;
+  const original = url.match(/^(.*\/commons\/)([0-9a-f])\/([0-9a-f]{2})\/([^/]+)$/);
+  if (original) return `${original[1]}thumb/${original[2]}/${original[3]}/${original[4]}/${ancho}px-${original[4]}`;
+  return url;
+}
+
 function hoyRD() {
   const ahoraRD = new Date(Date.now() - 4 * 60 * 60 * 1000);
   return { anio: ahoraRD.getUTCFullYear(), mes: ahoraRD.getUTCMonth() + 1, dia: ahoraRD.getUTCDate() };
@@ -170,9 +182,13 @@ async function renderDeporte(slug: "mlb" | "nba") {
 async function renderTurismo() {
   const reel = await leerJsonPublico("reel-turismo.json");
   const ciudad = reel?.destino ? CIUDADES.find((c) => c.slug === reel.destino) : null;
+  // El area de la foto se achica a proposito (antes 440px): una foto real
+  // ocupa mucho mas espacio que un PNG se comprime mal, y la tarjeta llegaba
+  // a pesar casi 1 MB (se veia en blanco en el celular mientras cargaba).
+  const anchoFoto = 280;
   return (
     <Marco>
-      <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", paddingLeft: "80px", width: "680px", height: "100%" }}>
+      <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", paddingLeft: "80px", width: `${ANCHO - 80 - anchoFoto}px`, height: "100%" }}>
         <div style={{ display: "flex", fontSize: "28px", fontWeight: 800, color: GOLD, letterSpacing: "3px", marginBottom: "18px" }}>TURISMO RD</div>
         <div style={{ display: "flex", fontSize: "48px", fontWeight: 800, color: "#FFFFFF", lineHeight: 1.22, marginBottom: "16px" }}>
           {ciudad ? ciudad.nombre : "Descubre República Dominicana"}
@@ -183,9 +199,9 @@ async function renderTurismo() {
       {ciudad ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={ciudad.foto.url}
+          src={miniaturaWikimedia(ciudad.foto.url, 500)}
           alt=""
-          style={{ position: "absolute", right: 0, top: 0, width: "440px", height: `${ALTO}px`, objectFit: "cover" }}
+          style={{ position: "absolute", right: 0, top: 0, width: `${anchoFoto}px`, height: `${ALTO}px`, objectFit: "cover" }}
         />
       ) : (
         <svg width="400" height="400" viewBox="0 0 24 24" style={{ position: "absolute", right: "60px", top: "115px" }}>
