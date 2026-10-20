@@ -226,6 +226,7 @@ export default async function Home() {
                 alt="Tambora dominicana pintada con la bandera de República Dominicana"
                 width={64}
                 height={64}
+                priority
                 className="h-11 w-11 object-contain sm:hidden"
                 style={{ transform: "rotate(-30deg)", filter: "drop-shadow(0 0 1.5px #9AA5AF) drop-shadow(0 2px 4px rgba(0,0,0,0.35))" }}
               />
