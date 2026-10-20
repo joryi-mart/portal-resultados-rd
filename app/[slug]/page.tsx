@@ -1,5 +1,6 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
 import { inicioSorteoISO } from "@/lib/eventoSorteo";
+import { migaDePan } from "@/lib/breadcrumb";
 import { supabase } from "@/lib/supabase";
 import { slugSorteo } from "@/lib/slug";
 import { COLOR_POR_POSICION_SORTEOS } from "@/app/componentesResultados";
@@ -42,6 +43,16 @@ function formatearHora12(hora24: string) {
   h = h % 12;
   if (h === 0) h = 12;
   return h + ":" + m + " " + sufijo;
+}
+
+// Como la gente realmente escribe la hora al buscar ("anguila de la 9",
+// "anguila 5 de la tarde"), no como se escribe formalmente ("9:00 p.m.").
+function horaColoquial(hora24: string) {
+  if (!hora24) return "";
+  const h = parseInt(hora24.split(":")[0], 10);
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  const periodo = h < 12 ? "de la mañana" : h < 19 ? "de la tarde" : "de la noche";
+  return `${h12} ${periodo}`;
 }
 
 // Algunos sorteos cambian de hora los domingos (confirmado con la fuente oficial):
@@ -240,6 +251,12 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
   const datosEstructurados =
     eventosParaGoogle.length > 0 ? { "@context": "https://schema.org", "@graph": eventosParaGoogle } : null;
 
+  const migas = migaDePan([
+    { nombre: "Inicio", url: "https://labankerard.com/" },
+    { nombre: "Loterías", url: "https://labankerard.com/loterias" },
+    { nombre: loteriaData.nombre, url: `https://labankerard.com/${params.slug}` },
+  ]);
+
   return (
     <div className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
       {datosEstructurados ? (
@@ -248,6 +265,7 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
           dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }}
         />
       ) : null}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(migas) }} />
       <header className="bg-[#10203A] px-6 py-8 sm:px-10">
         <div className="mx-auto max-w-3xl">
           <a href="/" className="font-mono text-sm text-[#E7A63C] hover:underline">← Ver todas las loterías</a>
@@ -266,6 +284,11 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
           {DESCRIPCIONES_LOTERIA[params.slug] ? (
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-[#D5DEEA]">
               {DESCRIPCIONES_LOTERIA[params.slug]}
+            </p>
+          ) : null}
+          {params.slug === "anguila" && sorteos.length > 0 ? (
+            <p className="mt-3 max-w-xl font-mono text-sm font-bold text-[#E7A63C]">
+              Sortea {sorteos.map(function (s) { return s.hora_sorteo ? formatearHora12(s.hora_sorteo) : null; }).filter(Boolean).join(" · ")}
             </p>
           ) : null}
         </div>
@@ -540,6 +563,21 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
             pregunta: "¿Puedo buscar cuándo salió un número específico?",
             respuesta: "Sí, usa el buscador de números arriba en esta página para consultarlo al instante.",
           },
+          // Anguila tiene 4 sorteos al día y la gente busca por hora exacta
+          // ("anguila 10 am", "anguila de la 9"), no por el nombre del
+          // sorteo: una pregunta por horario, con la frase tal como se
+          // busca, responde eso directo en vez de un solo párrafo con los 4.
+          ...(params.slug === "anguila"
+            ? sorteos.map(function (s) {
+                const hora = s.hora_sorteo ? horaColoquial(s.hora_sorteo) : "";
+                return {
+                  pregunta: `¿A qué hora es el sorteo de Anguila de las ${hora}?`,
+                  respuesta: s.hora_sorteo
+                    ? `El sorteo de Anguila ${hora} (${formatearHora12(s.hora_sorteo)}, hora de República Dominicana) es "${s.nombre}". El resultado de hoy está arriba en esta página.`
+                    : `Consulta el horario de este sorteo de Anguila más arriba en esta página.`,
+                };
+              })
+            : []),
         ]}
       />
 

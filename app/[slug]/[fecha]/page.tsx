@@ -1,5 +1,6 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
 import { inicioSorteoISO } from "@/lib/eventoSorteo";
+import { migaDePan } from "@/lib/breadcrumb";
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 
@@ -251,6 +252,13 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
     if (f >= PRIMER_DIA_DE_DATOS && f <= hoy) otrosDias.push(f);
   }
 
+  const migas = migaDePan([
+    { nombre: "Inicio", url: "https://labankerard.com/" },
+    { nombre: "Loterías", url: "https://labankerard.com/loterias" },
+    { nombre: loteriaData.nombre, url: `https://labankerard.com/${params.slug}` },
+    { nombre: fechaLarga, url: `https://labankerard.com/${params.slug}/${params.fecha}` },
+  ]);
+
   return (
     <div className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
       {datosEstructurados ? (
@@ -259,6 +267,7 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
           dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }}
         />
       ) : null}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(migas) }} />
       <header className="bg-[#10203A] px-6 py-8 sm:px-10">
         <div className="mx-auto max-w-3xl">
           <a href={"/" + params.slug} className="font-mono text-sm text-[#E7A63C] hover:underline">← Ver todos los resultados de {loteriaData.nombre}</a>
