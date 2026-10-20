@@ -96,3 +96,12 @@ jobs:
           git commit -m "Reel de turismo del $HOY"
           git pull --rebase
           git push
+
+      # Tabla de posiciones y juegos de hoy de LIDOM en Facebook. Tambien al
+      # final y aparte: si LIDOM no tiene temporada activa, la ruta misma no
+      # publica nada, y un fallo aqui no afecta lo demas.
+      - name: Publicar LIDOM (posiciones y juegos de hoy)
+        if: always()
+        continue-on-error: true
+        run: |
+          curl -sf -m 60 "https://labankerard.com/api/publicar-lidom-diario?clave=${{ secrets.CRON_SECRET }}"
