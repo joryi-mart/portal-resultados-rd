@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/La Silla/**)",
+      "Read(C:\\Users\\La Silla\\**)",
+      "Bash(npx tsc --noEmit -p .)",
+      "Bash(curl -s -o /dev/null -w *)",
+      "Bash(tasklist)"
+    ]
+  }
+}

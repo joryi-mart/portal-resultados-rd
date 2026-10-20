@@ -25,7 +25,21 @@ export const NOMBRE_CORTO_LIDOM: Record<number, string> = {
   672: "Licey",
 };
 
-function Marco({ titulo, fecha, children }: { titulo: string; fecha: string; children: React.ReactNode }) {
+function Marco({
+  titulo,
+  fecha,
+  children,
+  tamFecha = "26px",
+  tamPie = "32px",
+  tamPieChico = "20px",
+}: {
+  titulo: string;
+  fecha: string;
+  children: React.ReactNode;
+  tamFecha?: string;
+  tamPie?: string;
+  tamPieChico?: string;
+}) {
   return (
     <div
       style={{
@@ -41,13 +55,13 @@ function Marco({ titulo, fecha, children }: { titulo: string; fecha: string; chi
     >
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
         <div style={{ display: "flex", fontSize: "46px", fontWeight: 800, color: GOLD, letterSpacing: "3px" }}>{titulo}</div>
-        <div style={{ display: "flex", fontSize: "26px", color: DIM, marginTop: "8px" }}>{fecha}</div>
+        <div style={{ display: "flex", fontSize: tamFecha, color: DIM, marginTop: "8px" }}>{fecha}</div>
         <div style={{ display: "flex", width: "480px", height: "3px", background: AZUL, marginTop: "22px" }} />
       </div>
       <div style={{ display: "flex", flex: 1, flexDirection: "column", justifyContent: "center" }}>{children}</div>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
-        <div style={{ display: "flex", fontSize: "32px", fontWeight: 800, color: GOLD }}>labankerard.com</div>
-        <div style={{ display: "flex", fontSize: "20px", color: DIM }}>Página informativa · La Bankera RD</div>
+        <div style={{ display: "flex", fontSize: tamPie, fontWeight: 800, color: GOLD }}>labankerard.com</div>
+        <div style={{ display: "flex", fontSize: tamPieChico, color: DIM }}>Página informativa · La Bankera RD</div>
       </div>
     </div>
   );
@@ -110,11 +124,12 @@ export async function generarImagenPosicionesLidom(posiciones: FilaPosicion[], f
 type Juego = { visitante: string; local: string; venue: string; hora: string };
 
 export async function generarImagenJuegosLidom(juegos: Juego[], fecha: string) {
+  const TAM = "34px";
   const imagen = new ImageResponse(
     (
-      <Marco titulo="LIDOM · JUEGOS DE HOY" fecha={fecha}>
+      <Marco titulo="LIDOM · JUEGOS DE HOY" fecha={fecha} tamFecha="28px" tamPie="30px" tamPieChico="22px">
         {juegos.length > 0 ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
             {juegos.map(function (j, i) {
               return (
                 <div
@@ -124,21 +139,21 @@ export async function generarImagenJuegosLidom(juegos: Juego[], fecha: string) {
                     flexDirection: "column",
                     borderRadius: "18px",
                     border: `1px solid ${AZUL}`,
-                    padding: "26px 32px",
-                    gap: "10px",
+                    padding: "16px 26px",
+                    gap: "4px",
                   }}
                 >
-                  <div style={{ display: "flex", fontSize: "34px", fontWeight: 800, color: "#FFFFFF" }}>
-                    {j.visitante} <span style={{ color: DIM, margin: "0 14px" }}>@</span> {j.local}
+                  <div style={{ display: "flex", fontSize: TAM, fontWeight: 800, color: "#FFFFFF" }}>
+                    {j.visitante} <span style={{ color: DIM, margin: "0 12px" }}>@</span> {j.local}
                   </div>
-                  <div style={{ display: "flex", fontSize: "22px", color: DIM }}>{j.venue}</div>
-                  <div style={{ display: "flex", fontSize: "30px", fontWeight: 800, color: GOLD }}>{j.hora}</div>
+                  <div style={{ display: "flex", fontSize: TAM, color: DIM }}>{j.venue}</div>
+                  <div style={{ display: "flex", fontSize: TAM, fontWeight: 800, color: GOLD }}>{j.hora}</div>
                 </div>
               );
             })}
           </div>
         ) : (
-          <div style={{ display: "flex", fontSize: "38px", fontWeight: 800, color: "#FFFFFF", textAlign: "center", justifyContent: "center" }}>
+          <div style={{ display: "flex", fontSize: TAM, fontWeight: 800, color: "#FFFFFF", textAlign: "center", justifyContent: "center" }}>
             Hoy no hay juegos programados
           </div>
         )}
