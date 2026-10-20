@@ -69,7 +69,7 @@ function construirCaption(loteriaNombre: string, loteriaSlug: string, fecha: str
   const hashtag = HASHTAG_LOTERIA[loteriaSlug] || "";
   const tituloParte = numeroParte > 1 ? ` (parte ${numeroParte})` : "";
   return (
-    `🎱 ${loteriaNombre} — Resultados del ${fechaTitulo(fecha)}${tituloParte}\n\n${lineas}\n\n` +
+    `🎱 ¿Qué número salió hoy en ${loteriaNombre}? Aquí está 👇\n${fechaTitulo(fecha)}${tituloParte}\n\n${lineas}\n\n` +
     INVITACION +
     `Ve más resultados en https://labankerard.com/${loteriaSlug}\n\n` +
     `Página informativa. No vendemos jugadas ni aceptamos apuestas.\n\n` +

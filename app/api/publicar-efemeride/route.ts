@@ -74,7 +74,7 @@ export async function GET(request: Request) {
     // ?prueba=1 muestra qué se publicaría hoy, sin publicar nada.
     if (url.searchParams.get("prueba") === "1") return NextResponse.json({ titulo, texto, fuente: propia ? "lista propia" : "Wikipedia" });
     const caption =
-      `${titulo}\n\n${texto}\n\n` +
+      `¿Sabes qué pasó un día como hoy? Te lo cuento 👇\n\n${titulo}\n\n${texto}\n\n` +
       `¿Lo sabías? Cuéntanos en los comentarios 👇\n\n` +
       `👉 Síguenos para tu dosis de historia todos los días.\n\n` +
       (propia ? "" : "Fuente: Wikipedia.\n\n") +

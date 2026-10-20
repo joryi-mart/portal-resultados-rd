@@ -243,7 +243,7 @@ def main():
 
     # Narracion: nombre, resumen y dos atracciones (el texto antes del " — ").
     atr = [a.split(" — ")[0].strip() for a in destino["atracciones"]][:2]
-    texto_voz = f"{destino['nombre']}, República Dominicana. {destino['resumen']} "
+    texto_voz = f"¿Conoces {destino['nombre']}? Te cuento por qué deberías ir. {destino['resumen']} "
     if atr:
         texto_voz += f"No te pierdas {' ni '.join(atr)}. "
     texto_voz += "Busca La Bankera RD en Google para descubrir más."
@@ -311,7 +311,7 @@ def main():
     if video:
         creditos += f" Video: {video['autor']} / Pixabay."
     caption = (
-        f"🌴 {destino['nombre']}, República Dominicana\n\n{destino['resumen']}\n\n"
+        f"🌴 ¿Conoces {destino['nombre']}? Te cuento por qué deberías ir 👇\n\n{destino['resumen']}\n\n"
         f"👉 Descubre qué hacer, dónde quedarte y cómo llegar: https://{enlace}\n\n"
         f"¿Ya lo conoces? Cuéntanos en los comentarios 👇\n\n🔎 Búscanos en Google como «La Bankera RD».\n\n{creditos}\n\n"
         f"#RepublicaDominicana #TurismoRD #{destino['nombre'].replace(' ', '')}"

@@ -633,7 +633,7 @@ def partes_narracion(slug, juegos):
     # reel completo, asi que pedir el follow solo al cierre pierde a quien se
     # va antes.
     partes = [{
-        "texto": f"Esto fue lo que pasó ayer en {NOMBRE_HABLADO.get(slug, slug)}. Sígueme para no perderte ningún resultado.",
+        "texto": f"¿Quién ganó ayer en {NOMBRE_HABLADO.get(slug, slug)}? Te lo cuento en 30 segundos. Sígueme para no perdértelo.",
         "foto": None,
     }]
     resumen_deporte = RESUMENES_POR_DEPORTE.get(slug, {})
@@ -679,7 +679,7 @@ def generar_voz(texto, salida_mp3):
 
 def construir_caption(titulo, subtitulo, fecha, enlace, hashtags):
     return (
-        f"{titulo}: {subtitulo}\n\nResultados de {fecha_larga(fecha)}.\n\n"
+        f"{subtitulo} Te lo cuento en 30 segundos 👇\n\n{titulo}, resultados de {fecha_larga(fecha)}.\n\n"
         f"¿Y tú, quién crees que gana hoy? Déjalo en los comentarios 👇\n\n"
         f"👉 Síguenos para recibir los resultados cada mañana.\n\n"
         f"Más en https://{enlace}\n\n🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n{hashtags}"
