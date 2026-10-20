@@ -22,10 +22,12 @@ type Posicion = {
   diferencia: string;
 };
 type Noticia = { id: string; title: string; url: string; image: string; published: string };
+type Juego = { visitanteId: number; visitante: string; localId: number; local: string; venue: string; hora: string; estado: string };
 
 export default function LidomCliente() {
   const [equipos, setEquipos] = useState<Equipo[]>([]);
   const [posiciones, setPosiciones] = useState<Posicion[]>([]);
+  const [juegosHoy, setJuegosHoy] = useState<Juego[]>([]);
   const [noticias, setNoticias] = useState<Noticia[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -40,6 +42,7 @@ export default function LidomCliente() {
         }
         setEquipos(data.equipos || []);
         setPosiciones(data.posiciones || []);
+        setJuegosHoy(data.juegosHoy || []);
         setNoticias(data.noticias?.news || []);
       })
       .catch(() => setError("No se pudo cargar la información"))
@@ -148,6 +151,57 @@ export default function LidomCliente() {
 
         {!cargando && !error && (
           <>
+            {juegosHoy.length > 0 ? (
+              <>
+                <h2 className="mb-4 text-lg font-semibold text-[#10203A]">⚾ Juegos de hoy</h2>
+                <div className="mb-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {juegosHoy.map(function (j, i) {
+                    return (
+                      <div key={i} className="rounded-xl border border-[#10203A]/15 bg-white p-4 shadow-sm">
+                        <p className="text-base font-bold text-[#10203A]">{j.visitante} @ {j.local}</p>
+                        <p className="mt-1 text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{j.venue}</p>
+                        <p className="mt-2 font-mono text-sm font-bold" style={{ color: COLOR_AZUL }}>
+                          {j.estado === "Final" || j.estado === "In Progress" ? j.estado : `${j.hora} (hora RD)`}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : null}
+
+            {posiciones.length > 0 ? (
+              <>
+                <h2 className="mb-4 text-lg font-semibold text-[#10203A]">🏆 Tabla de posiciones</h2>
+                <div className="mb-10 overflow-hidden rounded-xl border border-[#10203A]/15 bg-white">
+                  <table className="w-full text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-[#10203A]/10 bg-[#FBF7EE]" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                        <th className="px-3 py-2.5 font-mono text-xs font-bold uppercase tracking-wide">Equipo</th>
+                        <th className="px-3 py-2.5 text-center font-mono text-xs font-bold uppercase tracking-wide">JJ</th>
+                        <th className="px-3 py-2.5 text-center font-mono text-xs font-bold uppercase tracking-wide">G</th>
+                        <th className="px-3 py-2.5 text-center font-mono text-xs font-bold uppercase tracking-wide">P</th>
+                        <th className="px-3 py-2.5 text-center font-mono text-xs font-bold uppercase tracking-wide">PCT</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {posiciones.map(function (p) {
+                        return (
+                          <tr key={p.equipoId} className="border-t border-[#10203A]/6">
+                            <td className="px-3 py-2.5 font-semibold text-[#10203A]">{p.nombre}</td>
+                            <td className="px-3 py-2.5 text-center">{p.juegosJugados}</td>
+                            <td className="px-3 py-2.5 text-center font-bold" style={{ color: COLOR_AZUL }}>{p.victorias}</td>
+                            <td className="px-3 py-2.5 text-center">{p.derrotas}</td>
+                            <td className="px-3 py-2.5 text-center font-mono text-xs">{p.porcentaje}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            ) : null}
+
             <div className="mb-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {equipos.map(renderEquipo)}
             </div>

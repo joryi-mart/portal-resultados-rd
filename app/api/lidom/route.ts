@@ -64,6 +64,42 @@ async function obtenerPosiciones(ligaId: number | null) {
   return posiciones;
 }
 
+function hoyRD() {
+  const ahoraRD = new Date(Date.now() - 4 * 60 * 60 * 1000);
+  return ahoraRD.toISOString().slice(0, 10);
+}
+
+async function obtenerJuegosDeHoy(ligaId: number | null) {
+  if (!ligaId) return [];
+  const cacheado = getCache("lidom-juegos-hoy-v1");
+  if (cacheado) return cacheado;
+
+  const fecha = hoyRD();
+  const res = await fetch(`https://statsapi.mlb.com/api/v1/schedule?sportId=17&leagueId=${ligaId}&date=${fecha}&hydrate=team,venue`);
+  if (!res.ok) throw new Error(`Error MLB API (juegos de hoy LIDOM): ${res.status}`);
+  const data = await res.json();
+
+  const juegosCrudos = data.dates?.[0]?.games || [];
+  const juegos = juegosCrudos.map((g: any) => {
+    const idVisitante = g.teams?.away?.team?.id;
+    const idLocal = g.teams?.home?.team?.id;
+    const horaRD = new Date(new Date(g.gameDate).getTime() - 4 * 60 * 60 * 1000);
+    return {
+      visitanteId: idVisitante,
+      visitante: EQUIPOS_LIDOM[idVisitante] || g.teams?.away?.team?.name || "",
+      localId: idLocal,
+      local: EQUIPOS_LIDOM[idLocal] || g.teams?.home?.team?.name || "",
+      venue: g.venue?.name || "",
+      hora: horaRD.toLocaleTimeString("es-DO", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "UTC" }),
+      estado: g.status?.detailedState || "",
+    };
+  });
+
+  // Cache corto: los juegos de hoy pueden pasar a "En Progreso"/"Final".
+  setCache("lidom-juegos-hoy-v1", juegos, 5 * 60 * 1000);
+  return juegos;
+}
+
 async function obtenerNoticiasLIDOM() {
   const cacheado = getCache("noticias-lidom");
   if (cacheado) return cacheado;
@@ -90,8 +126,9 @@ export async function GET() {
     const equipos = await obtenerEquipos();
     const ligaId = equipos[0]?.ligaId || null;
 
-    const [posiciones, noticias] = await Promise.all([
+    const [posiciones, juegosHoy, noticias] = await Promise.all([
       obtenerPosiciones(ligaId).catch(() => []),
+      obtenerJuegosDeHoy(ligaId).catch(() => []),
       obtenerNoticiasLIDOM().catch(() => ({ news: [] })),
     ]);
 
@@ -99,6 +136,7 @@ export async function GET() {
       actualizado: new Date().toISOString(),
       equipos,
       posiciones,
+      juegosHoy,
       noticias,
     });
   } catch (error: any) {
