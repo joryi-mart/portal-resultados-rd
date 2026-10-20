@@ -187,7 +187,7 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
   return {
     title: titulo,
     description: descripcion,
-    openGraph: { images: ["/opengraph-image.png"], title: `${titulo} | La Bankera RD`, description: descripcion, locale: "es_DO", type: "website" },
+    openGraph: { title: `${titulo} | La Bankera RD`, description: descripcion, locale: "es_DO", type: "website" },
     alternates: {
       canonical: `https://labankerard.com/${params.slug}`,
       // Haiti Bolet tiene version en frances: se le indica a Google (hreflang).
