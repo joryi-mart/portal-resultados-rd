@@ -119,6 +119,8 @@ export default async function ResumenPage(props: { searchParams: Promise<{ fecha
       <main className="mx-auto max-w-7xl px-4 pb-6 pt-3 sm:px-8 sm:pt-4 lg:px-12">
         <a href="/" className="mb-4 inline-block font-mono text-sm text-[#1E4D8C] hover:underline">← Volver a la portada</a>
 
+        <h1 className="mb-4 text-2xl font-bold text-[#10203A]">Resumen de Resultados de Loterías Dominicanas</h1>
+
         {error ? (
           <div className="mb-6 rounded-lg border border-[#E4573D]/40 bg-[#E4573D]/5 p-4 text-sm text-[#B23B26]">No pudimos cargar los datos: {error.message}</div>
         ) : null}
