@@ -37,7 +37,7 @@ export async function datosEfemerides() {
   const deHoy = EFEMERIDES.find((e) => e.mes === mes && e.dia === dia);
   return {
     titulo: deHoy ? deHoy.texto : "Un día como hoy en la historia de RD",
-    subtitulo: "Qué pasó un día como hoy en la historia de República Dominicana",
+    subtitulo: "¿Sabes qué pasó un día como hoy? Entérate aquí",
   };
 }
 
@@ -48,7 +48,7 @@ export async function datosDeporte(slug: "mlb" | "nba") {
   return {
     titulo: hayDatos ? `Resultados de ${fechaLarga()}` : `Repaso de ${etiqueta}`,
     subtitulo: hayDatos
-      ? `Resumen de ayer en ${slug === "mlb" ? "las Grandes Ligas" : "la NBA"}`
+      ? `¿Quién ganó ayer? Aquí está el resumen`
       : `Vuelve cada mañana para el resumen de ${etiqueta}`,
   };
 }
@@ -58,7 +58,7 @@ export async function datosTurismo() {
   const ciudad = reel?.destino ? CIUDADES.find((c) => c.slug === reel.destino) : null;
   return {
     titulo: ciudad ? ciudad.nombre : "Descubre República Dominicana",
-    subtitulo: "Un destino dominicano distinto para conocer cada día",
+    subtitulo: ciudad ? `¿Conoces este lugar? Descúbrelo aquí` : "Un destino dominicano distinto para conocer cada día",
     ciudad,
   };
 }
