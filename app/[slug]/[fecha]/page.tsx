@@ -158,11 +158,11 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
 
   // Una fecha sin ningun resultado registrado es una pagina vacia: se marca
   // noindex para no llenar Google de paginas sin contenido. La fecha de hoy
-  // tambien se marca noindex siempre: su contenido es casi identico al de la
-  // pagina principal de la loteria, y Google las trataba como duplicadas
-  // (la principal perdia el ranking contra las paginas de fecha). Ahora la
-  // principal es la unica que compite por "hoy"; las fechas pasadas con
-  // resultados siguen indexadas igual que antes (es lo que mejor rankea).
+  // SI se indexa en cuanto tiene resultados: del 12 al 24 de octubre de 2026
+  // estuvo en noindex (para que no compitiera con la pagina principal), pero
+  // la principal siguio en la posicion 60-73 y los clics cayeron a la mitad,
+  // porque la gente busca "loteria nacional sabado 19 de septiembre" esa misma
+  // noche, y eran justo estas paginas (posicion 4-8) las que traian los clics.
   const hayResultados = (loteria.sorteos || []).some(function (s) {
     return (s.resultados || []).some(function (r) { return r.fecha === params.fecha; });
   });
@@ -170,7 +170,7 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
   return {
     title: titulo,
     description: descripcion,
-    ...(!hayResultados || esHoy ? { robots: { index: false, follow: true } } : {}),
+    ...(!hayResultados ? { robots: { index: false, follow: true } } : {}),
     openGraph: { images: ["/opengraph-image.png"], title: `${titulo} | La Bankera RD`, description: descripcion, locale: "es_DO", type: "website" },
     alternates: { canonical: `https://labankerard.com/${params.slug}/${params.fecha}` },
   };

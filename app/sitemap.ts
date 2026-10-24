@@ -400,21 +400,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .eq("activa", true)
     .gte("sorteos.resultados.fecha", desdeISO);
   const paginasFechas: MetadataRoute.Sitemap = ((loteriasConFechas || []) as unknown as { slug: string; sorteos: { resultados: { fecha: string }[] }[] }[]).flatMap(function (l) {
-    // La fecha de hoy no se manda: esa pagina quedo marcada noindex (su
-    // contenido compite con la pagina principal de la loteria), asi que no
-    // tiene sentido pedirle a Google que la indexe desde el sitemap.
+    // La fecha de hoy tambien se manda (solo si ya tiene resultados): es la
+    // que la gente busca esa misma noche ("loteria nacional sabado 19 de...").
     const fechas = new Set<string>();
     (l.sorteos || []).forEach(function (s) {
       (s.resultados || []).forEach(function (r) {
-        if (r.fecha >= desdeISO && r.fecha !== hoyISOSitemap) fechas.add(r.fecha);
+        if (r.fecha >= desdeISO) fechas.add(r.fecha);
       });
     });
     return Array.from(fechas).sort().reverse().map(function (f) {
+      const esHoy = f === hoyISOSitemap;
       return {
         url: `${SITIO}/${l.slug}/${f}`,
-        lastModified: new Date(f + "T12:00:00-04:00"),
-        changeFrequency: "monthly" as const,
-        priority: 0.5,
+        lastModified: esHoy ? new Date() : new Date(f + "T12:00:00-04:00"),
+        changeFrequency: esHoy ? ("hourly" as const) : ("monthly" as const),
+        priority: esHoy ? 0.8 : 0.5,
       };
     });
   });
