@@ -7,11 +7,32 @@ import { avisarResultadosRecientes } from "@/lib/indexnow";
 const LOTERIAS_DESTACADAS = ["nacional", "leidsa", "real", "loteka"];
 const SORTEOS_DESCONTINUADOS = [73, 78, 119];
 
-// Maximo de sorteos por imagen/publicacion. Si un dia una loteria tiene mas
-// sorteos que esto (ej. Lotería Real, que llega a tener 8 en un dia), los
-// resultados se reparten en varias publicaciones ("parte 2", "parte 3"...)
-// en vez de una sola imagen gigante o, peor, una imagen que se queda vieja.
-const MAX_SORTEOS_POR_PUBLICACION = 5;
+// Maximo de sorteos por imagen. Si una loteria tiene mas sorteos en una tanda,
+// se reparten en varias imagenes dentro de la misma publicacion.
+const MAX_SORTEOS_POR_IMAGEN = 5;
+
+// Los resultados del dia se publican en 3 tandas fijas, cada una UNA sola vez
+// y nunca se borra ni se rehace. Antes se borraba y se volvia a subir la
+// publicacion de cada loteria con cada sorteo nuevo: se perdian los "me gusta"
+// y Facebook lo veia como contenido repetido. Cada sorteo cae en la tanda
+// segun su hora_sorteo (menor que "hasta"). La tanda sale cuando ya llegaron
+// todos sus sorteos de hoy o, si alguno falta, al llegar la hora "limite".
+// Horas de Republica Dominicana.
+const TANDAS = [
+  { id: "mediodia", hasta: "14:00", limite: "14:15", gancho: "¿Qué números salieron hoy al mediodía?" },
+  { id: "tarde", hasta: "18:00", limite: "16:30", gancho: "¿Qué números salieron hoy en la tarde?" },
+  { id: "noche", hasta: "24:00", limite: "23:30", gancho: "¿Qué números salieron esta noche?" },
+];
+
+// Las tandas empiezan este dia; antes de esa fecha ya estaba publicado todo
+// con el sistema viejo (una publicacion por loteria) y se repetiria.
+const INICIO_TANDAS = "2026-10-24";
+
+// Fila diaria en publicaciones_facebook que guarda los resultados ya avisados
+// por notificacion push (no es una publicacion de Facebook).
+const SLUG_AVISOS_PUSH = "avisos-push";
+
+const LETRAS_DIA = ["D", "L", "M", "X", "J", "V", "S"];
 
 const HASHTAG_LOTERIA: Record<string, string> = {
   nacional: "#LoteriaNacional",
@@ -20,10 +41,9 @@ const HASHTAG_LOTERIA: Record<string, string> = {
   loteka: "#Loteka",
 };
 
-function hoyISO() {
+function ahoraRD() {
   // Republica Dominicana esta fijo en UTC-4 (no usa horario de verano).
-  const ahoraRD = new Date(Date.now() - 4 * 60 * 60 * 1000);
-  return ahoraRD.toISOString().slice(0, 10);
+  return new Date(Date.now() - 4 * 60 * 60 * 1000);
 }
 
 function fechaTitulo(fechaISO: string) {
@@ -35,7 +55,7 @@ function fechaTitulo(fechaISO: string) {
 }
 
 type ResultadoFila = { numeros: string; fecha: string; creado_en: string };
-type SorteoFila = { id: number; nombre: string; resultados: ResultadoFila[] };
+type SorteoFila = { id: number; nombre: string; hora_sorteo: string | null; dias_semana: string | null; resultados: ResultadoFila[] };
 type LoteriaFila = { id: number; nombre: string; slug: string; sorteos: SorteoFila[] };
 
 type ResultadoDeHoy = {
@@ -44,46 +64,37 @@ type ResultadoDeHoy = {
   creadoEn: string;
 };
 
-function claveParte(slugBase: string, indiceParte: number) {
-  // La primera parte conserva el slug de siempre (para no romper nada de lo
-  // que ya existe); de la segunda en adelante se numera.
-  return indiceParte === 0 ? slugBase : `${slugBase}-parte${indiceParte + 1}`;
-}
-
 // Invitacion a seguir la pagina y a buscar la marca en Google.
 const INVITACION = "👉 Síguenos para recibir los resultados apenas salen.\n🔎 Búscanos en Google como «La Bankera RD».\n\n";
 
-// Una publicacion solo se rehace si cambian los resultados (las lineas
-// "Sorteo: 12-34-56"), no si cambia el resto del texto. Asi se puede ajustar
-// la invitacion o el pie sin borrar y volver a publicar todo lo de hoy.
-function lineasDeResultados(texto: string) {
-  return texto.split("\n").filter(function (l) { return /: \d[\d-]*$/.test(l.trim()); }).join("\n");
+function tandaDeSorteo(horaSorteo: string | null) {
+  const hora = (horaSorteo || "23:59").slice(0, 5);
+  return TANDAS.find(function (t) { return hora < t.hasta; }) || TANDAS[TANDAS.length - 1];
 }
 
-function mismoContenido(a: string, b: string) {
-  return lineasDeResultados(a) === lineasDeResultados(b);
-}
-
-function construirCaption(loteriaNombre: string, loteriaSlug: string, fecha: string, resultados: ResultadoDeHoy[], numeroParte: number) {
-  const lineas = resultados.map(function (r) { return `${r.sorteoNombre}: ${r.numeros}`; }).join("\n");
-  const hashtag = HASHTAG_LOTERIA[loteriaSlug] || "";
-  const tituloParte = numeroParte > 1 ? ` (parte ${numeroParte})` : "";
+function construirCaption(gancho: string, fecha: string, bloques: { loteria: LoteriaFila; resultados: ResultadoDeHoy[] }[]) {
+  const cuerpo = bloques.map(function (b) {
+    const lineas = b.resultados.map(function (r) { return `${r.sorteoNombre}: ${r.numeros}`; }).join("\n");
+    return `📍 ${b.loteria.nombre}\n${lineas}`;
+  }).join("\n\n");
+  const hashtags = bloques.map(function (b) { return HASHTAG_LOTERIA[b.loteria.slug] || ""; }).filter(Boolean).join(" ");
   return (
-    `🎱 ¿Qué número salió hoy en ${loteriaNombre}? Aquí está 👇\n${fechaTitulo(fecha)}${tituloParte}\n\n${lineas}\n\n` +
+    `🎱 ${gancho} Aquí están 👇\n${fechaTitulo(fecha)}\n\n${cuerpo}\n\n` +
     INVITACION +
-    `Ve más resultados en https://labankerard.com/${loteriaSlug}\n\n` +
+    `Ve todos los resultados en https://labankerard.com\n\n` +
     `Página informativa. No vendemos jugadas ni aceptamos apuestas.\n\n` +
-    `#LoteriaDominicana #ResultadosHoy ${hashtag}`.trim()
+    `#LoteriaDominicana #ResultadosHoy ${hashtags}`.trim()
   );
 }
 
-async function crearPublicacion(caption: string, imagen: Buffer) {
+// Sube una foto sin publicarla, para luego juntarla con otras en una sola
+// publicacion.
+async function subirFotoSinPublicar(imagen: Buffer) {
   const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
 
   const formData = new FormData();
   formData.append("source", new Blob([new Uint8Array(imagen)], { type: "image/png" }), "resultado.png");
-  formData.append("caption", caption);
-  formData.append("published", "true");
+  formData.append("published", "false");
   formData.append("access_token", token || "");
 
   // Se usa "me" (la pagina duena del token) en vez del numero de FACEBOOK_PAGE_ID,
@@ -93,15 +104,29 @@ async function crearPublicacion(caption: string, imagen: Buffer) {
     body: formData,
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error?.message || "Error creando la publicacion en Facebook");
+  if (!res.ok) throw new Error(data.error?.message || "Error subiendo la foto a Facebook");
   return data.id as string;
 }
 
-async function borrarPublicacion(idFoto: string) {
+async function crearPublicacionConFotos(caption: string, imagenes: Buffer[]) {
   const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
-  const res = await fetch(`https://graph.facebook.com/v19.0/${idFoto}?access_token=${token}`, { method: "DELETE" });
+  const idsFotos: string[] = [];
+  for (const imagen of imagenes) idsFotos.push(await subirFotoSinPublicar(imagen));
+
+  const formData = new FormData();
+  formData.append("message", caption);
+  idsFotos.forEach(function (id, i) {
+    formData.append(`attached_media[${i}]`, JSON.stringify({ media_fbid: id }));
+  });
+  formData.append("access_token", token || "");
+
+  const res = await fetch(`https://graph.facebook.com/v19.0/me/feed`, {
+    method: "POST",
+    body: formData,
+  });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error?.message || "Error borrando la publicacion en Facebook");
+  if (!res.ok) throw new Error(data.error?.message || "Error creando la publicacion en Facebook");
+  return data.id as string;
 }
 
 export async function GET(request: Request) {
@@ -118,11 +143,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Faltan las claves de Facebook" }, { status: 500 });
     }
 
-    const hoy = hoyISO();
+    const ahora = ahoraRD();
+    const hoy = ahora.toISOString().slice(0, 10);
+    const horaActual = ahora.toISOString().slice(11, 16);
+    const letraHoy = LETRAS_DIA[new Date(hoy + "T12:00:00Z").getUTCDay()];
 
     const { data: loterias, error } = await supabase
       .from("loterias")
-      .select("id, nombre, slug, activa, sorteos ( id, nombre, dias_semana, resultados ( numeros, fecha, creado_en ) )")
+      .select("id, nombre, slug, activa, sorteos ( id, nombre, hora_sorteo, dias_semana, resultados ( numeros, fecha, creado_en ) )")
       .eq("activa", true)
       .in("slug", LOTERIAS_DESTACADAS);
 
@@ -135,112 +163,106 @@ export async function GET(request: Request) {
 
     if (errorPublicaciones) throw new Error(errorPublicaciones.message);
 
-    const listaLoterias = ((loterias || []) as unknown as LoteriaFila[]).map(function (l) {
-      return { ...l, sorteos: (l.sorteos || []).filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id); }) };
-    });
+    // Mismo orden en que salen los sorteos en el dia.
+    const ORDEN = ["real", "nacional", "loteka", "leidsa"];
+    const listaLoterias = ((loterias || []) as unknown as LoteriaFila[])
+      .map(function (l) {
+        return { ...l, sorteos: (l.sorteos || []).filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id); }) };
+      })
+      .sort(function (a, b) { return ORDEN.indexOf(a.slug) - ORDEN.indexOf(b.slug); });
 
-    const resumen: { creadas: string[]; actualizadas: string[]; sinCambios: string[]; fallidas: { loteria: string; error: string }[] } = {
-      creadas: [],
-      actualizadas: [],
-      sinCambios: [],
+    const resumen: { publicadas: string[]; esperando: string[]; fallidas: { tanda: string; error: string }[]; avisosPush: number } = {
+      publicadas: [],
+      esperando: [],
       fallidas: [],
+      avisosPush: 0,
     };
 
+    // 1) Notificaciones push: salen al momento para cada resultado nuevo,
+    // sin esperar a la tanda de Facebook.
+    const filaAvisos = (publicacionesHoy || []).find(function (p) { return p.loteria_slug === SLUG_AVISOS_PUSH; });
+    const yaAvisados = new Set<string>();
+    (publicacionesHoy || []).forEach(function (p) {
+      (p.mensaje || "").split("\n").forEach(function (l: string) { yaAvisados.add(l.trim()); });
+    });
+    const nuevosAvisados: string[] = [];
+
     for (const loteria of listaLoterias) {
-      // Cada loteria se procesa por separado: si una falla (ej. un problema
-      // puntual de Facebook), las demas se siguen publicando igual.
-      try {
-        const resultadosDeHoy: ResultadoDeHoy[] = [];
-        (loteria.sorteos || []).forEach(function (sorteo) {
-          (sorteo.resultados || []).forEach(function (r) {
-            if (r.fecha === hoy && r.creado_en) {
-              resultadosDeHoy.push({ sorteoNombre: sorteo.nombre, numeros: r.numeros, creadoEn: r.creado_en });
-            }
-          });
-        });
-
-        if (resultadosDeHoy.length === 0) continue;
-
-        resultadosDeHoy.sort(function (a, b) { return new Date(a.creadoEn).getTime() - new Date(b.creadoEn).getTime(); });
-
-        // Se reparten los sorteos del dia en grupos de a lo sumo
-        // MAX_SORTEOS_POR_PUBLICACION, en el orden en que salieron. Un grupo
-        // completo (con el maximo) queda "sellado": una vez publicado, nunca
-        // mas se vuelve a tocar, asi que su imagen jamas puede quedar vieja.
-        // Solo el ultimo grupo (si no esta lleno) sigue abierto a cambios.
-        const partes: ResultadoDeHoy[][] = [];
-        for (let i = 0; i < resultadosDeHoy.length; i += MAX_SORTEOS_POR_PUBLICACION) {
-          partes.push(resultadosDeHoy.slice(i, i + MAX_SORTEOS_POR_PUBLICACION));
-        }
-
-        // Para las notificaciones push: todo resultado que no aparezca en
-        // ninguna publicacion ya hecha hoy para esta loteria es "nuevo".
-        const publicacionesDeLaLoteria = (publicacionesHoy || []).filter(function (p) {
-          return p.loteria_slug === loteria.slug || p.loteria_slug.indexOf(`${loteria.slug}-parte`) === 0;
-        });
-        const lineasAnteriores = new Set<string>();
-        publicacionesDeLaLoteria.forEach(function (p) {
-          (p.mensaje || "").split("\n").forEach(function (l: string) { lineasAnteriores.add(l.trim()); });
-        });
-        const resultadosNuevos = resultadosDeHoy.filter(function (r) {
-          return !lineasAnteriores.has(`${r.sorteoNombre}: ${r.numeros}`);
-        });
-
-        for (let indiceParte = 0; indiceParte < partes.length; indiceParte++) {
-          const resultadosParte = partes[indiceParte];
-          const numeroParte = indiceParte + 1;
-          const slugParte = claveParte(loteria.slug, indiceParte);
-          const nombreConParte = numeroParte > 1 ? `${loteria.nombre} (parte ${numeroParte})` : loteria.nombre;
-          const captionNueva = construirCaption(loteria.nombre, loteria.slug, hoy, resultadosParte, numeroParte);
-
-          const publicacionExistente = publicacionesDeLaLoteria.find(function (p) { return p.loteria_slug === slugParte; });
-
-          if (!publicacionExistente) {
-            const imagen = await generarImagenResultados(nombreConParte, fechaTitulo(hoy), resultadosParte);
-            const idPublicacion = await crearPublicacion(captionNueva, imagen);
-            const { error: errorInsert } = await supabase
-              .from("publicaciones_facebook")
-              .insert({ loteria_slug: slugParte, fecha: hoy, post_id: idPublicacion, mensaje: captionNueva });
-            if (errorInsert) throw new Error(errorInsert.message);
-            resumen.creadas.push(nombreConParte);
-          } else if (!mismoContenido(publicacionExistente.mensaje || "", captionNueva)) {
-            // Una parte sellada no deberia cambiar nunca; si pasa (ej. se
-            // corrigio un numero a mano), tambien se actualiza para reflejarlo.
-            // Facebook no deja reemplazar la imagen de una publicacion ya
-            // hecha, asi que se borra y se crea una nueva con todo al dia.
-            try {
-              await borrarPublicacion(publicacionExistente.post_id);
-            } catch {
-              // Si no se pudo borrar (ej. permisos), se sigue igual: se crea
-              // la nueva de todas formas para no perder el resultado nuevo.
-            }
-            const imagen = await generarImagenResultados(nombreConParte, fechaTitulo(hoy), resultadosParte);
-            const idPublicacionNueva = await crearPublicacion(captionNueva, imagen);
-            const { error: errorUpdate } = await supabase
-              .from("publicaciones_facebook")
-              .update({ mensaje: captionNueva, post_id: idPublicacionNueva })
-              .eq("loteria_slug", slugParte)
-              .eq("fecha", hoy);
-            if (errorUpdate) throw new Error(errorUpdate.message);
-            resumen.actualizadas.push(nombreConParte);
-          } else {
-            resumen.sinCambios.push(nombreConParte);
-          }
-        }
-
-        for (const r of resultadosNuevos) {
+      for (const sorteo of loteria.sorteos) {
+        for (const r of sorteo.resultados || []) {
+          if (r.fecha !== hoy || !r.creado_en) continue;
+          const linea = `${sorteo.nombre}: ${r.numeros}`;
+          const clave = `${loteria.slug}|${linea}`;
+          // Se compara tambien con la linea sola por las publicaciones del
+          // sistema viejo, que la guardaban sin el nombre de la loteria.
+          if (yaAvisados.has(clave) || yaAvisados.has(linea)) continue;
+          nuevosAvisados.push(clave);
           try {
-            await enviarNotificacionATodos({
-              titulo: `🎱 ${loteria.nombre}`,
-              cuerpo: `${r.sorteoNombre}: ${r.numeros}`,
-              url: `/${loteria.slug}`,
-            });
+            await enviarNotificacionATodos({ titulo: `🎱 ${loteria.nombre}`, cuerpo: linea, url: `/${loteria.slug}` });
           } catch {
             // No dejar que un error al notificar arruine la publicacion en Facebook.
           }
         }
-      } catch (errorLoteria: any) {
-        resumen.fallidas.push({ loteria: loteria.nombre, error: errorLoteria.message });
+      }
+    }
+
+    if (nuevosAvisados.length > 0) {
+      const mensajeAvisos = [filaAvisos?.mensaje || "", ...nuevosAvisados].filter(Boolean).join("\n");
+      const { error: errorAvisos } = filaAvisos
+        ? await supabase.from("publicaciones_facebook").update({ mensaje: mensajeAvisos }).eq("loteria_slug", SLUG_AVISOS_PUSH).eq("fecha", hoy)
+        : await supabase.from("publicaciones_facebook").insert({ loteria_slug: SLUG_AVISOS_PUSH, fecha: hoy, post_id: "push", mensaje: mensajeAvisos });
+      if (errorAvisos) throw new Error(errorAvisos.message);
+      resumen.avisosPush = nuevosAvisados.length;
+    }
+
+    // 2) Tandas de Facebook.
+    for (const tanda of TANDAS) {
+      if (hoy < INICIO_TANDAS) break;
+      const slugTanda = `tanda-${tanda.id}`;
+      if ((publicacionesHoy || []).some(function (p) { return p.loteria_slug === slugTanda; })) continue;
+
+      try {
+        let faltanSorteos = false;
+        const bloques: { loteria: LoteriaFila; resultados: ResultadoDeHoy[] }[] = [];
+
+        for (const loteria of listaLoterias) {
+          const resultados: ResultadoDeHoy[] = [];
+          for (const sorteo of loteria.sorteos) {
+            if (tandaDeSorteo(sorteo.hora_sorteo).id !== tanda.id) continue;
+            const r = (sorteo.resultados || []).find(function (x) { return x.fecha === hoy && x.creado_en; });
+            if (r) resultados.push({ sorteoNombre: sorteo.nombre, numeros: r.numeros, creadoEn: r.creado_en });
+            else if ((sorteo.dias_semana || "").split(",").includes(letraHoy)) faltanSorteos = true;
+          }
+          if (resultados.length === 0) continue;
+          resultados.sort(function (a, b) { return new Date(a.creadoEn).getTime() - new Date(b.creadoEn).getTime(); });
+          bloques.push({ loteria, resultados });
+        }
+
+        if (bloques.length === 0) continue;
+        if (faltanSorteos && horaActual < tanda.limite) {
+          resumen.esperando.push(tanda.id);
+          continue;
+        }
+
+        const imagenes: Buffer[] = [];
+        for (const b of bloques) {
+          const partes = Math.ceil(b.resultados.length / MAX_SORTEOS_POR_IMAGEN);
+          for (let i = 0; i < partes; i++) {
+            const nombre = partes > 1 ? `${b.loteria.nombre} (${i + 1} de ${partes})` : b.loteria.nombre;
+            const grupo = b.resultados.slice(i * MAX_SORTEOS_POR_IMAGEN, (i + 1) * MAX_SORTEOS_POR_IMAGEN);
+            imagenes.push(await generarImagenResultados(nombre, fechaTitulo(hoy), grupo));
+          }
+        }
+
+        const caption = construirCaption(tanda.gancho, hoy, bloques);
+        const idPublicacion = await crearPublicacionConFotos(caption, imagenes);
+        const { error: errorInsert } = await supabase
+          .from("publicaciones_facebook")
+          .insert({ loteria_slug: slugTanda, fecha: hoy, post_id: idPublicacion, mensaje: caption });
+        if (errorInsert) throw new Error(errorInsert.message);
+        resumen.publicadas.push(tanda.id);
+      } catch (errorTanda: any) {
+        resumen.fallidas.push({ tanda: tanda.id, error: errorTanda.message });
       }
     }
 
