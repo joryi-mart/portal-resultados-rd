@@ -20,6 +20,12 @@ type Loteria = { id: number; nombre: string; slug: string; activa: boolean; sort
 
 export const revalidate = 3600;
 
+// Sorteos que ya no se realizan (El Extra de Loteka, Pega 4 de Real, Super
+// Pale de Leidsa). No tienen resultados guardados, pero Google sigue
+// mostrando sus paginas (El Extra: posicion 9), asi que en vez de una pagina
+// vacia se explica que ya no se juegan y se muestran los sorteos actuales.
+const SORTEOS_DESCONTINUADOS = [73, 78, 119];
+
 function hoyISO() {
   // Republica Dominicana esta fijo en UTC-4 (no usa horario de verano),
   // asi que restamos 4 horas sin importar en que zona horaria corra el servidor.
@@ -192,8 +198,13 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
   // El titulo lleva "Hoy" pero NO la fecha: Google guarda el titulo varios
   // dias y una fecha vieja en el buscador haria pensar que la pagina esta
   // atrasada. La fecha va en la descripcion, que Google refresca mas seguido.
-  const titulo = `${nombreBuscado} Hoy: Resultados en Vivo (${horaTexto})`;
-  const descripcion = `Resultado de ${sorteo.nombre} hoy, ${fechaEnTexto(hoyISO(), true)}. Sorteo de las ${horaTexto}, ${diasEnFrase(diasDelSorteo(sorteo))}. Números ganadores al instante y últimos 7 días.`;
+  const descontinuado = SORTEOS_DESCONTINUADOS.includes(sorteo.id);
+  const titulo = descontinuado
+    ? `${nombreBuscado}: ya no se juega. Resultados de ${nombreCortoLoteria} hoy`
+    : `${nombreBuscado} Hoy: Resultados en Vivo (${horaTexto})`;
+  const descripcion = descontinuado
+    ? `${sorteo.nombre} de ${loteria.nombre} ya no se sortea. Mira aquí los resultados de hoy de los sorteos que ${loteria.nombre} sí realiza.`
+    : `Resultado de ${sorteo.nombre} hoy, ${fechaEnTexto(hoyISO(), true)}. Sorteo de las ${horaTexto}, ${diasEnFrase(diasDelSorteo(sorteo))}. Números ganadores al instante y últimos 7 días.`;
 
   return {
     title: titulo,
@@ -223,6 +234,18 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
     .slice(0, 7);
   const cantidadNumeros = ultimosResultados.length > 0 ? ultimosResultados[0].numeros.split("-").length : 0;
   const textoComoSeJuega = comoSeJuega(sorteo.nombre, cantidadNumeros);
+
+  const descontinuado = SORTEOS_DESCONTINUADOS.includes(sorteo.id);
+  // Para la pagina de un sorteo que ya no existe: los que si se juegan en esa
+  // loteria, con su ultimo resultado.
+  const sorteosActuales = descontinuado
+    ? (loteria.sorteos || [])
+        .filter(function (s) { return !SORTEOS_DESCONTINUADOS.includes(s.id) && (s.resultados || []).length > 0; })
+        .map(function (s) {
+          const ultimo = s.resultados.slice().sort(function (a, b) { return b.fecha.localeCompare(a.fecha); })[0];
+          return { nombre: s.nombre, slug: slugSorteo(s.nombre), hora: s.hora_sorteo, ultimo };
+        })
+    : [];
 
   const datosEstructurados = resultadoHoy
     ? {
@@ -259,12 +282,46 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
             {sorteo.nombre}
           </h1>
           <p className="mt-2 font-mono text-sm text-[#D5DEEA]">
-            {loteria.nombre} · {sorteo.hora_sorteo ? formatearHora12(horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, hoy)) : "Hora por confirmar"} · {formatearDias(sorteo.dias_semana)}
+            {descontinuado
+              ? `${loteria.nombre} · Ya no se juega`
+              : `${loteria.nombre} · ${sorteo.hora_sorteo ? formatearHora12(horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, hoy)) : "Hora por confirmar"} · ${formatearDias(sorteo.dias_semana)}`}
           </p>
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-6 py-10 sm:px-10">
+        {descontinuado ? (
+          <div className="flex flex-col gap-6">
+            <div className="rounded-xl border-2 border-[#E7A63C] bg-[#FFF6E5] p-5">
+              <p className="mb-2 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">{sorteo.nombre} ya no se juega</p>
+              <p className="text-base leading-relaxed text-[#2E3B48]">
+                {loteria.nombre} dejó de realizar el sorteo {sorteo.nombre}, así que no hay resultados nuevos. Abajo tienes los sorteos que {loteria.nombre} sí realiza, con su último resultado.
+              </p>
+            </div>
+            <div className="rounded-xl border border-[#10203A]/15 bg-white p-5">
+              <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Sorteos actuales de {loteria.nombre}</h2>
+              <div className="flex flex-col">
+                {sorteosActuales.map(function (s) {
+                  return (
+                    <a
+                      key={s.slug}
+                      href={`/${params.slug}/sorteo/${s.slug}`}
+                      className="flex items-center justify-between gap-3 border-t border-[#10203A]/6 py-3 first:border-t-0 hover:bg-[#FBF7EE]"
+                    >
+                      <span className="flex flex-col">
+                        <span className="text-base font-bold text-[#10203A] underline decoration-[#1E4D8C]/30 underline-offset-4">{s.nombre}</span>
+                        <span className="text-sm font-semibold capitalize text-[#2E3B48]">
+                          {fechaEnTexto(s.ultimo.fecha, false)}{s.hora ? ` · ${formatearHora12(s.hora)}` : ""}
+                        </span>
+                      </span>
+                      <span className="shrink-0 font-mono text-base font-bold text-[#10203A]">{s.ultimo.numeros.split("-").length > 6 ? "Ver números" : s.ultimo.numeros}</span>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        ) : (
         <div className="rounded-xl border border-[#10203A]/15 bg-white p-5">
           <p className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Resultado de hoy, {fechaEnTexto(hoy, false)}</p>
           {numeros.length > 0 ? (
@@ -312,6 +369,7 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
             </div>
           ) : null}
         </div>
+        )}
 
         {ultimosResultados.length > 0 ? (
           <div className="mt-8 rounded-xl border border-[#10203A]/15 bg-white p-5">
@@ -335,6 +393,7 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
           </div>
         ) : null}
 
+        {!descontinuado ? (
         <div className="mt-8 rounded-xl border border-[#10203A]/15 bg-white p-5">
           <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Sobre {sorteo.nombre}</h2>
           <ul className="flex flex-col gap-2.5 text-base leading-relaxed text-[#2E3B48]">
@@ -349,10 +408,22 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
             <li>Las jugadas se hacen en las bancas de lotería autorizadas. La Bankera RD solo informa los resultados.</li>
           </ul>
         </div>
+        ) : null}
       </main>
 
       <PreguntasFrecuentes
-        preguntas={[
+        preguntas={descontinuado ? [
+          {
+            pregunta: `¿Todavía se juega ${sorteo.nombre}?`,
+            respuesta: `No. ${loteria.nombre} ya no realiza el sorteo ${sorteo.nombre}. En esta página tienes los sorteos que ${loteria.nombre} sí realiza hoy.`,
+          },
+          {
+            pregunta: `¿Qué sorteos tiene ${loteria.nombre} ahora?`,
+            respuesta: sorteosActuales.length > 0
+              ? `${loteria.nombre} realiza: ${sorteosActuales.map(function (s) { return s.nombre; }).join(", ")}.`
+              : `Consulta los sorteos actuales en la página de ${loteria.nombre}.`,
+          },
+        ] : [
           {
             pregunta: `¿Qué número salió hoy en ${sorteo.nombre}?`,
             respuesta: numeros.length > 0
