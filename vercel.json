@@ -1,6 +1,7 @@
 {
   "crons": [
     { "path": "/api/calendario/que-paso-mlb", "schedule": "0 13 * * *" },
+    { "path": "/api/calendario/bracket-mlb", "schedule": "30 13 * * *" },
     { "path": "/api/calendario/efemeride", "schedule": "0 14 * * *" },
     { "path": "/api/calendario/reel-deportes", "schedule": "30 14 * * *" },
     { "path": "/api/calendario/que-paso-lidom", "schedule": "0 15 * * *" },

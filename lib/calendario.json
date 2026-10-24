@@ -4,6 +4,7 @@
   "publicaciones": [
     { "id": "reel-deportes", "nombre": "Reel: ¿Quién ganó ayer?", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 8, "ruta": "/api/publicar-reel-diario" },
     { "id": "que-paso-mlb", "nombre": "¿Qué pasó ayer en MLB?", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 9, "ruta": "/api/publicar-que-paso?deporte=mlb" },
+    { "id": "bracket-mlb", "nombre": "Bracket Serie Mundial MLB (solo si hubo juego nuevo)", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 9, "ruta": "/api/publicar-bracket-mlb" },
     { "id": "efemeride", "nombre": "Un día como hoy", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 10, "ruta": "/api/publicar-efemeride" },
     { "id": "juegos-hoy-mlb", "nombre": "Juegos de hoy en MLB (hora RD)", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 11, "ruta": "/api/publicar-juegos-hoy" },
     { "id": "que-paso-lidom", "nombre": "¿Qué pasó ayer en LIDOM?", "dias": [0, 1, 2, 3, 4, 5, 6], "hora": 11, "ruta": "/api/publicar-que-paso?deporte=lidom" },
