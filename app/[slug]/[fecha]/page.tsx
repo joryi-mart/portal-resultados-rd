@@ -3,6 +3,7 @@ import { inicioSorteoISO } from "@/lib/eventoSorteo";
 import { migaDePan } from "@/lib/breadcrumb";
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
+import EnlaceCalculadoras from "@/app/EnlaceCalculadoras";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
@@ -392,6 +393,8 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
             </ul>
           </section>
         ) : null}
+
+        <EnlaceCalculadoras />
       </main>
 
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">

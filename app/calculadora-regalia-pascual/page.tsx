@@ -62,7 +62,18 @@ const PREGUNTAS = [
   },
 ];
 
+// Casos concretos (sueldo fijo; regalia = sueldo x meses trabajados / 12).
+// Responden busquedas como "regalia si tengo 6 meses trabajando".
+const EJEMPLOS = [
+  { sueldo: "RD$ 20,000", tiempo: "Todo el año (12 meses)", regalia: "RD$ 20,000" },
+  { sueldo: "RD$ 20,000", tiempo: "9 meses (desde abril)", regalia: "RD$ 15,000" },
+  { sueldo: "RD$ 20,000", tiempo: "6 meses (desde julio)", regalia: "RD$ 10,000" },
+  { sueldo: "RD$ 30,000", tiempo: "3 meses (desde octubre)", regalia: "RD$ 7,500" },
+  { sueldo: "RD$ 35,000", tiempo: "Renunció en agosto (8 meses)", regalia: "RD$ 23,333" },
+];
+
 export default function CalculadoraRegaliaPage() {
+  const ano = new Date(Date.now() - 4 * 60 * 60 * 1000).getUTCFullYear();
   const preguntasParaGoogle = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -99,6 +110,35 @@ export default function CalculadoraRegaliaPage() {
             <strong className="text-[#10203A]">Ejemplo:</strong> si ganas RD$ 30,000 al mes y entraste a trabajar el 1
             de julio, trabajaste la mitad del año. Tu regalía sería más o menos RD$ 15,000.
           </p>
+        </section>
+
+        <section className="mt-6 rounded-xl border border-[#10203A]/12 bg-white p-5 sm:p-6">
+          <h2 className="mb-2 font-[family-name:var(--font-display)] text-xl font-bold">Ejemplos: ¿cuánto me toca de regalía en {ano}?</h2>
+          <p className="mb-4 text-base leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+            La regalía pascual {ano} se debe pagar a más tardar el <strong className="text-[#10203A]">20 de diciembre de {ano}</strong>.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-base">
+              <thead>
+                <tr className="text-left" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                  <th className="py-2 pr-3 font-semibold">Sueldo</th>
+                  <th className="py-2 pr-3 font-semibold">Tiempo trabajado en el año</th>
+                  <th className="py-2 font-semibold">Regalía</th>
+                </tr>
+              </thead>
+              <tbody>
+                {EJEMPLOS.map(function (e) {
+                  return (
+                    <tr key={e.sueldo + e.tiempo} className="border-t border-[#10203A]/8">
+                      <td className="py-2 pr-3">{e.sueldo}</td>
+                      <td className="py-2 pr-3">{e.tiempo}</td>
+                      <td className="py-2 font-bold text-[#10203A]">{e.regalia}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section className="mt-6 rounded-xl border border-[#10203A]/12 bg-white p-5 sm:p-6">

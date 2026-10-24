@@ -346,7 +346,7 @@ export default async function Home() {
               <img src="/api/tarjeta-explorar/regalia" alt="Regalía pascual" className="aspect-[1.9/1] w-full object-cover" />
               <div className="flex items-center justify-between px-4 py-3">
                 <div>
-                  <p className="text-lg font-bold text-[#10203A]">Regalía pascual</p>
+                  <p className="text-lg font-bold text-[#10203A]">Calculadora de regalía pascual</p>
                   <p className="text-base text-[#2E3B48]">¿Cuánto te toca de doble sueldo?</p>
                 </div>
                 <span className="font-mono text-sm font-semibold text-[#007A33]">→</span>
@@ -360,7 +360,7 @@ export default async function Home() {
               <img src="/api/tarjeta-explorar/prestaciones" alt="Prestaciones laborales" className="aspect-[1.9/1] w-full object-cover" />
               <div className="flex items-center justify-between px-4 py-3">
                 <div>
-                  <p className="text-lg font-bold text-[#10203A]">Prestaciones laborales</p>
+                  <p className="text-lg font-bold text-[#10203A]">Calculadora de prestaciones laborales</p>
                   <p className="text-base text-[#2E3B48]">¿Te botaron o renunciaste?</p>
                 </div>
                 <span className="font-mono text-sm font-semibold text-[#007A33]">→</span>

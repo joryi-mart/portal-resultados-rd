@@ -13,10 +13,11 @@ const COLOR_TEXTO_SECUNDARIO = "#2E3B48";
 export const revalidate = 86400;
 
 export const metadata = {
-  // Titulo y descripcion cortos para que Google no los corte.
-  title: "Calcular Prestaciones Laborales RD 2026: Cesantía y Preaviso",
+  // Titulo y descripcion cortos para que Google no los corte. "Calculadora de
+  // prestaciones laborales" es como lo escribe la mayoria en Search Console.
+  title: "Calculadora de Prestaciones Laborales RD 2026: Cesantía y Preaviso",
   description:
-    "Calcula gratis tus prestaciones en RD: preaviso, cesantía, vacaciones y regalía según el Código de Trabajo, si renunciaste o te despidieron.",
+    "Calculadora de prestaciones laborales en República Dominicana: preaviso, cesantía, vacaciones y regalía según el Código de Trabajo, con ejemplos reales.",
   openGraph: {
     title: "Calcular Prestaciones RD 2026 ⚖️ ¿Cuánto te toca?",
     description: "Escribe tu sueldo y tus fechas y descubre al instante cuánto te deben pagar.",
@@ -69,6 +70,39 @@ const PREGUNTAS = [
   },
 ];
 
+// Casos concretos con las cuentas hechas: responden busquedas especificas
+// ("prestaciones si renuncio", "cesantia con 2 años") donde es mas facil
+// posicionar que en "calculadora de prestaciones" a secas.
+const EJEMPLOS = [
+  {
+    caso: "Te botaron después de 2 años ganando RD$ 25,000",
+    lineas: [
+      "Salario diario: RD$ 25,000 ÷ 23.83 = RD$ 1,049",
+      "Preaviso: 28 días = RD$ 29,375",
+      "Cesantía: 21 días por año × 2 años = 42 días = RD$ 44,062",
+    ],
+    total: "Total: unos RD$ 73,437, más las vacaciones que no tomaste y la regalía proporcional.",
+  },
+  {
+    caso: "Te botaron después de 8 meses ganando RD$ 20,000",
+    lineas: [
+      "Salario diario: RD$ 20,000 ÷ 23.83 = RD$ 839",
+      "Preaviso: 14 días = RD$ 11,750",
+      "Cesantía: 13 días = RD$ 10,911",
+    ],
+    total: "Total: unos RD$ 22,661, más las vacaciones proporcionales y la regalía proporcional.",
+  },
+  {
+    caso: "Renunciaste después de 3 años ganando RD$ 30,000",
+    lineas: [
+      "Preaviso y cesantía: no te tocan, porque renunciaste por tu cuenta",
+      "Vacaciones no tomadas: 14 días × RD$ 1,259 = RD$ 17,625 (solo si no las disfrutaste)",
+      "Regalía pascual: la parte de los meses trabajados en el año",
+    ],
+    total: "Total: vacaciones pendientes + regalía proporcional.",
+  },
+];
+
 export default function CalcularPrestacionesPage() {
   const preguntasParaGoogle = {
     "@context": "https://schema.org",
@@ -85,7 +119,7 @@ export default function CalcularPrestacionesPage() {
       <header className="bg-[#10203A] px-6 py-8 sm:px-10">
         <div className="mx-auto max-w-2xl">
           <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold text-[#FBF7EE] sm:text-4xl">
-            Calcular Prestaciones RD
+            Calculadora de prestaciones laborales RD
           </h1>
           <p className="mt-2 font-mono text-base text-[#F1F4F8]">
             Preaviso, cesantía, vacaciones y regalía según el Código de Trabajo dominicano.
@@ -116,6 +150,24 @@ export default function CalcularPrestacionesPage() {
               </tbody>
             </table>
           </div>
+        </section>
+
+        <section className="mt-6 rounded-xl border border-[#10203A]/12 bg-white p-5 sm:p-6">
+          <h2 className="mb-4 font-[family-name:var(--font-display)] text-xl font-bold">Ejemplos: ¿cuánto me toca de prestaciones?</h2>
+          {EJEMPLOS.map(function (e) {
+            return (
+              <div key={e.caso} className="mb-5 border-t border-[#10203A]/8 pt-4 first:border-t-0 first:pt-0 last:mb-0">
+                <h3 className="text-lg font-semibold">{e.caso}</h3>
+                <ul className="mt-2 flex flex-col gap-1 text-base leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+                  {e.lineas.map(function (l) { return <li key={l}>{l}</li>; })}
+                </ul>
+                <p className="mt-2 text-base font-bold text-[#10203A]">{e.total}</p>
+              </div>
+            );
+          })}
+          <p className="mt-4 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+            Salario diario = sueldo mensual ÷ 23.83. Montos aproximados. Para tu caso exacto usa la calculadora de arriba.
+          </p>
         </section>
 
         <section className="mt-6 rounded-xl border border-[#10203A]/12 bg-white p-5 sm:p-6">

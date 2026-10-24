@@ -7,6 +7,7 @@ import { COLOR_POR_POSICION_SORTEOS } from "@/app/componentesResultados";
 import { notFound } from "next/navigation";
 import NavPildoras from "../NavPildoras";
 import PreguntasFrecuentes from "../PreguntasFrecuentes";
+import EnlaceCalculadoras from "../EnlaceCalculadoras";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
@@ -526,6 +527,8 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
             {" "}o el historial de cada sorteo.
           </p>
         </section>
+
+        <EnlaceCalculadoras />
       </main>
 
       <PreguntasFrecuentes
