@@ -97,7 +97,9 @@ def buscar_video_pixabay(nombre, carpeta, otros_destinos):
     for v in datos.get("hits", []):
         etiquetas = v.get("tags", "").lower()
         if lugar in etiquetas and "dominican" in etiquetas and not any(a in etiquetas for a in ajenos):
-            archivo = v["videos"].get("medium") or v["videos"].get("large")
+
+            # Primero la version Full HD: la de 720p se ve borrosa al llenar la pantalla vertical.
+            archivo = next((v["videos"][k] for k in ("large", "medium") if v["videos"].get(k, {}).get("url")), None)
             if not archivo or not archivo.get("url"):
                 continue
             destino = os.path.join(carpeta, "pixabay_tmp.mp4")
@@ -133,7 +135,7 @@ class TomaFoto:
 class TomaVideo:
     def __init__(self, ruta, duracion, ffmpeg):
         cmd = [ffmpeg, "-v", "error", "-i", ruta, "-t", f"{duracion:.2f}",
-               "-vf", f"scale=-2:{H},crop={W}:{H},fps={FPS}", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"]
+               "-vf", f"scale=-2:{H}:flags=lanczos,crop={W}:{H},fps={FPS}", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"]
         crudo = subprocess.run(cmd, capture_output=True, check=True).stdout
         n = len(crudo) // (W * H * 3)
         self.cuadros = [Image.frombuffer("RGB", (W, H), crudo[i * W * H * 3:(i + 1) * W * H * 3]) for i in range(n)]
@@ -274,8 +276,8 @@ def main():
     leyendas_capa = [capa_leyenda(ley) for _, ley in tomas]
     sin_audio = salida + ".sinaudio.mp4"
     cmd = [ffmpeg, "-y", "-v", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
-           # Tope de bitrate: el video se guarda en el repositorio cada dia (unos 4 MB).
-           "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "26", "-maxrate", "2M", "-bufsize", "4M", "-preset", "veryfast",
+           # Calidad HD con tope de bitrate: el video se guarda en el repositorio cada dia (unos 6-10 MB).
+           "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "21", "-maxrate", "5M", "-bufsize", "10M", "-preset", "veryfast",
            "-g", str(FPS * 2), "-keyint_min", str(FPS * 2), "-sc_threshold", "0", sin_audio]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     total = int(duracion * FPS)
