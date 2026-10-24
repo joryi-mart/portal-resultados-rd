@@ -6,11 +6,11 @@ const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variab
 const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "600"], variable: "--font-mono" });
 
 const COLOR_AZUL = "#1E4D8C";
-const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
+const COLOR_TEXTO_SECUNDARIO = "#2E3B48";
 
 export const metadata = {
   title: "Contacto",
-  description: "Cómo escribirle a La Bankera RD por correo o por Facebook.",
+  description: "Escríbele a La Bankera RD, desde Santo Domingo, República Dominicana: por correo a contacto@labankerard.com o por Facebook. Respondemos en 24 a 48 horas.",
   alternates: { canonical: "https://labankerard.com/contacto" },
 };
 
@@ -23,26 +23,33 @@ export default function ContactoPage() {
           <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold text-[#FBF7EE] sm:text-4xl">
             Contacto
           </h1>
-          <p className="mt-2 font-mono text-sm text-[#D5DEEA]">
-            La Bankera RD · labankerard.com
+          <p className="mt-2 text-base text-[#E6ECF3]">
+            La Bankera RD · Santo Domingo, República Dominicana
           </p>
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-6 py-10 sm:px-10">
-        <p className="mb-8 text-base leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+        <p className="mb-8 text-lg leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
           ¿Tienes una pregunta, viste un dato incorrecto, o quieres proponernos algo? Escríbenos por cualquiera de
-          estos medios.
+          estos medios. <strong className="text-[#10203A]">Respondemos en 24 a 48 horas.</strong>
         </p>
 
-        <div className="mb-4 flex items-center gap-4 rounded-xl border border-[#10203A]/12 bg-white p-5">
-          <span className="text-2xl">✉️</span>
-          <div>
-            <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Correo</p>
-            <a href="mailto:contacto@labankerard.com" className="font-mono text-sm underline" style={{ color: COLOR_AZUL }}>
-              contacto@labankerard.com
-            </a>
+        <div className="mb-4 rounded-xl border border-[#10203A]/12 bg-white p-5">
+          <div className="flex items-center gap-4">
+            <span className="text-2xl">✉️</span>
+            <div>
+              <p className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Correo</p>
+              <p className="text-lg font-semibold" style={{ color: COLOR_TEXTO_SECUNDARIO }}>contacto@labankerard.com</p>
+            </div>
           </div>
+          <a
+            href="mailto:contacto@labankerard.com"
+            className="mt-4 flex min-h-[52px] items-center justify-center rounded-xl text-lg font-bold text-white hover:opacity-90"
+            style={{ backgroundColor: COLOR_AZUL }}
+          >
+            Escribir un correo
+          </a>
         </div>
 
         <a
@@ -53,12 +60,12 @@ export default function ContactoPage() {
         >
           <span className="text-2xl">📘</span>
           <div>
-            <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Facebook</p>
-            <p className="font-mono text-sm" style={{ color: COLOR_AZUL }}>la bankera RD</p>
+            <p className="font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">Facebook</p>
+            <p className="text-lg font-semibold underline" style={{ color: COLOR_AZUL }}>La Bankera RD</p>
           </div>
         </a>
 
-        <p className="text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
+        <p className="text-base leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
           Recuerda que La Bankera RD es un portal informativo, independiente y no oficial. No gestionamos jugadas,
           apuestas ni reclamos de premios: para eso, contacta directamente a la lotería correspondiente.
         </p>
