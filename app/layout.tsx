@@ -96,6 +96,14 @@ export default function RootLayout({
         />
         <GoogleAnalytics />
         <RegistrarServiceWorker />
+        {/* Google AdSense. Va como <script async> normal (no next/script)
+            para que el verificador de AdSense lo vea en el HTML de cada
+            pagina; async hace que no frene la carga de los resultados. */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5924926013371020"
+          crossOrigin="anonymous"
+        ></script>
       </head>
       <body className="min-h-full flex flex-col">
         <div className="sticky top-0 z-50 border-b border-white/10 bg-[#10203A] px-4 py-2 shadow-md sm:px-8">
