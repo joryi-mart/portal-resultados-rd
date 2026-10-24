@@ -39,6 +39,40 @@ function formatearDias(diasSemana: string) {
   return letras.map(nombreDia).join(", ");
 }
 
+const NOMBRES_DIAS: Record<string, string> = { L: "lunes", M: "martes", X: "miércoles", J: "jueves", V: "viernes", S: "sábado", D: "domingo" };
+
+// "todos los días", "de lunes a sábado" o "lunes y jueves", para usar dentro
+// de una frase.
+function diasEnFrase(diasSemana: string) {
+  const letras = (diasSemana || "").split(",").map(function (l) { return l.trim(); }).filter(Boolean);
+  if (letras.length === 0 || letras.length === 7) return "todos los días";
+  if (letras.length === 6 && !letras.includes("D")) return "de lunes a sábado";
+  const nombres = letras.map(function (l) { return NOMBRES_DIAS[l] || l; });
+  return nombres.length === 1 ? `los ${nombres[0]}` : `${nombres.slice(0, -1).join(", ")} y ${nombres[nombres.length - 1]}`;
+}
+
+// "viernes 23 de octubre" (con año si se pide).
+function fechaEnTexto(fechaISO: string, conAno: boolean) {
+  return new Date(fechaISO + "T12:00:00Z")
+    .toLocaleDateString("es-DO", { weekday: "long", day: "numeric", month: "long", ...(conAno ? { year: "numeric" } : {}), timeZone: "UTC" })
+    .replace(",", "");
+}
+
+// Explicacion corta de como se juega, segun cuantos numeros salen en el sorteo.
+function comoSeJuega(nombreSorteo: string, cantidadNumeros: number) {
+  if (/kino/i.test(nombreSorteo)) return "Salen 20 números del 01 al 80. Eliges tus números y ganas según cuántos aciertes.";
+  if (cantidadNumeros === 1) return "Sale un solo número del 00 al 99. Ganas si tu número es igual al que sale.";
+  if (cantidadNumeros === 2) return "Salen 2 números del 00 al 99. Se juega como un palé: ganas si aciertas los dos.";
+  if (cantidadNumeros === 3) return "Salen 3 números del 00 al 99: primer, segundo y tercer premio. Puedes jugar quiniela (un número), palé (dos números) o tripleta (los tres).";
+  if (cantidadNumeros > 3) return `Salen ${cantidadNumeros} números. Eliges tus números y, mientras más aciertes, mayor es el premio.`;
+  return "";
+}
+
+// "10:30 PM", el formato que la gente escribe en Google.
+function horaParaTitulo(hora24: string) {
+  return formatearHora12(hora24).replace("p.m.", "PM").replace("a.m.", "AM");
+}
+
 function formatearHora12(hora24: string) {
   if (!hora24) return "";
   const partes = hora24.split(":");
@@ -57,6 +91,14 @@ function formatearHora12(hora24: string) {
 const HORA_DOMINGO_SORTEOS: Record<number, string> = {
   65: "15:55", 66: "15:55", 67: "15:55", 68: "15:55", 63: "18:00",
 };
+// Dias en que se juega el sorteo. Si tiene hora especial de domingo, se juega
+// tambien el domingo aunque dias_semana no lo diga (ej. Quiniela Nacional).
+function diasDelSorteo(sorteo: { id: number; dias_semana: string }) {
+  const dias = sorteo.dias_semana || "";
+  if (HORA_DOMINGO_SORTEOS[sorteo.id] && dias && !dias.split(",").map(function (l) { return l.trim(); }).includes("D")) return dias + ",D";
+  return dias;
+}
+
 function horaSorteoEfectiva(sorteoId: number, hora24: string, fechaISO: string) {
   const esDomingo = new Date(fechaISO + "T00:00:00").getDay() === 0;
   if (esDomingo && HORA_DOMINGO_SORTEOS[sorteoId]) return HORA_DOMINGO_SORTEOS[sorteoId];
@@ -120,7 +162,7 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
   if (!encontrado) return { title: "Sorteo no encontrado" };
 
   const { loteria, sorteo } = encontrado;
-  const horaTexto = formatearHora12(sorteo.hora_sorteo);
+  const horaTexto = horaParaTitulo(sorteo.hora_sorteo);
   // El nombre del sorteo a veces ya incluye el de la loteria (ej. "Quiniela
   // Loteka" en Loteka, "Quiniela Real" en Loteria Real): si lo repetimos se
   // ve como "Quiniela Loteka de Loteka", asi que lo omitimos en ese caso.
@@ -140,16 +182,18 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
   const sorteoYaIncluyeLoteria =
     sorteo.nombre.toLowerCase().includes(nombreCortoLoteria.toLowerCase()) ||
     OMITIR_NOMBRE_LOTERIA_EN_TITULO.includes(loteria.slug);
-  // Titulos escritos con las palabras exactas que la gente busca en Google
+  // Nombres escritos con las palabras exactas que la gente busca en Google
   // (sacadas de Search Console), para los sorteos con muchas impresiones.
-  const TITULOS_ESPECIALES: Record<string, string> = {
-    "real/loto-pool-noche": "Loto Pool Real Noche (8:00 PM) — Resultados de hoy",
+  const NOMBRES_ESPECIALES: Record<string, string> = {
+    "real/loto-pool-noche": "Loto Pool Real Noche",
   };
-  const titulo = TITULOS_ESPECIALES[`${params.slug}/${params.sorteoSlug}`]
-    || (sorteoYaIncluyeLoteria
-      ? `${sorteo.nombre} — ${horaTexto}`
-      : `${sorteo.nombre} (${nombreCortoLoteria}) — ${horaTexto}`);
-  const descripcion = `Número ganador de ${sorteo.nombre} (${loteria.nombre}) en vivo y en directo, sorteo de las ${horaTexto} de hoy. Resultado actualizado al instante en La Bankera RD.`;
+  const nombreBuscado = NOMBRES_ESPECIALES[`${params.slug}/${params.sorteoSlug}`]
+    || (sorteoYaIncluyeLoteria ? sorteo.nombre : `${sorteo.nombre} (${nombreCortoLoteria})`);
+  // El titulo lleva "Hoy" pero NO la fecha: Google guarda el titulo varios
+  // dias y una fecha vieja en el buscador haria pensar que la pagina esta
+  // atrasada. La fecha va en la descripcion, que Google refresca mas seguido.
+  const titulo = `${nombreBuscado} Hoy: Resultados en Vivo (${horaTexto})`;
+  const descripcion = `Resultado de ${sorteo.nombre} hoy, ${fechaEnTexto(hoyISO(), true)}. Sorteo de las ${horaTexto}, ${diasEnFrase(diasDelSorteo(sorteo))}. Números ganadores al instante y últimos 7 días.`;
 
   return {
     title: titulo,
@@ -176,7 +220,9 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
   const ultimosResultados = sorteo.resultados
     .slice()
     .sort(function (a, b) { return b.fecha.localeCompare(a.fecha); })
-    .slice(0, 10);
+    .slice(0, 7);
+  const cantidadNumeros = ultimosResultados.length > 0 ? ultimosResultados[0].numeros.split("-").length : 0;
+  const textoComoSeJuega = comoSeJuega(sorteo.nombre, cantidadNumeros);
 
   const datosEstructurados = resultadoHoy
     ? {
@@ -220,7 +266,7 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
 
       <main className="mx-auto max-w-3xl px-6 py-10 sm:px-10">
         <div className="rounded-xl border border-[#10203A]/15 bg-white p-5">
-          <p className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Resultado de hoy</p>
+          <p className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Resultado de hoy, {fechaEnTexto(hoy, false)}</p>
           {numeros.length > 0 ? (
             <div className="flex flex-wrap items-center gap-2">
               {numeros.map(function (n, i) {
@@ -269,23 +315,40 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
 
         {ultimosResultados.length > 0 ? (
           <div className="mt-8 rounded-xl border border-[#10203A]/15 bg-white p-5">
-            <p className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Últimos resultados de {sorteo.nombre}</p>
+            <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">{sorteo.nombre}: últimos 7 días</h2>
             <div className="flex flex-col">
               {ultimosResultados.map(function (r, i) {
+                const fechaTexto = fechaEnTexto(r.fecha, false);
                 return (
                   <a
                     key={i}
                     href={"/" + params.slug + "/" + r.fecha}
-                    className="flex items-center justify-between gap-3 border-t border-[#10203A]/6 py-2.5 first:border-t-0 hover:bg-[#FBF7EE]"
+                    title={`Resultados de ${loteria.nombre} del ${fechaTexto}`}
+                    className="flex items-center justify-between gap-3 border-t border-[#10203A]/6 py-3 first:border-t-0 hover:bg-[#FBF7EE]"
                   >
-                    <span className="shrink-0 font-mono text-xs font-bold" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{r.fecha}</span>
-                    <span className="font-mono text-sm font-semibold text-[#10203A]">{r.numeros}</span>
+                    <span className="text-base font-semibold capitalize text-[#2E3B48] underline decoration-[#1E4D8C]/30 underline-offset-4">{fechaTexto}</span>
+                    <span className="shrink-0 font-mono text-base font-bold text-[#10203A]">{r.numeros}</span>
                   </a>
                 );
               })}
             </div>
           </div>
         ) : null}
+
+        <div className="mt-8 rounded-xl border border-[#10203A]/15 bg-white p-5">
+          <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Sobre {sorteo.nombre}</h2>
+          <ul className="flex flex-col gap-2.5 text-base leading-relaxed text-[#2E3B48]">
+            {sorteo.hora_sorteo ? (
+              <li>
+                <strong>🕗 Hora:</strong> {formatearHora12(sorteo.hora_sorteo)} (hora de República Dominicana)
+                {HORA_DOMINGO_SORTEOS[sorteo.id] ? `; los domingos a las ${formatearHora12(HORA_DOMINGO_SORTEOS[sorteo.id])}` : ""}.
+              </li>
+            ) : null}
+            <li><strong>📅 Días:</strong> se juega {diasEnFrase(diasDelSorteo(sorteo))}.</li>
+            {textoComoSeJuega ? <li><strong>🎯 Cómo se juega:</strong> {textoComoSeJuega}</li> : null}
+            <li>Las jugadas se hacen en las bancas de lotería autorizadas. La Bankera RD solo informa los resultados.</li>
+          </ul>
+        </div>
       </main>
 
       <PreguntasFrecuentes

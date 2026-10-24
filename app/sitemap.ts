@@ -386,10 +386,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
-  // Paginas por fecha de los ultimos 14 dias, solo las fechas que tienen
+  // Paginas por fecha de los ultimos 60 dias, solo las fechas que tienen
   // resultados reales (evita listar paginas vacias). Son las que hoy traen
   // visitas desde Google, y hasta ahora solo se descubrian siguiendo enlaces.
-  const DIAS_FECHAS_EN_SITEMAP = 14;
+  // (Antes eran 14 dias; se amplio para que el mes completo este en el mapa.)
+  const DIAS_FECHAS_EN_SITEMAP = 60;
   const hoyRD = new Date(Date.now() - 4 * 60 * 60 * 1000);
   const hoyISOSitemap = hoyRD.toISOString().slice(0, 10);
   const desdeISO = new Date(hoyRD.getTime() - DIAS_FECHAS_EN_SITEMAP * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
