@@ -97,6 +97,18 @@ function formatearHora12(hora24: string) {
 const HORA_DOMINGO_SORTEOS: Record<number, string> = {
   65: "15:55", 66: "15:55", 67: "15:55", 68: "15:55", 63: "18:00",
 };
+// Loterias de Estados Unidos: sortean con la hora de Nueva York, que cambia
+// en noviembre y en marzo (RD no cambia). Mucha de su gente vive alla, asi que
+// se muestran las dos horas.
+const LOTERIAS_EEUU = ["new-york", "florida", "loterias-americanas", "powerball", "mega-millions"];
+
+// "10:30 PM" en Nueva York para una hora de RD en esa fecha (RD es UTC-4 fijo).
+function horaEnNuevaYork(hora24: string, fechaISO: string) {
+  const [h, m] = hora24.split(":").map(function (x) { return parseInt(x, 10); });
+  const [a, mes, d] = fechaISO.split("-").map(function (x) { return parseInt(x, 10); });
+  return new Date(Date.UTC(a, mes - 1, d, h + 4, m)).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" });
+}
+
 // Dias en que se juega el sorteo. Si tiene hora especial de domingo, se juega
 // tambien el domingo aunque dias_semana no lo diga (ej. Quiniela Nacional).
 function diasDelSorteo(sorteo: { id: number; dias_semana: string }) {
@@ -235,6 +247,10 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
   const cantidadNumeros = ultimosResultados.length > 0 ? ultimosResultados[0].numeros.split("-").length : 0;
   const textoComoSeJuega = comoSeJuega(sorteo.nombre, cantidadNumeros);
 
+  const esEEUU = LOTERIAS_EEUU.includes(params.slug);
+  // Como lo escribe la gente en Google ("la nueva york noche", "noyok").
+  const nombreConAlias = params.slug === "new-york" ? `${sorteo.nombre} (Nueva York)` : sorteo.nombre;
+
   const descontinuado = SORTEOS_DESCONTINUADOS.includes(sorteo.id);
   // Para la pagina de un sorteo que ya no existe: los que si se juegan en esa
   // loteria, con su ultimo resultado.
@@ -284,7 +300,7 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
           <p className="mt-2 font-mono text-sm text-[#D5DEEA]">
             {descontinuado
               ? `${loteria.nombre} · Ya no se juega`
-              : `${loteria.nombre} · ${sorteo.hora_sorteo ? formatearHora12(horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, hoy)) : "Hora por confirmar"} · ${formatearDias(sorteo.dias_semana)}`}
+              : `${loteria.nombre} · ${sorteo.hora_sorteo ? horaParaTitulo(horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, hoy)) + " en RD" + (esEEUU ? ` (${horaEnNuevaYork(sorteo.hora_sorteo, hoy)} en Nueva York)` : "") : "Hora por confirmar"} · ${formatearDias(sorteo.dias_semana)}`}
           </p>
         </div>
       </header>
@@ -400,7 +416,14 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
             {sorteo.hora_sorteo ? (
               <li>
                 <strong>🕗 Hora:</strong> {formatearHora12(sorteo.hora_sorteo)} (hora de República Dominicana)
+                {esEEUU ? `, que son las ${horaEnNuevaYork(sorteo.hora_sorteo, hoy)} en Nueva York` : ""}
                 {HORA_DOMINGO_SORTEOS[sorteo.id] ? `; los domingos a las ${formatearHora12(HORA_DOMINGO_SORTEOS[sorteo.id])}` : ""}.
+              </li>
+            ) : null}
+            {esEEUU ? (
+              <li>
+                <strong>🇺🇸 Cambio de hora:</strong> de noviembre a marzo Estados Unidos atrasa su reloj una hora y República
+                Dominicana no, así que en esos meses este sorteo sale una hora más tarde en RD.
               </li>
             ) : null}
             <li><strong>📅 Días:</strong> se juega {diasEnFrase(diasDelSorteo(sorteo))}.</li>
@@ -425,16 +448,18 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
           },
         ] : [
           {
-            pregunta: `¿Qué número salió hoy en ${sorteo.nombre}?`,
+            pregunta: esEEUU ? `¿Cuáles salieron hoy en la ${nombreConAlias}?` : `¿Qué número salió hoy en ${sorteo.nombre}?`,
             respuesta: numeros.length > 0
               ? `El resultado de hoy de ${sorteo.nombre} fue ${resultadoHoy!.numeros}. Lo puedes ver arriba en esta página, se actualiza automáticamente.`
               : `Todavía no ha salido el resultado de hoy de ${sorteo.nombre}. En cuanto se publique, aparece arriba en esta página sin necesidad de recargarla.`,
           },
           {
-            pregunta: `¿A qué hora es el sorteo de ${sorteo.nombre}?`,
-            respuesta: sorteo.hora_sorteo
-              ? `${sorteo.nombre} sortea a las ${formatearHora12(horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, hoy))} (hora de República Dominicana), ${formatearDias(sorteo.dias_semana).toLowerCase()}.`
-              : `Consulta el horario de ${sorteo.nombre} en la página de ${loteria.nombre}.`,
+            pregunta: esEEUU ? `¿A qué hora sale la ${sorteo.nombre} en República Dominicana?` : `¿A qué hora es el sorteo de ${sorteo.nombre}?`,
+            respuesta: !sorteo.hora_sorteo
+              ? `Consulta el horario de ${sorteo.nombre} en la página de ${loteria.nombre}.`
+              : esEEUU
+                ? `La ${sorteo.nombre} sale a las ${formatearHora12(sorteo.hora_sorteo)} en República Dominicana, que son las ${horaEnNuevaYork(sorteo.hora_sorteo, hoy)} en Nueva York, ${diasEnFrase(diasDelSorteo(sorteo))}. De noviembre a marzo sale una hora más tarde en RD, porque Estados Unidos atrasa su reloj y RD no.`
+                : `${sorteo.nombre} sortea a las ${formatearHora12(horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, hoy))} (hora de República Dominicana), ${formatearDias(sorteo.dias_semana).toLowerCase()}.`,
           },
           {
             pregunta: `¿Dónde veo el resultado de ${sorteo.nombre} en vivo?`,

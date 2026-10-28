@@ -165,9 +165,10 @@ const TITULOS_LOTERIA: Record<string, string> = {
   leidsa: "Leidsa: Resultados de Super Kino TV, Loto y Pega 3 en Vivo",
   loteka: "Loteka: Quiniela de las 7:55 y Mega Chances en Vivo",
   haiti: "Bolet Haití: Resultados de los 6 Sorteos en Vivo",
-  "new-york": "New York Tarde y Noche: Resultados en Vivo",
+  "new-york": "New York Tarde y Noche (Nueva York): Resultados en Vivo",
   anguila: "Anguila en Vivo: Sorteos de las 10, 1, 6 y 9",
-  florida: "Florida Día y Noche: Resultados en Vivo",
+  // La gente busca "florida noche" y "florida día" por separado (pos. 40-46).
+  florida: "Florida Noche y Florida Día: Resultados en Vivo y Horarios",
 };
 
 export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
