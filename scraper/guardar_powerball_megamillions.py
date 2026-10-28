@@ -30,9 +30,29 @@ MESES = {
 }
 
 
-def hoy_rd():
+def ahora_rd():
     # Republica Dominicana esta siempre en UTC-4 (no usa horario de verano).
-    return (datetime.now(timezone.utc) - timedelta(hours=4)).strftime("%Y-%m-%d")
+    return datetime.now(timezone.utc) - timedelta(hours=4)
+
+
+def hoy_rd():
+    return ahora_rd().strftime("%Y-%m-%d")
+
+
+# Los dos sorteos son a las 11 PM de Nueva York, y el resultado a veces sale
+# despues de la medianoche de RD (el sabado 24-oct-2026 se perdio asi). Cuando
+# Nueva York pasa a horario de invierno (noviembre a marzo) el sorteo queda a
+# las 11:59 PM de RD y el resultado sale casi siempre despues de las 12. Por
+# eso, de madrugada tambien se acepta el sorteo de "ayer".
+HORAS_MADRUGADA = 6
+
+
+def fechas_aceptadas():
+    ahora = ahora_rd()
+    fechas = [ahora.strftime("%Y-%m-%d")]
+    if ahora.hour < HORAS_MADRUGADA:
+        fechas.append((ahora - timedelta(days=1)).strftime("%Y-%m-%d"))
+    return fechas
 
 
 def obtener_powerball(hoy):
@@ -125,17 +145,24 @@ def main():
         return
 
     hoy = hoy_rd()
-    print(f"Hoy (RD): {hoy}\n")
+    fechas = fechas_aceptadas()
+    print(f"Hoy (RD): {hoy} | fechas aceptadas: {', '.join(fechas)}\n")
 
+    # PowerBall se pide por fecha, pero la pagina devuelve el ultimo sorteo
+    # hasta esa fecha (pedir el domingo trae el del sabado), y a veces pedir
+    # la fecha exacta no responde. Se prueba cada fecha aceptada y se guarda
+    # el primer resultado cuya fecha real sea una de las aceptadas.
     try:
-        r = obtener_powerball(hoy)
-        if not r:
-            print("  ⚠️ No se pudo leer PowerBall")
-        elif r["fecha"] != hoy:
-            print(f"  ⏳ PowerBall: el ultimo sorteo es del {r['fecha']}, no de hoy")
-        else:
-            accion = guardar_en_supabase(112, r["fecha"], r["numeros"], "powerball.com")
-            print(f"  ✅ PowerBall: {r['numeros']} ({accion})")
+        guardado = False
+        for fecha in fechas:
+            r = obtener_powerball(fecha)
+            if r and r["fecha"] in fechas:
+                accion = guardar_en_supabase(112, r["fecha"], r["numeros"], "powerball.com")
+                print(f"  ✅ PowerBall {r['fecha']}: {r['numeros']} ({accion})")
+                guardado = True
+                break
+        if not guardado:
+            print(f"  ⏳ PowerBall: sin resultado para {', '.join(fechas)}")
     except Exception as e:
         print(f"  ❌ Error con PowerBall: {e}")
 
@@ -143,8 +170,8 @@ def main():
         r = obtener_mega_millions(hoy)
         if not r:
             print("  ⚠️ No se pudo leer Mega Millions")
-        elif r["fecha"] != hoy:
-            print(f"  ⏳ Mega Millions: el ultimo sorteo es del {r['fecha']}, no de hoy")
+        elif r["fecha"] not in fechas:
+            print(f"  ⏳ Mega Millions: el ultimo sorteo es del {r['fecha']}, no de {', '.join(fechas)}")
         else:
             accion = guardar_en_supabase(117, r["fecha"], r["numeros"], "megamillions.com")
             print(f"  ✅ Mega Millions: {r['numeros']} ({accion})")
