@@ -44,6 +44,11 @@ function formatearFechaLarga(fechaISO: string) {
   return d.toLocaleDateString("es-DO", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 }
 
+// Dias completos entre dos fechas "AAAA-MM-DD".
+function diasEntre(desdeISO: string, hastaISO: string) {
+  return Math.round((Date.parse(hastaISO + "T00:00:00Z") - Date.parse(desdeISO + "T00:00:00Z")) / 86400000);
+}
+
 function formatearFechaBreve(fechaISO: string) {
   const d = new Date(fechaISO + "T00:00:00");
   return d.toLocaleDateString("es-DO", { weekday: "long", day: "numeric", month: "long" });
@@ -358,6 +363,33 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
                           {anterior.numeros.split("-").join(" - ")}
                         </a>
                       </p>
+                    );
+                  })()}
+
+                  {(function () {
+                    // Datos propios de cada numero (cuando salio por ultima vez en este
+                    // mismo sorteo): contenido que no tienen las otras paginas de
+                    // resultados, que solo copian los numeros. Solo para sorteos de
+                    // pocos numeros (no Super Kino, que trae 20).
+                    if (numeros.length === 0 || numeros.length > 6) return null;
+                    const previos = sorteo.resultados
+                      .filter(function (r) { return r.fecha < params.fecha; })
+                      .sort(function (a, b) { return b.fecha.localeCompare(a.fecha); });
+                    if (previos.length < 5) return null;
+                    const datos = Array.from(new Set(numeros)).map(function (n) {
+                      const ultimo = previos.find(function (r) { return r.numeros.split("-").includes(n); });
+                      if (!ultimo) return `El ${n} no había salido en este sorteo desde que empezamos a guardar sus resultados (${formatearFechaBreve(previos[previos.length - 1].fecha)}).`;
+                      if (ultimo === previos[0]) return `El ${n} repitió: también salió en el sorteo anterior (${formatearFechaBreve(ultimo.fecha)}).`;
+                      const dias = diasEntre(ultimo.fecha, params.fecha);
+                      return `El ${n} no salía desde hace ${dias} ${dias === 1 ? "día" : "días"} (${formatearFechaBreve(ultimo.fecha)}).`;
+                    });
+                    return (
+                      <div className="mt-3 rounded-lg bg-[#FBF7EE] px-4 py-3">
+                        <p className="mb-1.5 text-sm font-bold text-[#10203A]">Datos de estos números</p>
+                        <ul className="flex flex-col gap-1 text-sm leading-relaxed text-[#2E3B48]">
+                          {datos.map(function (d) { return <li key={d}>{d}</li>; })}
+                        </ul>
+                      </div>
                     );
                   })()}
                 </div>
