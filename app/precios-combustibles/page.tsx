@@ -26,8 +26,8 @@ export const metadata = {
 // nuevo cada semana (normalmente los viernes/sabados). Estos son los precios
 // del aviso oficial vigente al actualizar esta pagina — revisar micm.gob.do
 // para la semana mas reciente antes de volver a actualizar este arreglo.
-// Fuente: aviso firmado el 09/oct/2026 por el Ministro Eduardo Sanz Lovaton.
-const SEMANA_VIGENTE = "10 al 16 de octubre de 2026";
+// Fuente: aviso firmado el 23/oct/2026 por el Ministro Eduardo Sanz Lovaton.
+const SEMANA_VIGENTE = "24 al 30 de octubre de 2026";
 const PRECIOS = [
   { nombre: "Gasolina Premium", precio: "358.10" },
   { nombre: "Gasolina Regular", precio: "317.50" },
