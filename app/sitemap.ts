@@ -2,6 +2,7 @@ import { MetadataRoute } from "next";
 import { supabase } from "@/lib/supabase";
 import { slugSorteo } from "@/lib/slug";
 import { CIUDADES } from "./turismo/datos";
+import { mesesDisponibles, slugMes } from "@/lib/informeMensual";
 
 const SITIO = "https://labankerard.com";
 
@@ -221,6 +222,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 0.6,
     },
+    {
+      url: `${SITIO}/informe`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    // Un informe por cada mes ya terminado (lib/informeMensual.ts).
+    ...mesesDisponibles().map(function (m) {
+      return {
+        url: `${SITIO}/informe/${slugMes(m)}`,
+        lastModified: new Date(Date.UTC(m.anio, m.mes, 1)),
+        changeFrequency: "yearly" as const,
+        priority: 0.6,
+      };
+    }),
     {
       url: `${SITIO}/numero`,
       lastModified: new Date(),

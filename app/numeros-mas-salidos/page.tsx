@@ -172,6 +172,14 @@ export default async function NumerosMasSalidosPage() {
           </p>
         </div>
 
+        <a
+          href="/informe"
+          className="mb-8 flex min-h-[56px] items-center justify-between rounded-xl border border-[#10203A]/12 bg-white px-5 text-base font-bold text-[#10203A] hover:shadow-md"
+        >
+          <span>📊 Informe del mes: los números que más salieron cada mes</span>
+          <span style={{ color: COLOR_AZUL }}>→</span>
+        </a>
+
         <p className="mb-8 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
           ¿Buscas un número en específico? Entra a{" "}
           <a href="/numero" className="underline" style={{ color: COLOR_AZUL }}>

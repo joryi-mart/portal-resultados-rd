@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 const COOKIE_NAME = "analytics_auth";
 const DIAS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-const PREFIJOS = ["que-paso-", "efemeride-", "dato-", "reel-"];
+const PREFIJOS = ["que-paso-", "efemeride-", "dato-", "reel-", "informe-"];
 
 type Publicacion = { id: string; nombre: string; dias: number[]; hora: number; ruta: string };
 type Fila = { loteria_slug: string; fecha: string; post_id: string | null };
