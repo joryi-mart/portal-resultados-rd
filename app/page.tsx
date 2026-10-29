@@ -238,6 +238,36 @@ export default async function Home() {
       />
 
       <main className="mx-auto max-w-7xl px-4 pb-6 pt-3 sm:px-8 sm:pt-4 lg:px-12">
+        {/* Buscador destacado: es la segunda pagina mas vista del sitio
+            (Analytics, oct-2026). Va arriba de los resultados, en una franja
+            delgada, porque el bloque de resultados es muy largo y debajo de
+            el casi nadie lo veria. Se usa sin salir de la portada. */}
+        <form
+          action="/buscador"
+          method="get"
+          className="mb-4 flex flex-col gap-2 rounded-2xl border-2 border-[#E7A63C] bg-white px-4 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-5"
+        >
+          <label htmlFor="numero-portada" className="text-lg font-extrabold text-[#10203A] sm:shrink-0">
+            🔎 ¿Salió tu número? <span className="hidden font-semibold text-[#2E3B48] sm:inline">Mira cuándo salió por última vez</span>
+          </label>
+          <div className="flex flex-1 gap-2">
+            <input
+              id="numero-portada"
+              name="numero"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]{1,2}"
+              maxLength={2}
+              required
+              placeholder="Ej: 27"
+              className="h-12 w-full min-w-0 rounded-xl border-2 border-[#10203A]/20 bg-white px-4 text-center font-mono text-2xl font-bold text-[#10203A] placeholder:text-[#7B858F] focus:border-[#E7A63C] focus:outline-none sm:max-w-[160px]"
+            />
+            <button type="submit" className="h-12 shrink-0 rounded-xl bg-[#10203A] px-6 text-lg font-extrabold text-[#FBF7EE] hover:opacity-90">
+              Buscar
+            </button>
+          </div>
+        </form>
+
         <Suspense
           fallback={
             <>
@@ -289,17 +319,6 @@ export default async function Home() {
             <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{listaLoterias.length} loterías activas y sus horarios</p>
           </div>
           <span className="font-mono text-sm font-semibold text-[#1E4D8C]">Ver todas →</span>
-        </a>
-
-        <a
-          href="/buscador"
-          className="mb-8 flex items-center justify-between rounded-xl border border-[#10203A]/12 bg-white px-5 py-4 shadow-[0_1px_3px_rgba(16,32,58,0.08)] transition hover:shadow-md"
-        >
-          <div>
-            <p className="font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Buscador de números</p>
-            <p className="font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>¿Cuándo salió tu número por última vez?</p>
-          </div>
-          <span className="font-mono text-sm font-semibold text-[#1E4D8C]">Buscar →</span>
         </a>
 
         <div className="mb-8 rounded-xl border border-[#10203A]/12 bg-white px-5 py-4 shadow-[0_1px_3px_rgba(16,32,58,0.08)]">
