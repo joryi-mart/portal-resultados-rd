@@ -1,4 +1,3 @@
-import RelojDigital from "./RelojDigital";
 import NotificacionesPush from "./NotificacionesPush";
 
 export type Resultado = { numeros: string; fecha: string; creado_en: string };
@@ -316,7 +315,7 @@ function NavegacionFechaMovil(props: { fechaActual: string }) {
   );
 }
 
-export function PanelSuperior(props: { cambios: Cambio[]; fechaActual: string }) {
+export function PanelSuperior(props: { cambios: Cambio[]; fechaActual: string; horaUltimoResultado?: string | null }) {
   const cambios = props.cambios;
   const fechaActual = props.fechaActual;
   const dolar = cambios.find(function (c) { return c.moneda_origen === "USD"; });
@@ -329,10 +328,14 @@ export function PanelSuperior(props: { cambios: Cambio[]; fechaActual: string })
   const noHayManana = manana > hoy;
 
   return (
-    <div className="border-t border-white/10 pt-4">
-      <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3">
-        <div className="flex flex-nowrap items-center gap-x-2 overflow-x-auto sm:flex-wrap sm:gap-x-5 sm:gap-y-2 sm:overflow-visible">
-          <div className="shrink-0"><RelojDigital /></div>
+    <div className="border-t border-white/10 pt-2">
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+        <div className="flex flex-nowrap items-center gap-x-2 overflow-x-auto sm:flex-wrap sm:gap-x-4 sm:gap-y-2 sm:overflow-visible">
+          {props.horaUltimoResultado ? (
+            <span className="shrink-0 rounded-lg bg-white/8 px-2 py-1 font-mono text-xs font-semibold text-[#E7A63C] sm:px-3 sm:py-1.5 sm:text-sm">
+              Último resultado: {props.horaUltimoResultado}
+            </span>
+          ) : null}
           {(dolar || euro) ? (
             <>
               <span className="hidden font-[family-name:var(--font-display)] text-xs font-bold uppercase tracking-wide text-[#E7A63C] sm:inline">

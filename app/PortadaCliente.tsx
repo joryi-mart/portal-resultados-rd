@@ -25,16 +25,18 @@ export function PildoraEstado(props: { hoy: string }) {
   const fechaSeleccionada = usarFechaSeleccionada(props.hoy);
   const fechaTitulo = formatearFechaTitulo(fechaSeleccionada);
   return (
-    <div className="hidden items-center gap-2 self-start rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#E7A63C] sm:mr-24 sm:flex sm:self-auto lg:mr-40">
+    <div className="hidden items-center gap-2 self-start rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#E7A63C] sm:mr-24 sm:flex sm:self-auto lg:mr-28">
       <span className="h-2 w-2 animate-pulse rounded-full bg-[#E4573D]" />
       {fechaSeleccionada === props.hoy ? "En vivo" : "Consultando"} · {fechaTitulo}
     </div>
   );
 }
 
-export function PanelSuperiorConFecha(props: { cambios: Cambio[]; hoy: string }) {
+export function PanelSuperiorConFecha(props: { cambios: Cambio[]; hoy: string; horaUltimoResultado?: string | null }) {
   const fechaSeleccionada = usarFechaSeleccionada(props.hoy);
-  return <PanelSuperior cambios={props.cambios} fechaActual={fechaSeleccionada} />;
+  // La hora del ultimo resultado es de hoy: no se muestra si se consulta otro dia.
+  const hora = fechaSeleccionada === props.hoy ? props.horaUltimoResultado : null;
+  return <PanelSuperior cambios={props.cambios} fechaActual={fechaSeleccionada} horaUltimoResultado={hora} />;
 }
 
 // Resultados de un dia sacados de las mismas loterias que usa el pizarron (antes

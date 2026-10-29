@@ -196,44 +196,27 @@ export default async function Home() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }}
         />
       ) : null}
-      <header className="relative overflow-hidden bg-[#10203A] px-6 py-5 sm:px-10 sm:py-6">
+      <header className="relative overflow-hidden bg-[#10203A] px-4 py-3 sm:px-10 sm:py-4">
         <div className="pointer-events-none absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "radial-gradient(#FBF7EE 1px, transparent 1px)", backgroundSize: "18px 18px" }} />
         <Image
           src="/tambora.png"
           alt="Tambora dominicana pintada con la bandera de República Dominicana"
           width={144}
           height={144}
-          className="pointer-events-none absolute right-3 -top-1 hidden h-28 w-28 object-contain sm:block lg:right-11 lg:h-36 lg:w-36"
+          className="pointer-events-none absolute right-3 -top-2 hidden h-20 w-20 object-contain sm:block lg:right-8 lg:h-24 lg:w-24"
           style={{ transform: "rotate(-30deg)", filter: "drop-shadow(0 0 1.5px #9AA5AF) drop-shadow(0 0 1.5px #9AA5AF) drop-shadow(0 4px 8px rgba(0,0,0,0.35))" }}
         />
         <div className="relative mx-auto max-w-7xl">
-          <div className="mb-3 flex flex-col gap-3 border-b border-white/10 pb-3 sm:flex-row sm:items-center sm:justify-between">
-            <a href="/" className="flex shrink-0 items-center gap-2.5">
-              <Image
-                src="/logo-circulo.png"
-                alt="Logo de La Bankera RD"
-                width={40}
-                height={40}
-                priority
-                className="h-9 w-9 sm:h-10 sm:w-10"
-              />
-              <span className="font-[family-name:var(--font-display)] text-2xl font-bold leading-none text-[#FBF7EE] sm:text-2xl">
-                La Bankera<span className="text-[#E7A63C]">RD</span>
-              </span>
-              <Image src="/bandera-rd.svg" alt="Bandera de República Dominicana" width={30} height={20} className="h-5 w-[30px]" />
-              <Image
-                src="/tambora.png"
-                alt="Tambora dominicana pintada con la bandera de República Dominicana"
-                width={64}
-                height={64}
-                priority
-                className="h-11 w-11 object-contain sm:hidden"
-                style={{ transform: "rotate(-30deg)", filter: "drop-shadow(0 0 1.5px #9AA5AF) drop-shadow(0 2px 4px rgba(0,0,0,0.35))" }}
-              />
-            </a>
+          {/* Encabezado compacto: el logo ya esta en la barra fija de arriba
+              (layout), asi que aqui solo van el titulo y una linea de datos.
+              Asi los resultados quedan mas arriba en el celular. */}
+          <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <h1 className="text-center text-base font-bold leading-snug text-[#FBF7EE] sm:text-left sm:text-lg">
+              Resultados de loterías dominicanas hoy en vivo
+            </h1>
             <Suspense
               fallback={
-                <div className="hidden items-center gap-2 self-start rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#E7A63C] sm:mr-24 sm:flex sm:self-auto lg:mr-40">
+                <div className="hidden items-center gap-2 self-start rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#E7A63C] sm:mr-24 sm:flex sm:self-auto lg:mr-28">
                   <span className="h-2 w-2 animate-pulse rounded-full bg-[#E4573D]" />
                   En vivo · {fechaTitulo}
                 </div>
@@ -242,16 +225,8 @@ export default async function Home() {
               <PildoraEstado hoy={hoy} />
             </Suspense>
           </div>
-          <h1 className="mb-3 text-center text-sm font-semibold leading-relaxed text-[#FBF7EE] sm:text-left sm:text-base">
-            Resultados de loterías dominicanas hoy en vivo
-          </h1>
-          {horaUltimoResultado ? (
-            <p className="mb-3 text-center font-mono text-xs font-semibold text-[#E7A63C] sm:text-left">
-              Último resultado publicado hoy: {horaUltimoResultado}
-            </p>
-          ) : null}
-          <Suspense fallback={<PanelSuperior cambios={cambios} fechaActual={hoy} />}>
-            <PanelSuperiorConFecha cambios={cambios} hoy={hoy} />
+          <Suspense fallback={<PanelSuperior cambios={cambios} fechaActual={hoy} horaUltimoResultado={horaUltimoResultado} />}>
+            <PanelSuperiorConFecha cambios={cambios} hoy={hoy} horaUltimoResultado={horaUltimoResultado} />
           </Suspense>
         </div>
       </header>
