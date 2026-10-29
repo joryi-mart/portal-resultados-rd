@@ -214,9 +214,19 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
   const titulo = descontinuado
     ? `${nombreBuscado}: ya no se juega. Resultados de ${nombreCortoLoteria} hoy`
     : `${nombreBuscado} Hoy: Resultados en Vivo (${horaTexto})`;
+  // Con los numeros en la descripcion, quien busca "new york noche" ve en
+  // Google que la pagina tiene la respuesta (Search Console: 2.070
+  // impresiones y 1 clic en octubre con la descripcion sin numeros). Los
+  // sorteos de muchos numeros (Kino) no caben, para esos va sin numeros.
+  const ultimo = sorteo.resultados.slice().sort(function (a, b) { return b.fecha.localeCompare(a.fecha); })[0];
+  const numerosCaben = ultimo && ultimo.numeros.split("-").length <= 6;
   const descripcion = descontinuado
     ? `${sorteo.nombre} de ${loteria.nombre} ya no se sortea. Mira aquí los resultados de hoy de los sorteos que ${loteria.nombre} sí realiza.`
-    : `Resultado de ${sorteo.nombre} hoy, ${fechaEnTexto(hoyISO(), true)}. Sorteo de las ${horaTexto}, ${diasEnFrase(diasDelSorteo(sorteo))}. Números ganadores al instante y últimos 7 días.`;
+    : ultimo && numerosCaben && ultimo.fecha === hoyISO()
+      ? `${sorteo.nombre} hoy, ${fechaEnTexto(ultimo.fecha, false)}: salió ${ultimo.numeros}. Sorteo de las ${horaTexto}, ${diasEnFrase(diasDelSorteo(sorteo))}. Mira también los últimos 7 días.`
+      : ultimo && numerosCaben
+        ? `${sorteo.nombre} del ${fechaEnTexto(ultimo.fecha, false)}: salió ${ultimo.numeros}. El de hoy sale a las ${horaTexto} y aparece aquí al momento. Últimos 7 días y números calientes.`
+        : `Resultado de ${sorteo.nombre} hoy, ${fechaEnTexto(hoyISO(), true)}. Sorteo de las ${horaTexto}, ${diasEnFrase(diasDelSorteo(sorteo))}. Números ganadores al instante y últimos 7 días.`;
 
   return {
     title: titulo,
@@ -245,6 +255,16 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
     .sort(function (a, b) { return b.fecha.localeCompare(a.fecha); })
     .slice(0, 7);
   const cantidadNumeros = ultimosResultados.length > 0 ? ultimosResultados[0].numeros.split("-").length : 0;
+
+  // Si el de hoy aun no sale, arriba va el ultimo resultado en grande: quien
+  // busca "new york noche" por la manana quiere el de anoche, no un
+  // "Pendiente" (y Google, que visita casi siempre de dia, veia la pagina vacia).
+  const ultimoAnterior = !resultadoHoy ? ultimosResultados[0] : undefined;
+  const numerosUltimo = ultimoAnterior ? ultimoAnterior.numeros.split("-") : [];
+  const letraHoy = ["D", "L", "M", "X", "J", "V", "S"][new Date(hoy + "T12:00:00Z").getUTCDay()];
+  const letrasDias = diasDelSorteo(sorteo).split(",").map(function (l) { return l.trim(); }).filter(Boolean);
+  const seJuegaHoy = letrasDias.length === 0 || letrasDias.includes(letraHoy);
+  const horaHoyTexto = sorteo.hora_sorteo ? formatearHora12(horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, hoy)) : "";
   const textoComoSeJuega = comoSeJuega(sorteo.nombre, cantidadNumeros);
 
   const esEEUU = LOTERIAS_EEUU.includes(params.slug);
@@ -339,6 +359,23 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
           </div>
         ) : (
         <div className="rounded-xl border border-[#10203A]/15 bg-white p-5">
+          {ultimoAnterior ? (
+            <>
+              <p className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Último resultado: <span className="capitalize">{fechaEnTexto(ultimoAnterior.fecha, false)}</span></p>
+              <div className="flex flex-wrap items-center gap-2">
+                {numerosUltimo.map(function (n, i) {
+                  const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[sorteo.id];
+                  return <Bolita key={i} tamano={tamanoBolita(numerosUltimo.length)} color={colorPorPosicion ? colorPorPosicion(i, numerosUltimo.length) ?? undefined : undefined}>{n}</Bolita>;
+                })}
+              </div>
+              <p className="mt-4 rounded-lg bg-[#FBF7EE] px-3 py-2.5 text-base font-semibold text-[#2E3B48]">
+                {seJuegaHoy
+                  ? `🕗 El de hoy, ${fechaEnTexto(hoy, false)}, sale a las ${horaHoyTexto || "hora por confirmar"} y aparece aquí al momento, sin recargar.`
+                  : `Hoy, ${fechaEnTexto(hoy, false)}, no hay sorteo de ${sorteo.nombre}. Se juega ${diasEnFrase(diasDelSorteo(sorteo))}.`}
+              </p>
+            </>
+          ) : (
+          <>
           <p className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Resultado de hoy, {fechaEnTexto(hoy, false)}</p>
           {numeros.length > 0 ? (
             <div className="flex flex-wrap items-center gap-2">
@@ -351,6 +388,8 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
             <span className="inline-block rounded-full px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wide" style={{ backgroundColor: "#E4E8EB", color: "#7B858F" }}>
               Pendiente
             </span>
+          )}
+          </>
           )}
 
           {hayDatosSuficientes ? (
