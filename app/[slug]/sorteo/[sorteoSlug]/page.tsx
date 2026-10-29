@@ -6,6 +6,7 @@ import { slugSorteo } from "@/lib/slug";
 import { COLOR_POR_POSICION_SORTEOS } from "@/app/componentesResultados";
 import { notFound } from "next/navigation";
 import PreguntasFrecuentes from "@/app/PreguntasFrecuentes";
+import CompartirYAvisos from "@/app/CompartirYAvisos";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
@@ -425,6 +426,20 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
           ) : null}
         </div>
         )}
+
+        {!descontinuado ? (
+          <CompartirYAvisos
+            pagina="sorteo"
+            tituloAviso={`¿Te avisamos cuando salga ${sorteo.nombre}?`}
+            mensaje={(function () {
+              const r = resultadoHoy || ultimoAnterior;
+              const enlace = `https://labankerard.com/${params.slug}/sorteo/${params.sorteoSlug}`;
+              if (!r || r.numeros.split("-").length > 6) return `🎯 Resultados de ${sorteo.nombre} — La Bankera RD\n\nMíralos aquí 👉 ${enlace}`;
+              const cuando = r.fecha === hoy ? `hoy, ${fechaEnTexto(r.fecha, false)}` : `del ${fechaEnTexto(r.fecha, false)}`;
+              return `🎯 ${sorteo.nombre} ${cuando}: ${r.numeros}\n\nMíralo aquí 👉 ${enlace}`;
+            })()}
+          />
+        ) : null}
 
         {ultimosResultados.length > 0 ? (
           <div className="mt-8 rounded-xl border border-[#10203A]/15 bg-white p-5">

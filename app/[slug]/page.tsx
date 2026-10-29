@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 import NavPildoras from "../NavPildoras";
 import PreguntasFrecuentes from "../PreguntasFrecuentes";
 import EnlaceCalculadoras from "../EnlaceCalculadoras";
+import CompartirYAvisos from "../CompartirYAvisos";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
@@ -491,6 +492,25 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
             })}
           </div>
         )}
+
+        {sorteos.length > 0 ? (
+          <CompartirYAvisos
+            pagina="loteria"
+            tituloAviso={`¿Te avisamos cuando salga ${loteriaData.nombre}?`}
+            mensaje={(function () {
+              // El ultimo resultado de cada juego (de hoy o el mas reciente).
+              const lineas = sorteos
+                .map(function (s) {
+                  const r = s.resultados.slice().sort(function (a, b) { return b.fecha.localeCompare(a.fecha); })[0];
+                  if (!r || r.numeros.split("-").length > 6) return null;
+                  return `${s.nombre}${r.fecha === hoy ? "" : r.fecha === ayer ? " (ayer)" : ""}: ${r.numeros}`;
+                })
+                .filter(Boolean)
+                .join("\n");
+              return `🎯 Resultados de ${loteriaData.nombre} — La Bankera RD\n\n${lineas ? lineas + "\n\n" : ""}Míralos aquí 👉 https://labankerard.com/${params.slug}`;
+            })()}
+          />
+        ) : null}
 
         <section className="mt-10">
           <h2 className="mb-3 font-[family-name:var(--font-display)] text-xl font-bold text-[#10203A]">

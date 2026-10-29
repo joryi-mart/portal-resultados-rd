@@ -4,6 +4,7 @@ import { migaDePan } from "@/lib/breadcrumb";
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import EnlaceCalculadoras from "@/app/EnlaceCalculadoras";
+import CompartirYAvisos from "@/app/CompartirYAvisos";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
@@ -397,6 +398,24 @@ export default async function PaginaResultadoFecha(props: { params: Promise<{ sl
             })}
           </div>
         )}
+
+        {sorteos.length > 0 ? (
+          <CompartirYAvisos
+            pagina="fecha"
+            tituloAviso={`¿Te avisamos cuando salga ${loteriaData.nombre}?`}
+            mensaje={(function () {
+              const lineas = sorteos
+                .map(function (s) {
+                  const r = s.resultados.find(function (x) { return x.fecha === params.fecha; });
+                  if (!r || r.numeros.split("-").length > 6) return null;
+                  return `${s.nombre}: ${r.numeros}`;
+                })
+                .filter(Boolean)
+                .join("\n");
+              return `🎯 ${loteriaData.nombre} ${esHoy ? "hoy, " + fechaLarga.replace(/ de \d{4}$/, "") : "del " + fechaLarga}\n\n${lineas ? lineas + "\n\n" : ""}Míralo aquí 👉 https://labankerard.com/${params.slug}/${params.fecha}`;
+            })()}
+          />
+        ) : null}
 
         {resumenLineas.length > 0 ? (
           <section className="mt-10">

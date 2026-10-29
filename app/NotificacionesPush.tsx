@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { enviarEvento } from "@/lib/eventoAnalytics";
 
 function base64UrlAUint8Array(base64Url: string) {
   const padding = "=".repeat((4 - (base64Url.length % 4)) % 4);
@@ -26,7 +27,10 @@ function estaOculto() {
 // Tarjeta que invita a activar los avisos. Solo aparece si el telefono lo permite
 // y la persona todavia no los tiene activados; si toca "Ahora no" no vuelve a
 // salir por una semana.
-export default function NotificacionesPush(props: { className?: string }) {
+// "titulo" permite nombrar la loteria de la pagina ("¿Te avisamos cuando
+// salga New York Noche?"); "pagina" sirve para medir en Analytics desde donde
+// se activan.
+export default function NotificacionesPush(props: { className?: string; titulo?: string; pagina?: string }) {
   const [estado, setEstado] = useState<"cargando" | "oculto" | "puede-activar">("cargando");
 
   useEffect(function () {
@@ -67,6 +71,7 @@ export default function NotificacionesPush(props: { className?: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(suscripcion.toJSON()),
       });
+      enviarEvento("push_activado", { pagina: props.pagina || "portada" });
 
       setEstado("oculto");
     } catch {
@@ -81,7 +86,7 @@ export default function NotificacionesPush(props: { className?: string }) {
       <div className="flex items-start gap-3">
         <span className="text-2xl leading-none" aria-hidden="true">🔔</span>
         <div className="min-w-0 flex-1">
-          <p className="font-[family-name:var(--font-display)] text-base font-bold text-[#FBF7EE]">¿Quieres saber cuándo sale tu lotería?</p>
+          <p className="font-[family-name:var(--font-display)] text-base font-bold text-[#FBF7EE]">{props.titulo || "¿Quieres saber cuándo sale tu lotería?"}</p>
           <p className="mt-1 text-sm leading-snug text-[#C9D6E8]">Te avisamos apenas salga el resultado, en tu teléfono o en tu computadora. Gratis, y lo puedes quitar cuando quieras.</p>
         </div>
         <button type="button" onClick={ocultarPorUnaSemana} aria-label="Cerrar" className="-mt-1 px-1 text-xl leading-none text-[#C9D6E8] hover:text-white">×</button>
