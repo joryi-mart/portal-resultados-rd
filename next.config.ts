@@ -22,6 +22,12 @@ const nextConfig = {
         destination: "https://labankerard.com/:ruta",
         permanent: true,
       },
+      // Secciones de entretenimiento quitadas el 28-oct-2026 (en 30 dias
+      // sumaron 1 visita). Quien llegue por un enlace viejo va a la portada.
+      { source: "/cine", destination: "/", permanent: true },
+      { source: "/series", destination: "/", permanent: true },
+      { source: "/videojuegos", destination: "/", permanent: true },
+      { source: "/farandula", destination: "/", permanent: true },
     ];
   },
   images: {

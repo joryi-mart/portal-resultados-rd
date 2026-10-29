@@ -40,28 +40,12 @@ function IconoFutbol() {
     </svg>
   );
 }
-function IconoCine() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="5" width="18" height="14" rx="1.5" />
-      <path d="M7 5v14M17 5v14M3 9h4M17 9h4M3 15h4M17 15h4" />
-    </svg>
-  );
-}
 function IconoCalculadora() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="5" y="2.5" width="14" height="19" rx="2" />
       <path d="M8 6.5h8v3H8z" />
       <path d="M8.5 13.5h.01M12 13.5h.01M15.5 13.5h.01M8.5 17.5h.01M12 17.5h.01M15.5 17.5h.01" strokeWidth="2.5" />
-    </svg>
-  );
-}
-function IconoFarandula() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3Z" />
-      <path d="M6 11a6 6 0 0 0 12 0M12 18v3M9 21h6" />
     </svg>
   );
 }
@@ -111,7 +95,7 @@ function ItemDesplegable(props: { item: ItemMenu }) {
   );
 }
 
-type MenuId = "loterias" | "beisbol" | "nba" | "futbol" | "cine" | "calculadoras" | "variedades" | null;
+type MenuId = "loterias" | "beisbol" | "nba" | "futbol" | "calculadoras" | "variedades" | null;
 
 /**
  * Un pill con dos zonas clicables:
@@ -231,12 +215,6 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
     { etiqueta: "⚖️ Prestaciones laborales", href: "/calcular-prestaciones-rd" },
   ];
 
-  const itemsCine: ItemMenu[] = [
-    { etiqueta: "Ver todo (resumen)", href: "/cine" },
-    { etiqueta: "📺 Series", href: "/series" },
-    { etiqueta: "🎮 Videojuegos", href: "/videojuegos" },
-  ];
-
   const itemsVariedades: ItemMenu[] = [
     { etiqueta: "🏝️ Turismo", href: "/turismo" },
     { etiqueta: "⛽ Precio del combustible", href: "/precios-combustibles" },
@@ -335,18 +313,6 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
         </PillCategoria>
 
         <PillCategoria
-          href="/cine"
-          icono={<IconoCine />}
-          etiqueta="Cine"
-          activo={menuAbierto === "cine"}
-          onAlternar={function () { alternar("cine"); }}
-        >
-          {itemsCine.map(function (item, i) {
-            return <ItemDesplegable key={i} item={item} />;
-          })}
-        </PillCategoria>
-
-        <PillCategoria
           href="/calculadora-regalia-pascual"
           icono={<IconoCalculadora />}
           etiqueta="Calculadoras"
@@ -357,14 +323,6 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
             return <ItemDesplegable key={i} item={item} />;
           })}
         </PillCategoria>
-
-        <a
-          href="/farandula"
-          className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-[#007A33] py-2.5 px-5 text-base font-bold text-white hover:bg-[#00994A]"
-        >
-          <IconoFarandula />
-          Farándula
-        </a>
 
         <PillCategoria
           href="/turismo"

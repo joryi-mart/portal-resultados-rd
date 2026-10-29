@@ -3,8 +3,6 @@ import GuiaJuegos from "../GuiaJuegos";
 const GUIAS_ENTRETENIMIENTO = [
   { href: "/como-leer-calificaciones-de-peliculas", titulo: "Cómo leer las calificaciones de películas y series" },
   { href: "/clasificacion-de-videojuegos-esrb", titulo: "Qué significan las clasificaciones de los videojuegos" },
-  { href: "/cine", titulo: "Cine: estrenos y películas" },
-  { href: "/series", titulo: "Series" },
 ];
 
 export const metadata = {
@@ -33,10 +31,7 @@ export default function ComoLeerCalificacionesPage() {
       mostrarComoJugar={false}
       tituloGuias="Más sobre entretenimiento"
       guiasRelacionadas={GUIAS_ENTRETENIMIENTO}
-      botones={[
-        { href: "/cine", texto: "Ver cine" },
-        { href: "/series", texto: "Ver series" },
-      ]}
+      botones={[{ href: "/", texto: "Ver resultados de loterías de hoy" }]}
       introduccion="Cuando buscas una película o una serie, casi siempre te encuentras con tres calificaciones distintas: IMDb, Rotten Tomatoes y Metacritic. Parecen lo mismo, pero miden cosas diferentes, y por eso a veces dan resultados muy distintos para la misma película."
       encabezadoJuegos="Qué mide cada una"
       juegos={[

@@ -133,34 +133,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
-      url: `${SITIO}/cine`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.6,
-    },
-    {
-      url: `${SITIO}/videojuegos`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.5,
-    },
-    {
       url: `${SITIO}/lidom`,
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.6,
-    },
-    {
-      url: `${SITIO}/farandula`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.5,
-    },
-    {
-      url: `${SITIO}/series`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.5,
     },
     {
       url: `${SITIO}/dias-feriados`,

@@ -3,8 +3,6 @@ import GuiaJuegos from "../GuiaJuegos";
 const GUIAS_ENTRETENIMIENTO = [
   { href: "/como-leer-calificaciones-de-peliculas", titulo: "Cómo leer las calificaciones de películas y series" },
   { href: "/clasificacion-de-videojuegos-esrb", titulo: "Qué significan las clasificaciones de los videojuegos" },
-  { href: "/cine", titulo: "Cine: estrenos y películas" },
-  { href: "/videojuegos", titulo: "Videojuegos" },
 ];
 
 export const metadata = {
@@ -33,7 +31,7 @@ export default function ClasificacionVideojuegosPage() {
       mostrarComoJugar={false}
       tituloGuias="Más sobre entretenimiento"
       guiasRelacionadas={GUIAS_ENTRETENIMIENTO}
-      botones={[{ href: "/videojuegos", texto: "Ver videojuegos" }]}
+      botones={[{ href: "/", texto: "Ver resultados de loterías de hoy" }]}
       introduccion="Si compras videojuegos para tus hijos, o simplemente quieres saber qué tan fuerte es un juego, fíjate en la letra que aparece en la caja o en la tienda digital. Es la clasificación de la ESRB, el sistema que se usa en Estados Unidos y Canadá, y sirve como guía de qué edad es apropiada para cada juego."
       encabezadoJuegos="Las clasificaciones"
       juegos={[
