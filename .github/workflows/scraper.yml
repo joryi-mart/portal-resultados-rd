@@ -52,6 +52,12 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: python scraper/guardar_anguila_extra.py
 
+      - name: "Correr el scraper (Anguila de cada hora: 8 AM a 10 PM)"
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python scraper/guardar_anguila_horas.py
+
       - name: "Correr el scraper (MegaLotto de Loteka)"
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

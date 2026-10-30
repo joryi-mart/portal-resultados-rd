@@ -51,12 +51,19 @@ function formatearHora12(hora24: string) {
 
 // Como la gente realmente escribe la hora al buscar ("anguila de la 9",
 // "anguila 5 de la tarde"), no como se escribe formalmente ("9:00 p.m.").
+// Con minutos solo si no es en punto ("2:30 de la tarde", "9 de la noche").
 function horaColoquial(hora24: string) {
   if (!hora24) return "";
-  const h = parseInt(hora24.split(":")[0], 10);
+  const [hh, mm] = hora24.split(":");
+  const h = parseInt(hh, 10);
   const h12 = h % 12 === 0 ? 12 : h % 12;
   const periodo = h < 12 ? "de la mañana" : h < 19 ? "de la tarde" : "de la noche";
-  return `${h12} ${periodo}`;
+  return `${h12}${mm && mm !== "00" ? ":" + mm : ""} ${periodo}`;
+}
+
+// "las 9 de la noche" pero "la 1 de la tarde".
+function articuloHora(horaTexto: string) {
+  return /^1(:| )/.test(horaTexto) ? "la" : "las";
 }
 
 // Algunos sorteos cambian de hora los domingos (confirmado con la fuente oficial):
@@ -183,7 +190,12 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
 
   // Titulos con las frases que la gente escribe en Google (Search Console, oct-2026).
   // Sin "hoy": ese titulo lo usa la pagina del dia (/slug/fecha) y no deben competir.
-  const titulo = TITULOS_LOTERIA[params.slug] ?? `${loteria.nombre}: Resultados en Vivo, Horarios y Sorteos`;
+  // Anguila sortea cada hora (8 AM a 10 PM); desde el 30-oct-2026 se guardan
+  // los 15. Solo se dice "cada hora" si ya estan en la base de datos.
+  const anguilaCadaHora = params.slug === "anguila" && (loteria.sorteos || []).length >= 15;
+  const titulo = anguilaCadaHora
+    ? "Anguila en Vivo: Sorteos de Cada Hora (8 AM a 10 PM)"
+    : TITULOS_LOTERIA[params.slug] ?? `${loteria.nombre}: Resultados en Vivo, Horarios y Sorteos`;
 
   // La descripcion nombra los juegos reales de cada loteria (es lo que la gente
   // busca) y se recorta para no pasar de ~160 caracteres.
@@ -196,7 +208,9 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
   };
   let lista = juegos;
   while (lista.length > 1 && armar(lista).length > 160) lista = lista.slice(0, -1);
-  const descripcion = params.slug === "anguila"
+  const descripcion = anguilaCadaHora
+    ? "Resultados de Anguila (las Anguilas) de hoy: los 15 sorteos de cada hora, de las 8 de la mañana a las 10 de la noche. Números al instante."
+    : params.slug === "anguila"
     ? "Resultados de Anguila (las Anguilas) de hoy y de ayer: sorteos de las 10 de la mañana, 1 y 6 de la tarde y 9 de la noche. Números al instante."
     : lista.length > 0
     ? armar(lista)
@@ -234,7 +248,9 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
 
   const loteriaData = loteria as unknown as Loteria;
   // Se ocultan aquí en vez de borrarlos de la base de datos, para no perder el historial.
-  const sorteos = (loteriaData.sorteos || []).filter(function (s) { return !SORTEOS_OCULTOS.includes(s.id); });
+  const sorteos = (loteriaData.sorteos || [])
+    .filter(function (s) { return !SORTEOS_OCULTOS.includes(s.id); })
+    .sort(function (a, b) { return (a.hora_sorteo || "99").localeCompare(b.hora_sorteo || "99"); });
 
   // Datos estructurados (schema.org) con los resultados de hoy, para que Google
   // pueda leer los números ganadores directamente, no solo el texto. Mismo patrón
@@ -572,17 +588,24 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
             pregunta: `¿Dónde veo los resultados de ${loteriaData.nombre} en vivo?`,
             respuesta: `Aquí mismo: esta página se actualiza sola apenas se publica un resultado nuevo de ${loteriaData.nombre}, no hace falta recargarla.`,
           },
+          // Las horas como las dice la gente ("la nacional de las 9 de la
+          // noche", "de las 6 de la tarde": +10% a +30% en Google Trends,
+          // oct-2026), con la hora especial de los domingos.
           {
-            pregunta: `¿A qué hora juega ${loteriaData.nombre}?`,
+            pregunta: `¿A qué hora sale ${loteriaData.nombre}?`,
             respuesta:
               sorteos.length > 0
                 ? `${loteriaData.nombre} tiene ${sorteos.length} ${sorteos.length === 1 ? "sorteo" : "sorteos"}: ` +
                   sorteos
                     .map(function (s) {
-                      return `${s.nombre} a las ${s.hora_sorteo ? formatearHora12(s.hora_sorteo) : "hora por confirmar"}`;
+                      if (!s.hora_sorteo) return `${s.nombre} (hora por confirmar)`;
+                      const domingo = HORA_DOMINGO_SORTEOS[s.id];
+                      const hc = horaColoquial(s.hora_sorteo);
+                      const hd = domingo ? horaColoquial(domingo) : "";
+                      return `${s.nombre} a ${articuloHora(hc)} ${hc}` + (domingo ? ` (los domingos a ${articuloHora(hd)} ${hd})` : "");
                     })
                     .join(", ") +
-                  " (hora de República Dominicana). Pueden cambiar en feriados y fechas especiales."
+                  ", hora de República Dominicana. Pueden cambiar en feriados y fechas especiales."
                 : `Consulta los horarios de ${loteriaData.nombre} más abajo en esta página.`,
           },
           {
@@ -611,12 +634,15 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
               }]
             : []),
           ...(params.slug === "anguila"
-            ? sorteos.map(function (s) {
+            ? sorteos
+                .slice()
+                .sort(function (a, b) { return (a.hora_sorteo || "").localeCompare(b.hora_sorteo || ""); })
+                .map(function (s) {
                 const hora = s.hora_sorteo ? horaColoquial(s.hora_sorteo) : "";
                 return {
-                  pregunta: `¿A qué hora es el sorteo de Anguila de las ${hora}?`,
+                  pregunta: `¿Qué salió en la Anguila de ${articuloHora(hora)} ${hora}?`,
                   respuesta: s.hora_sorteo
-                    ? `El sorteo de Anguila ${hora} (${formatearHora12(s.hora_sorteo)}, hora de República Dominicana) es "${s.nombre}". El resultado de hoy está arriba en esta página.`
+                    ? `La Anguila de ${articuloHora(hora)} ${hora} (${formatearHora12(s.hora_sorteo)}, hora de República Dominicana) es el sorteo "${s.nombre}". Su resultado de hoy está arriba en esta página.`
                     : `Consulta el horario de este sorteo de Anguila más arriba en esta página.`,
                 };
               })

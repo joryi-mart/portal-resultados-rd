@@ -34,6 +34,14 @@ function hoyISO() {
   return ahoraRD.toISOString().slice(0, 10);
 }
 
+// "anoche" o "ayer" si la fecha es la de ayer (la gente busca "la nacional
+// de anoche": +20% en Google Trends, oct-2026); "" si es otro dia.
+function cuandoFue(fechaISO: string, hora24: string) {
+  const ayer = new Date(new Date(hoyISO() + "T12:00:00Z").getTime() - 86400000).toISOString().slice(0, 10);
+  if (fechaISO !== ayer) return "";
+  return (hora24 || "").slice(0, 5) >= "18:00" ? "anoche" : "ayer";
+}
+
 function nombreDia(letra: string) {
   const mapa: Record<string, string> = { L: "Lun", M: "Mar", X: "Mié", J: "Jue", V: "Vie", S: "Sáb", D: "Dom" };
   return mapa[letra] || letra;
@@ -226,7 +234,7 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
     : ultimo && numerosCaben && ultimo.fecha === hoyISO()
       ? `${sorteo.nombre} hoy, ${fechaEnTexto(ultimo.fecha, false)}: salió ${ultimo.numeros}. Sorteo de las ${horaTexto}, ${diasEnFrase(diasDelSorteo(sorteo))}. Mira también los últimos 7 días.`
       : ultimo && numerosCaben
-        ? `${sorteo.nombre} del ${fechaEnTexto(ultimo.fecha, false)}: salió ${ultimo.numeros}. El de hoy sale a las ${horaTexto} y aparece aquí al momento. Últimos 7 días y números calientes.`
+        ? `${sorteo.nombre} ${cuandoFue(ultimo.fecha, sorteo.hora_sorteo) ? "de " + cuandoFue(ultimo.fecha, sorteo.hora_sorteo) + ", " : "del "}${fechaEnTexto(ultimo.fecha, false)}: salió ${ultimo.numeros}. El de hoy sale a las ${horaTexto} y aparece aquí al momento. Últimos 7 días y números calientes.`
         : `Resultado de ${sorteo.nombre} hoy, ${fechaEnTexto(hoyISO(), true)}. Sorteo de las ${horaTexto}, ${diasEnFrase(diasDelSorteo(sorteo))}. Números ganadores al instante y últimos 7 días.`;
 
   return {
@@ -362,7 +370,7 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
         <div className="rounded-xl border border-[#10203A]/15 bg-white p-5">
           {ultimoAnterior ? (
             <>
-              <p className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Último resultado: <span className="capitalize">{fechaEnTexto(ultimoAnterior.fecha, false)}</span></p>
+              <p className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-[#10203A]">Último resultado: {cuandoFue(ultimoAnterior.fecha, sorteo.hora_sorteo) ? cuandoFue(ultimoAnterior.fecha, sorteo.hora_sorteo) + ", " + fechaEnTexto(ultimoAnterior.fecha, false) : <span className="capitalize">{fechaEnTexto(ultimoAnterior.fecha, false)}</span>}</p>
               <div className="flex flex-wrap items-center gap-2">
                 {numerosUltimo.map(function (n, i) {
                   const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[sorteo.id];
@@ -435,7 +443,8 @@ export default async function PaginaSorteo(props: { params: Promise<{ slug: stri
               const r = resultadoHoy || ultimoAnterior;
               const enlace = `https://labankerard.com/${params.slug}/sorteo/${params.sorteoSlug}`;
               if (!r || r.numeros.split("-").length > 6) return `🎯 Resultados de ${sorteo.nombre} — La Bankera RD\n\nMíralos aquí 👉 ${enlace}`;
-              const cuando = r.fecha === hoy ? `hoy, ${fechaEnTexto(r.fecha, false)}` : `del ${fechaEnTexto(r.fecha, false)}`;
+              const cf = cuandoFue(r.fecha, sorteo.hora_sorteo);
+              const cuando = r.fecha === hoy ? `hoy, ${fechaEnTexto(r.fecha, false)}` : cf ? `de ${cf}, ${fechaEnTexto(r.fecha, false)}` : `del ${fechaEnTexto(r.fecha, false)}`;
               return `🎯 ${sorteo.nombre} ${cuando}: ${r.numeros}\n\nMíralo aquí 👉 ${enlace}`;
             })()}
           />
