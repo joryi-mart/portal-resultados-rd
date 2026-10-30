@@ -40,8 +40,30 @@ def main():
         headers={**HEADERS, "Prefer": "return=representation"},
         json=filas, timeout=15,
     )
+    # Si los ids de la tabla se pusieron a mano alguna vez, el contador
+    # automatico puede chocar con uno existente ("duplicate key"): entonces se
+    # numeran a partir del id mas alto.
+    if not r.ok and "duplicate key" in r.text:
+        m = requests.get(f"{SUPABASE_URL}/rest/v1/sorteos?select=id&order=id.desc&limit=1", headers=HEADERS, timeout=15)
+        m.raise_for_status()
+        siguiente = m.json()[0]["id"] + 1
+        for i, f in enumerate(filas):
+            f["id"] = siguiente + i
+        r = requests.post(
+            f"{SUPABASE_URL}/rest/v1/sorteos",
+            headers={**HEADERS, "Prefer": "return=representation"},
+            json=filas, timeout=15,
+        )
     if not r.ok:
         print("Error:", r.status_code, r.text)
+        # El registro de GitHub Actions no se puede leer sin iniciar sesion:
+        # se deja el motivo en publicaciones_facebook para poder revisarlo.
+        requests.post(
+            f"{SUPABASE_URL}/rest/v1/publicaciones_facebook",
+            headers=HEADERS,
+            json={"loteria_slug": "diagnostico-anguila", "fecha": "2026-10-30", "post_id": "error", "mensaje": f"{r.status_code} {r.text}"[:2000]},
+            timeout=15,
+        )
         r.raise_for_status()
     for s in r.json():
         print("Agregado:", s["id"], s["nombre"], s["hora_sorteo"])
