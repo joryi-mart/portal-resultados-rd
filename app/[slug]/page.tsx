@@ -120,7 +120,7 @@ const DESCRIPCIONES_LOTERIA: Record<string, string> = {
   "la-suerte": "Lotería dominicana con sorteos de día y tarde.",
   "new-york": "Resultados de la Lotería de Nueva York, muy seguida en República Dominicana por la comunidad dominicana en Estados Unidos.",
   florida: "Resultados de la Lotería de Florida, popular entre la comunidad dominicana en Estados Unidos.",
-  anguila: "Lotería de la isla caribeña de Anguila, con varios sorteos a lo largo del día.",
+  anguila: "Lotería de la isla caribeña de Anguila, que en RD mucha gente llama \"las Anguilas\", con varios sorteos a lo largo del día.",
   haiti: "Lotería de Haití ('Bolet'), con múltiples sorteos diarios, muy seguida por la comunidad haitiana en República Dominicana.",
   sxm: "Lotería de la isla de San Martín (lado holandés), con sorteos de día y noche.",
   "loterias-americanas": "Resultados de loterías de estados de Estados Unidos, como Nueva Jersey y Georgia, seguidas por la comunidad dominicana allí.",
@@ -196,7 +196,9 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
   };
   let lista = juegos;
   while (lista.length > 1 && armar(lista).length > 160) lista = lista.slice(0, -1);
-  const descripcion = lista.length > 0
+  const descripcion = params.slug === "anguila"
+    ? "Resultados de Anguila (las Anguilas) de hoy y de ayer: sorteos de las 10 de la mañana, 1 y 6 de la tarde y 9 de la noche. Números al instante."
+    : lista.length > 0
     ? armar(lista)
     : `Números ganadores de ${loteria.nombre} de hoy y de ayer, horarios de sorteos y resultados al instante en República Dominicana.`;
 
@@ -600,6 +602,14 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
           // ("anguila 10 am", "anguila de la 9"), no por el nombre del
           // sorteo: una pregunta por horario, con la frase tal como se
           // busca, responde eso directo en vez de un solo párrafo con los 4.
+          // En RD mucha gente la busca en plural ("loterias anguilas",
+          // "anguilas loterias": +70-80% en Google Trends, oct-2026).
+          ...(params.slug === "anguila"
+            ? [{
+                pregunta: "¿Qué son las Anguilas?",
+                respuesta: `"Las Anguilas" es como mucha gente en República Dominicana llama a la lotería de Anguila, la isla del Caribe. Tiene ${sorteos.length} sorteos al día y sus resultados de hoy están arriba en esta página.`,
+              }]
+            : []),
           ...(params.slug === "anguila"
             ? sorteos.map(function (s) {
                 const hora = s.hora_sorteo ? horaColoquial(s.hora_sorteo) : "";
