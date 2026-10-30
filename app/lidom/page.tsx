@@ -1,24 +1,37 @@
 import LidomCliente from "./LidomCliente";
 import VideoDelDia from "../VideoDelDia";
+import { obtenerDatosLidom, type DatosLidom } from "@/lib/lidom";
 
+// "LIDOM hoy" es lo que la gente busca: juegos del dia con su marcador y la
+// tabla de posiciones, por eso van en el titulo.
 export const metadata = {
-  title: "LIDOM Hoy: Equipos, Posiciones y Noticias del Béisbol Invernal Dominicano",
+  title: "LIDOM Hoy: Juegos, Resultados y Tabla de Posiciones",
   description:
-    "Sigue la LIDOM, el béisbol invernal dominicano: Licey, Águilas, Escogido, Estrellas, Toros del Este y Gigantes del Cibao, con posiciones y noticias.",
+    "Juegos de hoy de la LIDOM con su resultado, tabla de posiciones actualizada y noticias del Licey, Águilas, Escogido, Estrellas, Toros y Gigantes.",
   openGraph: {
     images: ["/opengraph-image.png"],
-    title: "LIDOM Hoy: Equipos, Posiciones y Noticias",
-    description: "Liga de Béisbol Profesional de la República Dominicana: equipos, posiciones y noticias.",
+    title: "LIDOM Hoy: Juegos, Resultados y Tabla de Posiciones",
+    description: "Juegos de hoy de la LIDOM con su resultado, tabla de posiciones y noticias.",
     locale: "es_DO",
     type: "website",
   },
   alternates: { canonical: "https://labankerard.com/lidom" },
 };
 
-export default function LidomPage() {
+// Se rehace cada 5 minutos: los juegos de hoy cambian de "por jugar" a "en
+// juego" y a "final".
+export const revalidate = 300;
+
+export default async function LidomPage() {
+  let datos: DatosLidom | null = null;
+  try {
+    datos = await obtenerDatosLidom();
+  } catch {
+    datos = null;
+  }
   return (
     <main>
-      <LidomCliente />
+      <LidomCliente datos={datos} />
       <VideoDelDia slug="lidom" titulo="Resumen narrado de ayer en LIDOM" />
       <div className="bg-[#FBF7EE] px-4 pb-10 sm:px-8">
         <div className="mx-auto max-w-6xl border-t border-[#10203A]/10 pt-6">

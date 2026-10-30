@@ -1,53 +1,44 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Space_Grotesk } from "next/font/google";
 import Image from "next/image";
 import NavPildoras from "../NavPildoras";
 import { HISTORIAS_LIDOM } from "./datos";
+import type { DatosLidom, EquipoLidom as Equipo, NoticiaLidom as Noticia, JuegoLidom as Juego } from "@/lib/lidom";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"] });
 
 const COLOR_AZUL = "#1E4D8C";
 const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
 
-type Equipo = { id: number; nombre: string; ligaId: number | null };
-type Posicion = {
-  equipoId: number;
-  nombre: string;
-  juegosJugados: number;
-  victorias: number;
-  derrotas: number;
-  porcentaje: string;
-  diferencia: string;
-};
-type Noticia = { id: string; title: string; url: string; image: string; published: string };
-type Juego = { visitanteId: number; visitante: string; localId: number; local: string; venue: string; hora: string; estado: string };
+// La API de MLB da el estado en ingles.
+function estadoEnEspanol(j: Juego) {
+  if (j.estado === "Final" || j.estado === "Game Over" || j.estado === "Completed Early") return "Final";
+  if (j.estado === "In Progress") return "En juego";
+  if (j.estado === "Postponed") return "Pospuesto";
+  if (j.estado === "Suspended") return "Suspendido";
+  if (j.estado === "Delayed" || j.estado.startsWith("Delayed")) return "Retrasado";
+  return `${j.hora} (hora RD)`;
+}
 
-export default function LidomCliente() {
-  const [equipos, setEquipos] = useState<Equipo[]>([]);
-  const [posiciones, setPosiciones] = useState<Posicion[]>([]);
-  const [juegosHoy, setJuegosHoy] = useState<Juego[]>([]);
-  const [noticias, setNoticias] = useState<Noticia[]>([]);
-  const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState("");
+// Los datos llegan ya cargados desde el servidor (app/lidom/page.tsx), asi
+// Google los ve en el HTML en vez de un "Cargando...".
+export default function LidomCliente(props: { datos: DatosLidom | null }) {
+  const equipos = props.datos?.equipos || [];
+  const posiciones = props.datos?.posiciones || [];
+  const juegosHoy = props.datos?.juegosHoy || [];
+  const noticias = props.datos?.noticias?.news || [];
+  const error = props.datos ? "" : "No se pudo cargar la información de la LIDOM. Intenta de nuevo en unos minutos.";
 
-  useEffect(function () {
-    fetch("/api/lidom")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.detalle || data.error);
-          return;
-        }
-        setEquipos(data.equipos || []);
-        setPosiciones(data.posiciones || []);
-        setJuegosHoy(data.juegosHoy || []);
-        setNoticias(data.noticias?.news || []);
-      })
-      .catch(() => setError("No se pudo cargar la información"))
-      .finally(() => setCargando(false));
-  }, []);
+  // Juegos detras del lider, calculado aqui: el "gamesBack" de la API de MLB
+  // para la LIDOM venia mal (ponia "líder" a equipos del fondo y numeros
+  // negativos al lider real).
+  const lider = posiciones[0];
+  function juegosDetras(v: number, d: number) {
+    if (!lider) return "";
+    const gb = ((lider.victorias - v) + (d - lider.derrotas)) / 2;
+    return gb <= 0 ? "líder" : `a ${gb.toFixed(1).replace(".0", "")} del líder`;
+  }
 
   function renderEquipo(equipo: Equipo) {
     const pos = posiciones.find(function (p) { return p.equipoId === equipo.id; });
@@ -91,7 +82,7 @@ export default function LidomCliente() {
             <p className="truncate text-sm font-bold" style={{ color }}>{equipo.nombre}</p>
             {pos ? (
               <p className="truncate font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-                {pos.victorias}-{pos.derrotas} · {pos.diferencia === "-" ? "líder" : pos.diferencia + " GB"}
+                {pos.victorias}-{pos.derrotas} · {juegosDetras(pos.victorias, pos.derrotas)}
               </p>
             ) : (
               <p className="truncate font-mono text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Fuera de temporada</p>
@@ -137,7 +128,7 @@ export default function LidomCliente() {
     <div className={display.className + " min-h-screen bg-[#FBF7EE]"}>
       <NavPildoras />
       <div className="px-4 py-8 sm:px-8">
-        <h1 className="mb-2 text-2xl font-bold text-[#10203A]">🇩🇴 LIDOM</h1>
+        <h1 className="mb-2 text-2xl font-bold text-[#10203A] sm:text-3xl">🇩🇴 LIDOM hoy: juegos, resultados y posiciones</h1>
         <p className="mb-6 rounded-lg bg-[#1E4D8C]/5 p-4 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
           La Liga de Béisbol Profesional de la República Dominicana (LIDOM) es el torneo de béisbol invernal más seguido del país y una de las ligas más competitivas del Caribe. Seis equipos —Tigres del Licey, Águilas Cibaeñas, Leones del Escogido, Estrellas Orientales, Toros del Este y Gigantes del Cibao— se disputan la corona cada temporada, entre mediados de octubre y mediados de enero, con roster llenos de peloteros de Grandes Ligas que regresan a jugar en su país durante el invierno. El campeón representa a República Dominicana en la Serie del Caribe, el torneo más prestigioso del béisbol latinoamericano.
         </p>
@@ -146,29 +137,38 @@ export default function LidomCliente() {
           Más abajo puedes ver la tabla de posiciones actualizada de la temporada, el calendario de juegos de cada equipo y las noticias más recientes de la liga. También puedes entrar al perfil de cada equipo para conocer su historia, su roster y sus peloteros famosos.
         </p>
 
-        {cargando && <p className="font-mono text-sm" style={{ color: COLOR_TEXTO_SECUNDARIO }}>Cargando...</p>}
-        {error && <p className="rounded-lg bg-red-50 p-4 text-sm text-red-600">{error}</p>}
+        {error && <p className="rounded-lg bg-red-50 p-4 text-base text-red-700">{error}</p>}
 
-        {!cargando && !error && (
+        {!error && (
           <>
+            <h2 className="mb-4 text-xl font-semibold text-[#10203A]">⚾ Juegos de hoy</h2>
             {juegosHoy.length > 0 ? (
-              <>
-                <h2 className="mb-4 text-lg font-semibold text-[#10203A]">⚾ Juegos de hoy</h2>
-                <div className="mb-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {juegosHoy.map(function (j, i) {
-                    return (
-                      <div key={i} className="rounded-xl border border-[#10203A]/15 bg-white p-4 shadow-sm">
-                        <p className="text-base font-bold text-[#10203A]">{j.visitante} @ {j.local}</p>
-                        <p className="mt-1 text-xs" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{j.venue}</p>
-                        <p className="mt-2 font-mono text-sm font-bold" style={{ color: COLOR_AZUL }}>
-                          {j.estado === "Final" || j.estado === "In Progress" ? j.estado : `${j.hora} (hora RD)`}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </>
-            ) : null}
+              <div className="mb-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {juegosHoy.map(function (j, i) {
+                  const hayMarcador = j.carrerasVisitante !== null && j.carrerasLocal !== null && (j.estado === "Final" || j.estado === "Game Over" || j.estado === "Completed Early" || j.estado === "In Progress");
+                  return (
+                    <div key={i} className="rounded-xl border border-[#10203A]/15 bg-white p-4 shadow-sm">
+                      {hayMarcador ? (
+                        <div className="flex flex-col gap-1">
+                          <p className="flex items-center justify-between gap-3 text-base font-bold text-[#10203A]">
+                            <span>{j.visitante}</span><span className="font-mono text-xl">{j.carrerasVisitante}</span>
+                          </p>
+                          <p className="flex items-center justify-between gap-3 text-base font-bold text-[#10203A]">
+                            <span>{j.local}</span><span className="font-mono text-xl">{j.carrerasLocal}</span>
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-base font-bold text-[#10203A]">{j.visitante} vs. {j.local}</p>
+                      )}
+                      <p className="mt-1 text-sm text-[#2E3B48]">{j.venue}</p>
+                      <p className="mt-2 font-mono text-sm font-bold" style={{ color: COLOR_AZUL }}>{estadoEnEspanol(j)}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="mb-10 rounded-lg bg-white p-4 text-base text-[#2E3B48]">Hoy no hay juegos de la LIDOM programados.</p>
+            )}
 
             {posiciones.length > 0 ? (
               <>
