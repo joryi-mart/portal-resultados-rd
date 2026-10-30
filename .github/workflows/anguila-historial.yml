@@ -1,9 +1,14 @@
 name: Historial de Anguila de cada hora (una sola vez)
 
-# Carga los resultados de los ultimos dias de los 11 sorteos de Anguila que se
-# agregaron el 30-oct-2026, para que sus paginas tengan historial desde el
-# primer dia. Se corre a mano desde la pestaña "Actions" de GitHub.
+# Agrega los 11 sorteos de Anguila de cada hora (si faltan) y carga los
+# resultados de los ultimos dias, para que sus paginas tengan historial desde
+# el primer dia. Corre solo una vez al subir este archivo, o a mano desde la
+# pestaña "Actions" de GitHub.
 on:
+  push:
+    paths:
+      - ".github/workflows/anguila-historial.yml"
+      - "scraper/agregar_sorteos_anguila.py"
   workflow_dispatch:
     inputs:
       dias:
@@ -19,8 +24,13 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install -r scraper/requirements.txt
+      - name: Agregar los sorteos de cada hora (si faltan)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python scraper/agregar_sorteos_anguila.py
       - name: Cargar historial
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-        run: python scraper/guardar_anguila_horas.py --dias ${{ github.event.inputs.dias }}
+        run: python scraper/guardar_anguila_horas.py --dias ${{ github.event.inputs.dias || '30' }}
