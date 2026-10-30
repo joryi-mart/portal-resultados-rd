@@ -9,6 +9,8 @@ import NavPildoras from "../NavPildoras";
 import PreguntasFrecuentes from "../PreguntasFrecuentes";
 import EnlaceCalculadoras from "../EnlaceCalculadoras";
 import CompartirYAvisos from "../CompartirYAvisos";
+import AvisoRegalia from "../AvisoRegalia";
+import { diasParaRegalia } from "@/lib/regalia";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
@@ -304,6 +306,8 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
 
       <main className="mx-auto max-w-3xl px-6 py-10 sm:px-10">
         <NavPildoras />
+
+        <AvisoRegalia diasParaPago={diasParaRegalia()} pagina="loteria" />
 
         <a
           href="/buscador"
