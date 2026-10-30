@@ -72,14 +72,20 @@ function tandaDeSorteo(horaSorteo: string | null) {
   return TANDAS.find(function (t) { return hora < t.hasta; }) || TANDAS[TANDAS.length - 1];
 }
 
+// Arriba va un enlace directo por loteria: desde que se juntaron los
+// resultados en 3 tandas (24-oct) el unico enlace era el de la portada, al
+// final y escondido tras el "Ver más", y las visitas de Facebook a las
+// paginas de loteria cayeron de 3-13 por dia a 0 (Analytics). Los numeros
+// siguen en la imagen y mas abajo en el texto.
 function construirCaption(gancho: string, fecha: string, bloques: { loteria: LoteriaFila; resultados: ResultadoDeHoy[] }[]) {
+  const enlaces = bloques.map(function (b) { return `📍 ${b.loteria.nombre} 👉 https://labankerard.com/${b.loteria.slug}`; }).join("\n");
   const cuerpo = bloques.map(function (b) {
     const lineas = b.resultados.map(function (r) { return `${r.sorteoNombre}: ${r.numeros}`; }).join("\n");
-    return `📍 ${b.loteria.nombre}\n${lineas}`;
+    return `${b.loteria.nombre}\n${lineas}`;
   }).join("\n\n");
   const hashtags = bloques.map(function (b) { return HASHTAG_LOTERIA[b.loteria.slug] || ""; }).filter(Boolean).join(" ");
   return (
-    `🎱 ${gancho} Aquí están 👇\n${fechaTitulo(fecha)}\n\n${cuerpo}\n\n` +
+    `🎱 ${gancho} Aquí están 👇\n${enlaces}\n\n${fechaTitulo(fecha)}\n${cuerpo}\n\n` +
     INVITACION +
     `Ve todos los resultados en https://labankerard.com\n\n` +
     `Página informativa. No vendemos jugadas ni aceptamos apuestas.\n\n` +

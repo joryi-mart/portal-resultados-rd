@@ -1,16 +1,25 @@
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { supabase } from "@/lib/supabase";
+import { EJEMPLOS_REGALIA, generarImagenRegalia } from "@/lib/imagenRegalia";
 
-// Publica en Facebook el enlace a la calculadora de regalía pascual (Facebook
-// arma la tarjeta con la imagen de app/calculadora-regalia-pascual/opengraph-image.png).
-// Lo llama el calendario (lib/calendario.json) los lunes: como máximo una vez por
-// semana (se marca en publicaciones_facebook) y solo en temporada, del 1 de
-// octubre al 20 de diciembre, que es la fecha límite para pagar la regalía.
+// Publica en Facebook la calculadora de regalía pascual. Lo llama el
+// calendario (lib/calendario.json) lunes y jueves, solo en temporada (del 1 de
+// octubre al 20 de diciembre, fecha límite para pagar la regalía).
+//
+// Hasta el 1 de noviembre: un enlace con texto, como máximo una vez por semana
+// (los lunes). Esas 3 publicaciones (12, 19 y 26 de octubre) trajeron 3 visitas
+// en total, así que desde el 2 de noviembre se prueba otro formato: una imagen
+// con un ejemplo concreto ("si ganas RD$25,000 y entraste en mayo, te tocan
+// RD$16,667"), lunes y jueves, una de cada ejemplo de lib/imagenRegalia.tsx.
+// Es una prueba de 4 publicaciones: después se para hasta revisar las visitas
+// (se revisa el 16 de noviembre).
 export const dynamic = "force-dynamic";
 
 const URL_CALCULADORA = "https://labankerard.com/calculadora-regalia-pascual";
 const URL_PRESTACIONES = "https://labankerard.com/calcular-prestaciones-rd";
+const INICIO_IMAGENES = "2026-11-02";
+const MARCA_IMAGEN = "calculadora-regalia-foto-";
 
 function claveValida(recibida: string | null) {
   const esperada = (process.env.CRON_SECRET || "").trim();
@@ -42,6 +51,30 @@ function mensaje(diasParaPago: number, semana: number) {
   return textos[semana % textos.length] + `\n\n👉 Síguenos para más información útil de RD.\n\n#RegaliaPascual #DobleSueldo #RepublicaDominicana`;
 }
 
+// El enlace va en la segunda línea, antes del "Ver más" de Facebook.
+function captionImagen(primeraLinea: string, diasParaPago: number) {
+  const faltan = diasParaPago === 1 ? "Falta 1 día" : `Faltan ${diasParaPago} días`;
+  return (
+    `${primeraLinea}\n` +
+    `Calcula el tuyo gratis en 10 segundos 👉 ${URL_CALCULADORA}\n\n` +
+    `La regalía es la doceava parte de lo que ganaste en el año: sueldo × meses trabajados ÷ 12. No le descuentan ISR ni TSS.\n\n` +
+    `📅 ${faltan} para el 20 de diciembre, fecha límite para pagarla.\n\n` +
+    `#RegaliaPascual #DobleSueldo #RepublicaDominicana`
+  );
+}
+
+async function publicarImagen(caption: string, imagen: Buffer) {
+  const formData = new FormData();
+  formData.append("source", new Blob([new Uint8Array(imagen)], { type: "image/png" }), "regalia.png");
+  formData.append("caption", caption);
+  formData.append("published", "true");
+  formData.append("access_token", process.env.FACEBOOK_PAGE_ACCESS_TOKEN || "");
+  const res = await fetch("https://graph.facebook.com/v19.0/me/photos", { method: "POST", body: formData });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || "Error creando la publicacion en Facebook");
+  return (data.post_id || data.id) as string;
+}
+
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
@@ -58,8 +91,36 @@ export async function GET(request: Request) {
       return NextResponse.json({ resultado: "fuera de temporada (solo del 1 de octubre al 20 de diciembre)" });
     }
 
-    // Una sola publicacion por semana: la marca es el lunes de la semana de hoy.
     const fechaHoy = new Date(hoy + "T00:00:00Z");
+    const diasParaPago = Math.round((Date.parse(`${anio}-12-20T00:00:00Z`) - fechaHoy.getTime()) / 86400000);
+
+    if (hoy >= INICIO_IMAGENES) {
+      const { data: previas, error: errorPrevias } = await supabase
+        .from("publicaciones_facebook")
+        .select("loteria_slug")
+        .like("loteria_slug", MARCA_IMAGEN + "%");
+      if (errorPrevias) throw new Error(errorPrevias.message);
+      const marcas = (previas || []).map(function (p: any) { return p.loteria_slug as string; });
+      const marca = MARCA_IMAGEN + hoy;
+      if (marcas.includes(marca)) return NextResponse.json({ marca, resultado: "ya se publico hoy" });
+      if (marcas.length >= EJEMPLOS_REGALIA.length) {
+        return NextResponse.json({ resultado: `prueba terminada (${marcas.length} imagenes); se revisa el 16 de noviembre antes de seguir` });
+      }
+
+      const ejemplo = EJEMPLOS_REGALIA[marcas.length];
+      const caption = captionImagen(ejemplo.caption, diasParaPago);
+      const imagen = await generarImagenRegalia(ejemplo, diasParaPago);
+      const idPublicacion = await publicarImagen(caption, imagen);
+
+      const { error: errorInsert } = await supabase
+        .from("publicaciones_facebook")
+        .insert({ loteria_slug: marca, fecha: hoy, post_id: idPublicacion, mensaje: caption });
+      if (errorInsert) throw new Error(errorInsert.message);
+      return NextResponse.json({ marca, resultado: "publicado", post_id: idPublicacion });
+    }
+
+    // Formato anterior (hasta el 1 de noviembre): una sola publicacion por
+    // semana; la marca es el lunes de la semana de hoy.
     const diaSemana = (fechaHoy.getUTCDay() + 6) % 7; // 0 = lunes
     const lunes = new Date(fechaHoy.getTime() - diaSemana * 86400000).toISOString().slice(0, 10);
     const marca = `calculadora-regalia-${lunes}`;
@@ -70,7 +131,6 @@ export async function GET(request: Request) {
     if (errorConsulta) throw new Error(errorConsulta.message);
     if ((yaHay || []).length > 0) return NextResponse.json({ marca, resultado: "ya se publico esta semana" });
 
-    const diasParaPago = Math.round((Date.parse(`${anio}-12-20T00:00:00Z`) - fechaHoy.getTime()) / 86400000);
     const semana = Math.floor(fechaHoy.getTime() / (7 * 86400000));
     const texto = mensaje(diasParaPago, semana);
 
