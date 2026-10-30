@@ -35,25 +35,18 @@ def main():
     if not filas:
         print("Ya estaban los 15 sorteos de Anguila.")
         return
+    # La columna id de sorteos no tiene numeracion automatica (siempre se
+    # pusieron a mano): se numeran a partir del id mas alto.
+    m = requests.get(f"{SUPABASE_URL}/rest/v1/sorteos?select=id&order=id.desc&limit=1", headers=HEADERS, timeout=15)
+    m.raise_for_status()
+    siguiente = m.json()[0]["id"] + 1
+    for i, f in enumerate(filas):
+        f["id"] = siguiente + i
     r = requests.post(
         f"{SUPABASE_URL}/rest/v1/sorteos",
         headers={**HEADERS, "Prefer": "return=representation"},
         json=filas, timeout=15,
     )
-    # Si los ids de la tabla se pusieron a mano alguna vez, el contador
-    # automatico puede chocar con uno existente ("duplicate key"): entonces se
-    # numeran a partir del id mas alto.
-    if not r.ok and "duplicate key" in r.text:
-        m = requests.get(f"{SUPABASE_URL}/rest/v1/sorteos?select=id&order=id.desc&limit=1", headers=HEADERS, timeout=15)
-        m.raise_for_status()
-        siguiente = m.json()[0]["id"] + 1
-        for i, f in enumerate(filas):
-            f["id"] = siguiente + i
-        r = requests.post(
-            f"{SUPABASE_URL}/rest/v1/sorteos",
-            headers={**HEADERS, "Prefer": "return=representation"},
-            json=filas, timeout=15,
-        )
     if not r.ok:
         print("Error:", r.status_code, r.text)
         # El registro de GitHub Actions no se puede leer sin iniciar sesion:
