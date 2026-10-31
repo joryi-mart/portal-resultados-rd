@@ -245,7 +245,9 @@ def main():
 
     # Narracion: nombre, resumen y dos atracciones (el texto antes del " — ").
     atr = [a.split(" — ")[0].strip() for a in destino["atracciones"]][:2]
-    texto_voz = f"¿Conoces {destino['nombre']}? Te cuento por qué deberías ir. {destino['resumen']} "
+    hoy = (datetime.now(timezone.utc) - timedelta(hours=4)).date()
+    gancho = reel.gancho_del_dia("reel-turismo", hoy)
+    texto_voz = f"{gancho} ¿Conoces {destino['nombre']}? Te cuento por qué deberías ir. {destino['resumen']} "
     if atr:
         texto_voz += f"No te pierdas {' ni '.join(atr)}. "
     texto_voz += "Busca La Bankera RD en Google para descubrir más."
@@ -313,12 +315,12 @@ def main():
     if video:
         creditos += f" Video: {video['autor']} / Pixabay."
     caption = (
-        f"🌴 ¿Conoces {destino['nombre']}? Te cuento por qué deberías ir 👇\n\n{destino['resumen']}\n\n"
+        f"{gancho} 👇\n\n🌴 ¿Conoces {destino['nombre']}? Te cuento por qué deberías ir.\n\n{destino['resumen']}\n\n"
         f"👉 Descubre qué hacer, dónde quedarte y cómo llegar: https://{enlace}\n\n"
         f"¿Ya lo conoces? Cuéntanos en los comentarios 👇\n\n🔎 Búscanos en Google como «La Bankera RD».\n\n{creditos}\n\n"
         f"#RepublicaDominicana #TurismoRD #{destino['nombre'].replace(' ', '')}"
     )
-    fecha = (datetime.now(timezone.utc) - timedelta(hours=4)).date().isoformat()
+    fecha = hoy.isoformat()
     json.dump({"slug": f"reel-turismo-{destino['slug']}-{fecha}", "destino": destino["slug"], "fecha": fecha, "caption": caption},
               open(os.path.splitext(salida)[0] + ".json", "w", encoding="utf-8"), ensure_ascii=False)
     print(f"Listo: {salida} ({duracion:.1f} s)")

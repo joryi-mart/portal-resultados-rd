@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { ayerRD, fechaLarga } from "@/lib/publicacionDeportes";
 import { DEPORTES_QUE_PASO, captionQuePaso, esDeporteQuePaso, obtenerQuePasoAyer } from "@/lib/quePasoAyer";
 import { generarImagenQuePaso } from "@/lib/imagenQuePaso";
+import { ganchoDeHoy } from "@/lib/ganchos";
 
 // Publica en Facebook "¿Qué pasó ayer en MLB / LIDOM / NBA / LaLiga?": marcadores
 // de ayer con sus momentos clave (pitchers, jonrones, anotadores, goles).
@@ -80,7 +81,7 @@ export async function GET(request: Request) {
       return new NextResponse(new Uint8Array(imagen), { headers: { "Content-Type": "image/png", "Cache-Control": "no-store" } });
     }
 
-    const caption = captionQuePaso(deporte, textoFecha, juegos);
+    const caption = captionQuePaso(deporte, textoFecha, juegos, ganchoDeHoy(`que-paso-${deporte}`));
     const idPublicacion = await crearPublicacion(caption, imagen);
 
     const { error: errorInsert } = await supabase

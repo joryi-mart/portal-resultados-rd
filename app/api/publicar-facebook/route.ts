@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { generarImagenTanda, type ResultadoTanda } from "@/lib/imagenTanda";
 import { enviarNotificacionATodos } from "@/lib/pushNotificaciones";
 import { avisarResultadosRecientes } from "@/lib/indexnow";
+import { ganchoDelDia } from "@/lib/ganchos";
 
 const LOTERIAS_DESTACADAS = ["nacional", "leidsa", "real", "loteka"];
 const SORTEOS_DESCONTINUADOS = [73, 78, 119];
@@ -112,12 +113,14 @@ function enlaceLoteria(slug: string) {
   return `https://labankerard.com/${slug}?utm_source=facebook&utm_medium=social&utm_campaign=fb-${slug}`;
 }
 
-function captionLoteria(loteria: LoteriaFila, fecha: string, horaActual: string, resultados: ResultadoDeHoy[]) {
+// Arriba el gancho del dia (lib/ganchos.ts; cada salida de una misma loteria
+// en el dia lleva una frase distinta) y debajo de que loteria se trata.
+function captionLoteria(loteria: LoteriaFila, fecha: string, horaActual: string, resultados: ResultadoDeHoy[], gancho: string) {
   const cuando = horaActual >= "18:00" ? "esta noche" : "hoy";
   const lineas = resultados.map(function (r) { return `${r.sorteoNombre}: ${r.numeros}`; }).join("\n");
   return (
-    `🎱 ¿Qué salió ${cuando} en la ${loteria.nombre.replace(/^Lotería\s+/i, "")}? Aquí está 👇\n` +
-    `📍 Míralo en grande y el historial 👉 ${enlaceLoteria(loteria.slug)}\n\n` +
+    `${gancho} 👇\n` +
+    `🎱 Lo que salió ${cuando} en la ${loteria.nombre.replace(/^Lotería\s+/i, "")}, en grande y con el historial 👉 ${enlaceLoteria(loteria.slug)}\n\n` +
     `${fechaTitulo(fecha)}\n${lineas}\n\n` +
     INVITACION +
     `Página informativa. No vendemos jugadas ni aceptamos apuestas.\n\n` +
@@ -296,9 +299,10 @@ export async function GET(request: Request) {
           fechaImagen,
           pendientes.slice(0, MAX_SORTEOS_POR_IMAGEN).map(function (r) { return { loteria: loteria.nombre, sorteo: r.sorteoNombre, numeros: r.numeros }; })
         );
-        const caption = captionLoteria(loteria, hoy, horaActual, pendientes);
+        const salida = publicacionesLoteria.length + 1;
+        const caption = captionLoteria(loteria, hoy, horaActual, pendientes, ganchoDelDia(`fb-${loteria.slug}`, hoy, salida));
         const idPublicacion = await crearPublicacionConFotos(caption, [imagen]);
-        const slugPublicacion = `${prefijo}${publicacionesLoteria.length + 1}`;
+        const slugPublicacion = `${prefijo}${salida}`;
         const { error: errorInsert } = await supabase
           .from("publicaciones_facebook")
           .insert({ loteria_slug: slugPublicacion, fecha: hoy, post_id: idPublicacion, mensaje: caption });

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { supabase } from "@/lib/supabase";
 import { generarImagenPosicionesLidom, generarImagenJuegosLidom, NOMBRE_CORTO_LIDOM } from "@/lib/imagenLidom";
+import { ganchoDelDia } from "@/lib/ganchos";
 
 // Publica en Facebook la tabla de posiciones y los juegos de hoy de LIDOM,
 // con datos reales de la API oficial de MLB (sportId=17, liga 131 = Liga de
@@ -125,7 +126,7 @@ export async function GET(request: Request) {
         } else {
           const imagen = await generarImagenPosicionesLidom(posiciones, fechaTexto);
           const caption =
-            `🏆 TABLA DE POSICIONES — LIDOM\n${fechaTexto}\n\n` +
+            `${ganchoDelDia("lidom-posiciones", fecha)} 👇\n🏆 Tabla de posiciones de LIDOM, ${fechaTexto}\n\n` +
             posiciones.map(function (p: any, i: number) { return `${i + 1}. ${p.nombre}: ${p.victorias}-${p.derrotas} (${p.porcentaje})`; }).join("\n") +
             `\n\n👉 Más en https://labankerard.com/lidom\n\n🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n#LIDOM #BeisbolDominicano`;
           const postId = await crearPublicacion(caption, imagen, "lidom-posiciones.png");
@@ -150,7 +151,7 @@ export async function GET(request: Request) {
         } else {
           const imagen = await generarImagenJuegosLidom(juegos, fechaTexto);
           const caption =
-            `⚾ JUEGOS DE HOY — LIDOM\n${fechaTexto}\n\n` +
+            `${ganchoDelDia("lidom-juegos", fecha)} 👇\n⚾ Juegos de hoy en LIDOM, ${fechaTexto}\n\n` +
             juegos.map(function (j: any) { return `${j.visitante} @ ${j.local} — ${j.hora}`; }).join("\n") +
             `\n\n👉 Resultados en vivo en https://labankerard.com/lidom\n\n🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n#LIDOM #BeisbolDominicano`;
           const postId = await crearPublicacion(caption, imagen, "lidom-juegos.png");

@@ -21,6 +21,8 @@ from datetime import datetime, timedelta, timezone
 
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
+from ganchos import gancho_del_dia
+
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FUENTES = os.path.join(RAIZ, "lib", "fuentes")
 PUBLIC = os.path.join(RAIZ, "public")
@@ -628,12 +630,12 @@ RESUMENES_POR_DEPORTE = {"mlb": RESUMEN_BEISBOL, "lidom": RESUMEN_BEISBOL, "nba"
 # Devuelve la narracion dividida en tramos {"texto", "foto"} - uno por juego
 # (mas intro/cierre sin foto) - para poder sincronizar la foto del jugador
 # destacado con el momento exacto en que se habla de su juego.
-def partes_narracion(slug, juegos):
+def partes_narracion(slug, juegos, gancho):
     # El CTA va temprano (no solo al final): la mayoria de la gente no ve el
     # reel completo, asi que pedir el follow solo al cierre pierde a quien se
-    # va antes.
+    # va antes. El gancho cambia cada dia (lib/ganchos.json).
     partes = [{
-        "texto": f"¿Quién ganó ayer en {NOMBRE_HABLADO.get(slug, slug)}? Te lo cuento en 30 segundos. Sígueme para no perdértelo.",
+        "texto": f"{gancho} Resultados de ayer en {NOMBRE_HABLADO.get(slug, slug)}. Sígueme para no perdértelo.",
         "foto": None,
     }]
     resumen_deporte = RESUMENES_POR_DEPORTE.get(slug, {})
@@ -652,8 +654,8 @@ def partes_narracion(slug, juegos):
     return partes
 
 
-def texto_narracion(slug, juegos):
-    return " ".join(p["texto"] for p in partes_narracion(slug, juegos))
+def texto_narracion(slug, juegos, gancho):
+    return " ".join(p["texto"] for p in partes_narracion(slug, juegos, gancho))
 
 
 def generar_voz(texto, salida_mp3):
@@ -677,9 +679,9 @@ def generar_voz(texto, salida_mp3):
         return None, 0.0
 
 
-def construir_caption(titulo, subtitulo, fecha, enlace, hashtags):
+def construir_caption(titulo, gancho, fecha, enlace, hashtags):
     return (
-        f"{subtitulo} Te lo cuento en 30 segundos 👇\n\n{titulo}, resultados de {fecha_larga(fecha)}.\n\n"
+        f"{gancho} 👇\n\n{titulo}, resultados de {fecha_larga(fecha)}.\n\n"
         f"¿Y tú, quién crees que gana hoy? Déjalo en los comentarios 👇\n\n"
         f"👉 Síguenos para recibir los resultados cada mañana.\n\n"
         f"Más en https://{enlace}\n\n🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n{hashtags}"
@@ -690,8 +692,9 @@ TODOS_LOS_SLUGS = ["lidom", "mlb", "futbol", "nba"]
 
 
 def construir_caption_resumen(titulos, fecha):
+    gancho = gancho_del_dia("resumen-deportivo", fecha + timedelta(days=1))
     return (
-        f"Resumen deportivo: {unir(titulos)}\n\nResultados de {fecha_larga(fecha)}.\n\n"
+        f"{gancho} 👇\n\nResumen deportivo: {unir(titulos)}\n\nResultados de {fecha_larga(fecha)}.\n\n"
         f"👉 Síguenos para recibir los resultados cada mañana.\n\n"
         f"Más en https://labankerard.com\n\n🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n"
         f"#Deportes #ResumenDeportivo #RepublicaDominicana"
@@ -762,14 +765,16 @@ def main():
         print(f"Generando {slug} ({len(juegos)} juegos)...")
 
         salida_video = os.path.join(PUBLIC, f"reel-{slug}.mp4")
-        partes = partes_narracion(slug, juegos)
+        # Los reels de los resultados de ayer se publican hoy.
+        gancho = gancho_del_dia(f"reel-{slug}", fecha + timedelta(days=1))
+        partes = partes_narracion(slug, juegos, gancho)
         texto_completo = " ".join(p["texto"] for p in partes)
         voz_mp3, duracion_voz = generar_voz(texto_completo, os.path.join(PUBLIC, f"voz-{slug}.tmp.mp3"))
         duraciones[slug] = generar_video(titulo, subtitulo, enlace, juegos, salida_video, voz_mp3, duracion_voz, partes)
         if voz_mp3 and os.path.exists(voz_mp3):
             os.remove(voz_mp3)
 
-        caption = construir_caption(titulo, subtitulo, fecha, enlace, hashtags)
+        caption = construir_caption(titulo, gancho, fecha, enlace, hashtags)
         slug_publicacion = f"reel-{slug}-{fecha.isoformat()}"
         with open(os.path.join(PUBLIC, f"reel-{slug}.json"), "w", encoding="utf-8") as f:
             json.dump({"slug": slug_publicacion, "caption": caption, "fecha": fecha.isoformat()}, f, ensure_ascii=False)

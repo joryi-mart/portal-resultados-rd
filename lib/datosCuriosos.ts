@@ -199,12 +199,13 @@ export const DATOS: Dato[] = [
   },
 ];
 
-export function captionDato(dato: Dato) {
-  if (dato.caption) return dato.caption;
+// El gancho del dia (lib/ganchos.ts) va antes del "¿Sabías qué...?".
+export function captionDato(dato: Dato, gancho: string) {
+  if (dato.caption) return `${gancho} 👇\n${dato.caption}`;
   const enlace = dato.enlace || "https://labankerard.com";
   const hashtags = dato.hashtags || "#CuriosidadesRD #RepublicaDominicana #SabiasQue";
   return (
-    `¿Sabías qué...? 🎓\n\n${dato.texto} ${dato.pie}\n\n` +
+    `${gancho} 👇\n¿Sabías qué...? 🎓\n\n${dato.texto} ${dato.pie}\n\n` +
     `¿Lo sabías? Cuéntanos en los comentarios 👇\n\n` +
     `👉 Síguenos para aprender algo nuevo de RD cada semana.\n\n` +
     `Más en ${enlace}\n\n🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n${hashtags}`

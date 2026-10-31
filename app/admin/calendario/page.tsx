@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
 import calendario from "@/lib/calendario.json";
 import { DATOS } from "@/lib/datosCuriosos";
+import { PUBLICACIONES_CON_GANCHO, ganchoDelDia } from "@/lib/ganchos";
 
 // Panel privado: el calendario semanal de publicaciones de Facebook y lo que se
 // publicó en los últimos 7 días. Usa la misma sesión que /admin/analytics.
@@ -49,6 +50,8 @@ export default async function AdminCalendario() {
   }
 
   const publicaciones = calendario.publicaciones as Publicacion[];
+  const hoy = new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const manana = new Date(Date.parse(hoy + "T00:00:00Z") + 86400000).toISOString().slice(0, 10);
   const desde = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
   const { data, error } = await supabase
     .from("publicaciones_facebook")
@@ -104,6 +107,32 @@ export default async function AdminCalendario() {
               })}
             </tbody>
           </table>
+        </div>
+
+        <div className="mb-4 rounded-xl border border-[#10203A]/12 bg-white p-6">
+          <p className="mb-1 text-sm font-bold text-[#5C6B78]">Frase de gancho de hoy y de mañana</p>
+          <p className="mb-3 text-sm text-[#5C6B78]">
+            60 frases que rotan solas (lib/ganchos.json): ninguna publicación repite la de ayer y dos publicaciones del mismo día nunca usan la misma.
+          </p>
+          <div className="flex flex-col gap-3">
+            {Object.entries(PUBLICACIONES_CON_GANCHO).map(function ([tipo, p]) {
+              const salidas = tipo.startsWith("fb-") ? p.puestos.map(function (_, i) { return i + 1; }) : [1];
+              return (
+                <div key={tipo} className="border-t border-[#10203A]/6 pt-2 first:border-t-0 first:pt-0">
+                  <p className="text-sm font-bold text-[#10203A]">{p.nombre}</p>
+                  {salidas.map(function (s) {
+                    return (
+                      <p key={s} className="text-sm text-[#10203A]">
+                        {salidas.length > 1 ? <span className="mr-1 font-mono text-[#5C6B78]">{s}ª</span> : null}
+                        <span className="text-[#1E4D8C]">Hoy:</span> {ganchoDelDia(tipo, hoy, s)}{" "}
+                        <span className="text-[#5C6B78]">· Mañana: {ganchoDelDia(tipo, manana, s)}</span>
+                      </p>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div className="mb-4 rounded-xl border border-[#10203A]/12 bg-white p-6">

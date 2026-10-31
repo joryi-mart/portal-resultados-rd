@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { supabase } from "@/lib/supabase";
 import { EJEMPLOS_REGALIA, generarImagenRegalia } from "@/lib/imagenRegalia";
+import { ganchoDelDia } from "@/lib/ganchos";
 
 // Publica en Facebook la calculadora de regalía pascual. Lo llama el
 // calendario (lib/calendario.json) lunes y jueves, solo en temporada (del 1 de
@@ -51,11 +52,12 @@ function mensaje(diasParaPago: number, semana: number) {
   return textos[semana % textos.length] + `\n\n👉 Síguenos para más información útil de RD.\n\n#RegaliaPascual #DobleSueldo #RepublicaDominicana`;
 }
 
-// El enlace va en la segunda línea, antes del "Ver más" de Facebook.
-function captionImagen(primeraLinea: string, diasParaPago: number) {
+// Arriba el gancho del dia (lib/ganchos.ts) y la pregunta del ejemplo; el
+// enlace va en la tercera linea, antes del "Ver más" de Facebook.
+function captionImagen(gancho: string, primeraLinea: string, diasParaPago: number) {
   const faltan = diasParaPago === 1 ? "Falta 1 día" : `Faltan ${diasParaPago} días`;
   return (
-    `${primeraLinea}\n` +
+    `${gancho} 👇\n${primeraLinea}\n` +
     `Calcula el tuyo gratis en 10 segundos 👉 ${URL_CALCULADORA}\n\n` +
     `La regalía es la doceava parte de lo que ganaste en el año: sueldo × meses trabajados ÷ 12. No le descuentan ISR ni TSS.\n\n` +
     `📅 ${faltan} para el 20 de diciembre, fecha límite para pagarla.\n\n` +
@@ -108,7 +110,7 @@ export async function GET(request: Request) {
       }
 
       const ejemplo = EJEMPLOS_REGALIA[marcas.length];
-      const caption = captionImagen(ejemplo.caption, diasParaPago);
+      const caption = captionImagen(ganchoDelDia("calculadora-regalia", hoy), ejemplo.caption, diasParaPago);
       const imagen = await generarImagenRegalia(ejemplo, diasParaPago);
       const idPublicacion = await publicarImagen(caption, imagen);
 

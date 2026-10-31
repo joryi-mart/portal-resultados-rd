@@ -3,6 +3,7 @@ import { timingSafeEqual } from "crypto";
 import { supabase } from "@/lib/supabase";
 import { generarImagenDato } from "@/lib/imagenDato";
 import { DATOS, captionDato, type Dato } from "@/lib/datosCuriosos";
+import { ganchoDelDia } from "@/lib/ganchos";
 
 // Publica en Facebook una tarjeta "¿Sabías qué...?" (contenido que no es de lotería
 // del día, para variar la página). Se activa visitando la dirección en el navegador
@@ -69,7 +70,7 @@ export async function GET(request: Request) {
       if (publicados.has(dato.slug)) return NextResponse.json({ slug: dato.slug, resultado: "ya publicado antes" });
     }
 
-    const caption = captionDato(dato);
+    const caption = captionDato(dato, ganchoDelDia("dato", hoy));
     const imagen = await generarImagenDato(dato.texto, dato.pie);
     const idPublicacion = await crearPublicacion(caption, imagen);
 

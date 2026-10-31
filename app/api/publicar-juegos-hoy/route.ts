@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { fechaLarga } from "@/lib/publicacionDeportes";
 import { captionJuegosDeHoy, hoyRD, obtenerJuegosDeHoyMLB } from "@/lib/juegosDeHoy";
 import { generarImagenJuegosHoy } from "@/lib/imagenJuegosHoy";
+import { ganchoDeHoy } from "@/lib/ganchos";
 
 // Publica en Facebook "Juegos de hoy en MLB": hora de cada juego (hora de RD),
 // abridores, TV y, en playoffs, cómo va la serie.
@@ -75,7 +76,7 @@ export async function GET(request: Request) {
       return new NextResponse(new Uint8Array(imagen), { headers: { "Content-Type": "image/png", "Cache-Control": "no-store" } });
     }
 
-    const caption = captionJuegosDeHoy(textoFecha, juegos);
+    const caption = captionJuegosDeHoy(textoFecha, juegos, ganchoDeHoy("juegos-hoy-mlb"));
     const idPublicacion = await crearPublicacion(caption, imagen);
 
     const { error: errorInsert } = await supabase

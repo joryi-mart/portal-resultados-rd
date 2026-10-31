@@ -199,7 +199,7 @@ export async function obtenerQuePasoAyer(deporte: DeporteQuePaso, fechaISO: stri
   return juegosFutbol(fechaISO);
 }
 
-export function captionQuePaso(deporte: DeporteQuePaso, fechaTexto: string, juegos: JuegoDetallado[]) {
+export function captionQuePaso(deporte: DeporteQuePaso, fechaTexto: string, juegos: JuegoDetallado[], gancho: string) {
   const d = DEPORTES_QUE_PASO[deporte];
   const cuerpo = juegos
     .map(function (j) {
@@ -208,7 +208,7 @@ export function captionQuePaso(deporte: DeporteQuePaso, fechaTexto: string, jueg
     })
     .join("\n\n");
   return (
-    `${d.emoji} ¿Quién ganó ayer en ${d.nombre}? Te lo cuento rápido 👇\n${fechaTexto}\n\n${cuerpo}\n\n` +
+    `${gancho} 👇\n${d.emoji} ¿Quién ganó ayer en ${d.nombre}? ${fechaTexto}\n\n${cuerpo}\n\n` +
     `¿Qué te pareció? Te leemos en los comentarios 👇\n\n` +
     `👉 Síguenos para recibir los resultados cada mañana.\n\n` +
     `Más en ${d.enlace}\n\n🔎 Búscanos en Google como «La Bankera RD».\nPágina informativa.\n\n${d.hashtags}`

@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { generarImagenDato } from "@/lib/imagenDato";
 import { EFEMERIDES } from "@/app/efemerides/page";
 import { hechoDeWikipedia } from "@/lib/unDiaComoHoy";
+import { ganchoDeHoy } from "@/lib/ganchos";
 
 // Publica en Facebook la efemeride dominicana del dia (si hay una en la lista
 // de app/efemerides/page.tsx para la fecha de hoy). Pensada para que un cron
@@ -74,7 +75,7 @@ export async function GET(request: Request) {
     // ?prueba=1 muestra qué se publicaría hoy, sin publicar nada.
     if (url.searchParams.get("prueba") === "1") return NextResponse.json({ titulo, texto, fuente: propia ? "lista propia" : "Wikipedia" });
     const caption =
-      `¿Sabes qué pasó un día como hoy? Te lo cuento 👇\n\n${titulo}\n\n${texto}\n\n` +
+      `${ganchoDeHoy("efemeride")} 👇\n¿Sabes qué pasó un día como hoy?\n\n${titulo}\n\n${texto}\n\n` +
       `¿Lo sabías? Cuéntanos en los comentarios 👇\n\n` +
       `👉 Síguenos para tu dosis de historia todos los días.\n\n` +
       (propia ? "" : "Fuente: Wikipedia.\n\n") +
