@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import { generarImagenResultados } from "@/lib/imagenPublicacion";
+import { generarImagenTanda, type ResultadoTanda } from "@/lib/imagenTanda";
 import { enviarNotificacionATodos } from "@/lib/pushNotificaciones";
 import { avisarResultadosRecientes } from "@/lib/indexnow";
 
 const LOTERIAS_DESTACADAS = ["nacional", "leidsa", "real", "loteka"];
 const SORTEOS_DESCONTINUADOS = [73, 78, 119];
 
-// Maximo de sorteos por imagen. Si una loteria tiene mas sorteos en una tanda,
-// se reparten en varias imagenes dentro de la misma publicacion.
-const MAX_SORTEOS_POR_IMAGEN = 5;
+// Maximo de sorteos por imagen (lib/imagenTanda.tsx, cuadricula de 3
+// columnas). Con mas, las bolitas quedarian muy chicas: se reparten en varias
+// imagenes dentro de la misma publicacion.
+const MAX_SORTEOS_POR_IMAGEN = 16;
 
 // Los resultados del dia se publican en 3 tandas fijas, cada una UNA sola vez
 // y nunca se borra ni se rehace. Antes se borraba y se volvia a subir la
@@ -19,9 +20,9 @@ const MAX_SORTEOS_POR_IMAGEN = 5;
 // todos sus sorteos de hoy o, si alguno falta, al llegar la hora "limite".
 // Horas de Republica Dominicana.
 const TANDAS = [
-  { id: "mediodia", hasta: "14:00", limite: "14:15", gancho: "¿Qué números salieron hoy al mediodía?" },
-  { id: "tarde", hasta: "18:00", limite: "16:30", gancho: "¿Qué números salieron hoy en la tarde?" },
-  { id: "noche", hasta: "24:00", limite: "23:30", gancho: "¿Qué números salieron esta noche?" },
+  { id: "mediodia", hasta: "14:00", limite: "14:15", gancho: "¿Qué números salieron hoy al mediodía?", tituloImagen: "Resultados del mediodía" },
+  { id: "tarde", hasta: "18:00", limite: "16:30", gancho: "¿Qué números salieron hoy en la tarde?", tituloImagen: "Resultados de la tarde" },
+  { id: "noche", hasta: "24:00", limite: "23:30", gancho: "¿Qué números salieron esta noche?", tituloImagen: "Resultados de esta noche" },
 ];
 
 // Las tandas empiezan este dia; antes de esa fecha ya estaba publicado todo
@@ -250,14 +251,20 @@ export async function GET(request: Request) {
           continue;
         }
 
+        // Una sola imagen vertical con todas las loterias de la tanda (antes era
+        // una imagen por loteria y Facebook recortaba el collage). Si un dia
+        // hubiera demasiados sorteos para que se lean bien, se reparten en mas
+        // de una imagen.
+        const todos: ResultadoTanda[] = [];
+        bloques.forEach(function (b) {
+          b.resultados.forEach(function (r) { todos.push({ loteria: b.loteria.nombre, sorteo: r.sorteoNombre, numeros: r.numeros }); });
+        });
+        const partes = Math.ceil(todos.length / MAX_SORTEOS_POR_IMAGEN);
+        const fechaImagen = fechaTitulo(hoy).replace(",", "").replace(/^./, function (c) { return c.toUpperCase(); });
         const imagenes: Buffer[] = [];
-        for (const b of bloques) {
-          const partes = Math.ceil(b.resultados.length / MAX_SORTEOS_POR_IMAGEN);
-          for (let i = 0; i < partes; i++) {
-            const nombre = partes > 1 ? `${b.loteria.nombre} (${i + 1} de ${partes})` : b.loteria.nombre;
-            const grupo = b.resultados.slice(i * MAX_SORTEOS_POR_IMAGEN, (i + 1) * MAX_SORTEOS_POR_IMAGEN);
-            imagenes.push(await generarImagenResultados(nombre, fechaTitulo(hoy), grupo));
-          }
+        for (let i = 0; i < partes; i++) {
+          const grupo = todos.slice(i * MAX_SORTEOS_POR_IMAGEN, (i + 1) * MAX_SORTEOS_POR_IMAGEN);
+          imagenes.push(await generarImagenTanda(tanda.tituloImagen, fechaImagen, grupo));
         }
 
         const caption = construirCaption(tanda.gancho, hoy, bloques);
