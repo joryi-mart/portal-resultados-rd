@@ -1,0 +1,36 @@
+name: Cambio de hora de EE. UU.
+
+# Ajusta la hora de New York, Florida, Georgia, New Jersey, Powerball y Mega
+# Millions el dia que Nueva York cambia de hora (1-nov-2026 y 14-mar-2027).
+# Corre a las 3, 5 y 7 AM de RD (por si GitHub se retrasa o salta una), cuando
+# ya salieron los sorteos de la noche anterior. Los otros dias no hace nada.
+on:
+  schedule:
+    - cron: "0 7,9,11 1 11 *"
+    - cron: "0 7,9,11 14 3 *"
+  workflow_dispatch:
+    inputs:
+      temporada:
+        description: "invierno o verano (a mano, sin esperar el dia)"
+        required: true
+        default: "invierno"
+
+jobs:
+  cambio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests
+      - name: Cambiar horas
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            python scraper/cambio_hora_eeuu.py --forzar "${{ github.event.inputs.temporada }}"
+          else
+            python scraper/cambio_hora_eeuu.py
+          fi
