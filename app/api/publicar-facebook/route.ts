@@ -29,6 +29,18 @@ const TANDAS = [
 // con el sistema viejo (una publicacion por loteria) y se repetiria.
 const INICIO_TANDAS = "2026-10-24";
 
+// Desde este dia se vuelve a una publicacion por loteria (con su nombre en el
+// gancho y su enlace arriba): con las tandas, las visitas de Facebook a las
+// paginas de loteria cayeron de 86 (1-23 oct) a 4 (24-31 oct). A diferencia
+// del sistema viejo, nada se borra: cada sorteo nuevo sale en una
+// publicacion nueva de su loteria. Se marcan "fb-<loteria>-<n>".
+const INICIO_POR_LOTERIA = "2026-11-01";
+
+// Los sorteos de una misma loteria a la misma hora (ej. los de la Real al
+// mediodia) no llegan todos juntos: se espera a que lleguen los que tocaban
+// en la ultima hora, pero nunca mas de estos minutos desde el primero.
+const ESPERA_MAX_MINUTOS = 30;
+
 // Fila diaria en publicaciones_facebook que guarda los resultados ya avisados
 // por notificacion push (no es una publicacion de Facebook).
 const SLUG_AVISOS_PUSH = "avisos-push";
@@ -92,6 +104,29 @@ function construirCaption(gancho: string, fecha: string, bloques: { loteria: Lot
     `Página informativa. No vendemos jugadas ni aceptamos apuestas.\n\n` +
     `#LoteriaDominicana #ResultadosHoy ${hashtags}`.trim()
   );
+}
+
+// El enlace lleva una marca (utm) para saber en Analytics cuantas visitas trae
+// cada loteria desde Facebook; la pagina declara su URL canonica sin ella.
+function enlaceLoteria(slug: string) {
+  return `https://labankerard.com/${slug}?utm_source=facebook&utm_medium=social&utm_campaign=fb-${slug}`;
+}
+
+function captionLoteria(loteria: LoteriaFila, fecha: string, horaActual: string, resultados: ResultadoDeHoy[]) {
+  const cuando = horaActual >= "18:00" ? "esta noche" : "hoy";
+  const lineas = resultados.map(function (r) { return `${r.sorteoNombre}: ${r.numeros}`; }).join("\n");
+  return (
+    `🎱 ¿Qué salió ${cuando} en la ${loteria.nombre.replace(/^Lotería\s+/i, "")}? Aquí está 👇\n` +
+    `📍 Míralo en grande y el historial 👉 ${enlaceLoteria(loteria.slug)}\n\n` +
+    `${fechaTitulo(fecha)}\n${lineas}\n\n` +
+    INVITACION +
+    `Página informativa. No vendemos jugadas ni aceptamos apuestas.\n\n` +
+    `#LoteriaDominicana #ResultadosHoy ${HASHTAG_LOTERIA[loteria.slug] || ""}`.trim()
+  );
+}
+
+function minutosDelDia(hora: string) {
+  return Number(hora.slice(0, 2)) * 60 + Number(hora.slice(3, 5));
 }
 
 // Sube una foto sin publicarla, para luego juntarla con otras en una sola
@@ -222,9 +257,61 @@ export async function GET(request: Request) {
       resumen.avisosPush = nuevosAvisados.length;
     }
 
-    // 2) Tandas de Facebook.
+    // 2) Una publicacion por loteria con sus resultados nuevos (desde 1-nov).
+    const fechaImagen = fechaTitulo(hoy).replace(",", "").replace(/^./, function (c) { return c.toUpperCase(); });
+    for (const loteria of listaLoterias) {
+      if (hoy < INICIO_POR_LOTERIA) break;
+      try {
+        const prefijo = `fb-${loteria.slug}-`;
+        const publicacionesLoteria = (publicacionesHoy || []).filter(function (p) { return p.loteria_slug.indexOf(prefijo) === 0; });
+        const yaPublicados = new Set<string>();
+        publicacionesLoteria.forEach(function (p) {
+          (p.mensaje || "").split("\n").forEach(function (l: string) { yaPublicados.add(l.trim()); });
+        });
+
+        const pendientes: ResultadoDeHoy[] = [];
+        let faltaAlguno = false;
+        for (const sorteo of loteria.sorteos) {
+          const r = (sorteo.resultados || []).find(function (x) { return x.fecha === hoy && x.creado_en; });
+          if (r) {
+            if (!yaPublicados.has(`${sorteo.nombre}: ${r.numeros}`)) pendientes.push({ sorteoNombre: sorteo.nombre, numeros: r.numeros, creadoEn: r.creado_en });
+            continue;
+          }
+          // Sorteo de hoy que ya debio salir en la ultima hora y aun no llega.
+          const hora = (sorteo.hora_sorteo || "").slice(0, 5);
+          const diferencia = hora ? minutosDelDia(horaActual) - minutosDelDia(hora) : -1;
+          if ((sorteo.dias_semana || "").split(",").includes(letraHoy) && diferencia >= 0 && diferencia <= 60) faltaAlguno = true;
+        }
+        if (pendientes.length === 0) continue;
+
+        pendientes.sort(function (a, b) { return new Date(a.creadoEn).getTime() - new Date(b.creadoEn).getTime(); });
+        const minutosDesdeElPrimero = (Date.now() - new Date(pendientes[0].creadoEn).getTime()) / 60000;
+        if (faltaAlguno && minutosDesdeElPrimero < ESPERA_MAX_MINUTOS) {
+          resumen.esperando.push(loteria.slug);
+          continue;
+        }
+
+        const imagen = await generarImagenTanda(
+          loteria.nombre,
+          fechaImagen,
+          pendientes.slice(0, MAX_SORTEOS_POR_IMAGEN).map(function (r) { return { loteria: loteria.nombre, sorteo: r.sorteoNombre, numeros: r.numeros }; })
+        );
+        const caption = captionLoteria(loteria, hoy, horaActual, pendientes);
+        const idPublicacion = await crearPublicacionConFotos(caption, [imagen]);
+        const slugPublicacion = `${prefijo}${publicacionesLoteria.length + 1}`;
+        const { error: errorInsert } = await supabase
+          .from("publicaciones_facebook")
+          .insert({ loteria_slug: slugPublicacion, fecha: hoy, post_id: idPublicacion, mensaje: caption });
+        if (errorInsert) throw new Error(errorInsert.message);
+        resumen.publicadas.push(slugPublicacion);
+      } catch (errorLoteria: any) {
+        resumen.fallidas.push({ tanda: loteria.slug, error: errorLoteria.message });
+      }
+    }
+
+    // 3) Tandas de Facebook (24 al 31-oct-2026).
     for (const tanda of TANDAS) {
-      if (hoy < INICIO_TANDAS) break;
+      if (hoy < INICIO_TANDAS || hoy >= INICIO_POR_LOTERIA) break;
       const slugTanda = `tanda-${tanda.id}`;
       if ((publicacionesHoy || []).some(function (p) { return p.loteria_slug === slugTanda; })) continue;
 
@@ -260,7 +347,6 @@ export async function GET(request: Request) {
           b.resultados.forEach(function (r) { todos.push({ loteria: b.loteria.nombre, sorteo: r.sorteoNombre, numeros: r.numeros }); });
         });
         const partes = Math.ceil(todos.length / MAX_SORTEOS_POR_IMAGEN);
-        const fechaImagen = fechaTitulo(hoy).replace(",", "").replace(/^./, function (c) { return c.toUpperCase(); });
         const imagenes: Buffer[] = [];
         for (let i = 0; i < partes; i++) {
           const grupo = todos.slice(i * MAX_SORTEOS_POR_IMAGEN, (i + 1) * MAX_SORTEOS_POR_IMAGEN);
