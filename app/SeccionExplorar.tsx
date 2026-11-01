@@ -64,6 +64,8 @@ export default async function SeccionExplorar() {
               <img
                 src={`/api/tarjeta-explorar/${c.clave}`}
                 alt={t.titulo}
+                loading="lazy"
+                decoding="async"
                 className="aspect-[1.9/1] w-full object-cover"
               />
               <div className="px-4 py-3">
