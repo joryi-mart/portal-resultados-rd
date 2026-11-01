@@ -1,71 +1,59 @@
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
 import NavPildoras from "../NavPildoras";
 import PreguntasFrecuentes from "../PreguntasFrecuentes";
+import { FERIADOS, diasEntre, fechaLarga, hoyRD, proximoFeriado, type Feriado } from "@/lib/feriados";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
 const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "600"], variable: "--font-mono" });
 
-const COLOR_AZUL = "#1E4D8C";
-const COLOR_TEXTO_SECUNDARIO = "#5C6B78";
+const COLOR_TEXTO = "#2E3B48";
 const COLOR_VERDE_RD = "#007A33";
 
+// Se recalcula una vez al dia para que el "proximo feriado" este al dia.
+export const revalidate = 86400;
+
+// "dias feriados 2027" se busca muchisimo de noviembre a enero: por eso el
+// titulo nombra los dos años mientras 2026 no termine.
 export const metadata = {
-  title: "Días Feriados en República Dominicana 2026",
-  description: "Calendario completo de los 12 días feriados oficiales de República Dominicana en 2026, con las fechas trasladadas al lunes según la Ley 139-97.",
+  title: "Días Feriados 2026 y 2027 en República Dominicana: Calendario Oficial",
+  description: "Calendario oficial de los días feriados de República Dominicana en 2026 y 2027, con las fechas que se trasladan al lunes según la Ley 139-97. En 2027 se mueven Santos Reyes y Duarte.",
   openGraph: {
     images: ["/opengraph-image.png"],
-    title: "Días Feriados en República Dominicana 2026",
-    description: "Calendario oficial de feriados dominicanos 2026, actualizado con los traslados de ley.",
+    title: "Días Feriados 2026 y 2027 en República Dominicana",
+    description: "Calendario oficial de feriados dominicanos, con los traslados de ley.",
     locale: "es_DO",
     type: "website",
   },
   alternates: { canonical: "https://labankerard.com/dias-feriados" },
 };
 
-type Feriado = { nombre: string; fecha: string; nota?: string };
-
-// Fuente: Ministerio de Trabajo de Rep. Dominicana, contrastado con El Caribe,
-// Diario Libre y El Día (noviembre 2025). Las fechas ya incluyen los traslados
-// de la Ley 139-97 (feriados que caen martes-viernes se mueven al lunes).
-const FERIADOS_2026: Feriado[] = [
-  { nombre: "Año Nuevo", fecha: "2026-01-01" },
-  { nombre: "Día de los Santos Reyes", fecha: "2026-01-05", nota: "Trasladado del martes 6 al lunes 5" },
-  { nombre: "Día de la Altagracia", fecha: "2026-01-21" },
-  { nombre: "Día de Duarte", fecha: "2026-01-26" },
-  { nombre: "Día de la Independencia", fecha: "2026-02-27" },
-  { nombre: "Viernes Santo", fecha: "2026-04-03" },
-  { nombre: "Día del Trabajo", fecha: "2026-05-04", nota: "Trasladado del viernes 1 al lunes 4" },
-  { nombre: "Corpus Christi", fecha: "2026-06-04" },
-  { nombre: "Día de la Restauración", fecha: "2026-08-16", nota: "Cae domingo — no genera día libre extra" },
-  { nombre: "Día de las Mercedes", fecha: "2026-09-24" },
-  { nombre: "Día de la Constitución", fecha: "2026-11-09", nota: "Trasladado del viernes 6 al lunes 9" },
-  { nombre: "Navidad", fecha: "2026-12-25" },
-];
-
-const DIAS_SEMANA = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
-const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
-
-function formatearFechaLarga(fechaISO: string) {
-  const [y, m, d] = fechaISO.split("-").map(Number);
-  const fecha = new Date(y, m - 1, d);
-  return `${DIAS_SEMANA[fecha.getDay()]}, ${d} de ${MESES[m - 1]}`;
-}
-
-function hoyISO() {
-  const ahoraRD = new Date(Date.now() - 4 * 60 * 60 * 1000);
-  return ahoraRD.toISOString().slice(0, 10);
-}
-
-function diasHasta(fechaISO: string, hoy: string) {
-  const a = new Date(hoy + "T00:00:00");
-  const b = new Date(fechaISO + "T00:00:00");
-  return Math.round((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
+function ListaFeriados(props: { feriados: Feriado[]; hoy: string }) {
+  return (
+    <div className="rounded-xl border border-[#10203A]/15 bg-white">
+      {props.feriados.map(function (f) {
+        const yaPaso = f.fecha < props.hoy;
+        return (
+          <div
+            key={f.fecha}
+            className={"flex flex-col gap-1 border-t border-[#10203A]/8 px-5 py-4 first:border-t-0 sm:flex-row sm:items-center sm:justify-between " + (yaPaso ? "opacity-50" : "")}
+          >
+            <div>
+              <p className="text-lg font-bold text-[#10203A]">{f.nombre}</p>
+              <p className="text-base font-semibold capitalize" style={{ color: COLOR_TEXTO }}>{fechaLarga(f.fecha)}{yaPaso ? " · ya pasó" : ""}</p>
+            </div>
+            {f.nota ? <p className="text-base italic" style={{ color: COLOR_TEXTO }}>{f.nota}</p> : null}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 export default function DiasFeriadosPage() {
-  const hoy = hoyISO();
-  const proximo = FERIADOS_2026.find(function (f) { return f.fecha >= hoy; });
+  const hoy = hoyRD();
+  const proximo = proximoFeriado(hoy);
+  const faltan = proximo ? diasEntre(hoy, proximo.fecha) : 0;
 
   return (
     <div className={display.variable + " " + body.variable + " " + mono.variable + " min-h-screen bg-[#FBF7EE] font-[family-name:var(--font-body)] text-[#10203A]"}>
@@ -73,77 +61,74 @@ export default function DiasFeriadosPage() {
       <header className="bg-[#10203A] px-6 py-8 sm:px-10">
         <div className="mx-auto max-w-3xl">
           <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold text-[#FBF7EE] sm:text-4xl">
-            Días Feriados en República Dominicana 2026
+            Días Feriados 2026 y 2027 en República Dominicana
           </h1>
-          <p className="mt-2 font-mono text-sm text-[#D5DEEA]">
-            Calendario oficial, con los traslados de ley ya aplicados.
+          <p className="mt-2 text-base text-[#E6ECF3]">
+            Calendario oficial del Ministerio de Trabajo, con los traslados de ley ya aplicados.
           </p>
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-6 py-10 sm:px-10">
-        <a
-          href="/"
-          className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-sm font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
-        >
-          🎱 ¿Ya viste los resultados de la lotería de hoy? Consulta Nacional, Leidsa, Real y más.
-        </a>
-
         {proximo ? (
           <div className="mb-8 rounded-xl p-5" style={{ backgroundColor: COLOR_VERDE_RD }}>
-            <p className="font-mono text-xs font-bold uppercase tracking-wide text-white/70">Próximo feriado</p>
-            <p className="mt-1 font-[family-name:var(--font-display)] text-2xl font-bold capitalize text-white">
-              {proximo.nombre}
+            <p className="text-sm font-bold uppercase tracking-wide text-white/80">Próximo feriado</p>
+            <p className="mt-1 font-[family-name:var(--font-display)] text-2xl font-bold text-white">{proximo.nombre}</p>
+            <p className="mt-1 text-lg font-semibold capitalize text-white">
+              {fechaLarga(proximo.fecha)} · {faltan === 0 ? "es hoy" : `en ${faltan} día${faltan === 1 ? "" : "s"}`}
             </p>
-            <p className="mt-1 font-mono text-sm capitalize text-white/90">
-              {formatearFechaLarga(proximo.fecha)} · en {diasHasta(proximo.fecha, hoy)} día{diasHasta(proximo.fecha, hoy) === 1 ? "" : "s"}
-            </p>
+            {proximo.nota ? <p className="mt-1 text-base text-white/90">{proximo.nota}</p> : null}
           </div>
         ) : null}
 
-        <div className="rounded-xl border border-[#10203A]/15 bg-white">
-          {FERIADOS_2026.map(function (f, i) {
-            const yaPaso = f.fecha < hoy;
-            return (
-              <div
-                key={f.fecha}
-                className={"flex flex-col gap-1 border-t border-[#10203A]/8 px-5 py-4 first:border-t-0 sm:flex-row sm:items-center sm:justify-between " + (yaPaso ? "opacity-50" : "")}
-              >
-                <div>
-                  <p className="font-semibold text-[#10203A]">{f.nombre}</p>
-                  <p className="font-mono text-xs capitalize" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{formatearFechaLarga(f.fecha)}</p>
-                </div>
-                {f.nota ? (
-                  <p className="font-mono text-xs italic" style={{ color: COLOR_TEXTO_SECUNDARIO }}>{f.nota}</p>
-                ) : null}
-              </div>
-            );
-          })}
-        </div>
+        <section className="mb-10">
+          <h2 className="mb-3 font-[family-name:var(--font-display)] text-2xl font-bold text-[#10203A]">Días feriados 2027</h2>
+          <p className="mb-4 text-base leading-relaxed" style={{ color: COLOR_TEXTO }}>
+            El Ministerio de Trabajo publicó el calendario de 2027 el 1 de noviembre de 2026. Son 12 feriados y solo dos se
+            mueven al lunes, los dos en enero: <strong className="text-[#10203A]">Santos Reyes</strong> (del miércoles 6 al lunes 4) y{" "}
+            <strong className="text-[#10203A]">Duarte</strong> (del martes 26 al lunes 25).
+          </p>
+          <ListaFeriados feriados={FERIADOS[2027]} hoy={hoy} />
+        </section>
 
-        <p className="mt-6 text-sm leading-relaxed" style={{ color: COLOR_TEXTO_SECUNDARIO }}>
-          En 2026, República Dominicana tiene 12 días feriados nacionales. Algunos feriados que caen entre martes
-          y viernes se trasladan al lunes más cercano según la <strong>Ley 139-97</strong>, para formar fines de
-          semana largos. Los feriados de fecha fija (como Independencia, Restauración, Mercedes y Navidad) no se
-          trasladan aunque caigan entre semana.
+        <section className="mb-8">
+          <h2 className="mb-3 font-[family-name:var(--font-display)] text-2xl font-bold text-[#10203A]">Días feriados 2026</h2>
+          <ListaFeriados feriados={FERIADOS[2026]} hoy={hoy} />
+        </section>
+
+        <p className="text-base leading-relaxed" style={{ color: COLOR_TEXTO }}>
+          Según la <strong>Ley 139-97</strong>, los feriados que caen entre martes y viernes se trasladan al lunes más
+          cercano para formar fines de semana largos. Los de fecha fija (Año Nuevo, Altagracia, Independencia, Viernes
+          Santo, Corpus Christi, Restauración, Mercedes y Navidad) no se trasladan aunque caigan entre semana.
         </p>
+
+        <a
+          href="/"
+          className="mt-8 inline-flex items-center gap-2 rounded-full border border-[#E7A63C]/40 bg-[#E7A63C]/10 px-4 py-2 text-base font-semibold text-[#10203A] hover:bg-[#E7A63C]/20"
+        >
+          🎱 ¿Ya viste los resultados de la lotería de hoy? Consulta Nacional, Leidsa, Real y más.
+        </a>
       </main>
 
       <PreguntasFrecuentes
         preguntas={[
           {
-            pregunta: "¿Cuántos días feriados hay en República Dominicana en 2026?",
-            respuesta: "12 días feriados nacionales, listados arriba en esta página con sus fechas ya trasladadas según la Ley 139-97.",
+            pregunta: "¿Cuántos días feriados hay en República Dominicana en 2027?",
+            respuesta: "12 días feriados nacionales. Solo se trasladan al lunes los Santos Reyes (lunes 4 de enero) y el Día de Duarte (lunes 25 de enero).",
           },
           {
             pregunta: "¿Cuál es el próximo día feriado en República Dominicana?",
             respuesta: proximo
-              ? `El próximo es ${proximo.nombre}, el ${formatearFechaLarga(proximo.fecha)} (en ${diasHasta(proximo.fecha, hoy)} día${diasHasta(proximo.fecha, hoy) === 1 ? "" : "s"}).`
-              : "Puedes ver el calendario completo del año arriba en esta página.",
+              ? `El próximo es ${proximo.nombre}, el ${fechaLarga(proximo.fecha)}${faltan > 0 ? ` (en ${faltan} día${faltan === 1 ? "" : "s"})` : ", hoy"}.`
+              : "Puedes ver el calendario completo arriba en esta página.",
           },
           {
             pregunta: "¿Los feriados que caen entre semana se trasladan al lunes?",
-            respuesta: "Los que caen entre martes y viernes sí se trasladan al lunes más cercano, según la Ley 139-97. Los de fecha fija (como Independencia, Restauración, Mercedes y Navidad) no se trasladan aunque caigan entre semana.",
+            respuesta: "Los que caen entre martes y viernes se trasladan al lunes más cercano, según la Ley 139-97, salvo los de fecha fija como Independencia, Restauración, Mercedes y Navidad.",
+          },
+          {
+            pregunta: "¿Cuántos días feriados hay en República Dominicana en 2026?",
+            respuesta: "12 días feriados nacionales, listados arriba con sus fechas ya trasladadas según la Ley 139-97.",
           },
         ]}
       />

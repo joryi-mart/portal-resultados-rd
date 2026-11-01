@@ -88,6 +88,7 @@
     "efemeride": { "grupo": "historia", "puestos": [0], "nombre": "Un día como hoy" },
     "dato": { "grupo": "historia", "puestos": [4], "nombre": "¿Sabías qué…?" },
     "reel-turismo": { "grupo": "utiles", "puestos": [0], "nombre": "Reel de turismo" },
-    "calculadora-regalia": { "grupo": "utiles", "puestos": [3], "nombre": "Calculadora de regalía" }
+    "calculadora-regalia": { "grupo": "utiles", "puestos": [3], "nombre": "Calculadora de regalía" },
+    "feriados": { "grupo": "utiles", "puestos": [5], "nombre": "Días feriados" }
   }
 }

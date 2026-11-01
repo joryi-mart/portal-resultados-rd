@@ -219,7 +219,7 @@ export default function NavPildoras(props: { loterias?: LoteriaResumen[] }) {
     { etiqueta: "🏝️ Turismo", href: "/turismo" },
     { etiqueta: "⛽ Precio del combustible", href: "/precios-combustibles" },
     { etiqueta: "📍 Códigos postales", href: "/codigos-postales" },
-    { etiqueta: "📅 Días feriados 2026", href: "/dias-feriados" },
+    { etiqueta: "📅 Días feriados 2026 y 2027", href: "/dias-feriados" },
     { etiqueta: "🇩🇴 Efemérides dominicanas", href: "/efemerides" },
   ];
 
