@@ -33,6 +33,20 @@ function hoyISO() {
   return ahoraRD.toISOString().slice(0, 10);
 }
 
+// "anoche" o "ayer" si la fecha es la de ayer; "" si es otro dia.
+function cuandoFue(fechaISO: string, hora24: string) {
+  const ayer = new Date(new Date(hoyISO() + "T12:00:00Z").getTime() - 86400000).toISOString().slice(0, 10);
+  if (fechaISO !== ayer) return "";
+  return (hora24 || "").slice(0, 5) >= "18:00" ? "anoche" : "ayer";
+}
+
+// "sábado 31 de octubre".
+function fechaEnTexto(fechaISO: string) {
+  return new Date(fechaISO + "T12:00:00Z")
+    .toLocaleDateString("es-DO", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" })
+    .replace(",", "");
+}
+
 function nombreDia(letra: string) {
   const mapa: Record<string, string> = { L: "Lun", M: "Mar", X: "Mié", J: "Jue", V: "Vie", S: "Sáb", D: "Dom" };
   return mapa[letra] || letra;
@@ -417,6 +431,15 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
             {sorteos.map(function (sorteo) {
               const resultado = sorteo.resultados.find(function (r) { return r.fecha === hoy; });
               const hayResultadoReal = !!resultado;
+              // Si el de hoy aun no sale, se muestra el ultimo: Google visita casi
+              // siempre de dia y con "Pendiente" en todos veia la pagina vacia.
+              const ultimo = !resultado
+                ? sorteo.resultados.slice().sort(function (a, b) { return b.fecha.localeCompare(a.fecha); })[0]
+                : undefined;
+              const numerosUltimo = ultimo ? ultimo.numeros.split("-") : [];
+              const letraHoy = ["D", "L", "M", "X", "J", "V", "S"][new Date(hoy + "T12:00:00Z").getUTCDay()];
+              const letrasDias = (sorteo.dias_semana || "").split(",").map(function (l) { return l.trim(); }).filter(Boolean);
+              const seJuegaHoy = letrasDias.length === 0 || letrasDias.includes(letraHoy);
               const numeros = resultado ? resultado.numeros.split("-") : numerosVistaPrevia(sorteo.id);
               const tamano = tamanoBolita(numeros.length);
               const { calientes, frios, sorteosContados } = calcularCalientesFrios(sorteo.resultados);
@@ -472,6 +495,39 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
                         })}
                       </div>
                     )
+                  ) : ultimo ? (
+                    <div>
+                      <p className="mb-2 text-base font-bold text-[#2E3B48]">
+                        Último: {cuandoFue(ultimo.fecha, sorteo.hora_sorteo) ? cuandoFue(ultimo.fecha, sorteo.hora_sorteo) + ", " : ""}{fechaEnTexto(ultimo.fecha)}
+                      </p>
+                      {sorteo.nombre.toLowerCase().includes("kino") ? (
+                        <div className="grid grid-cols-5 gap-2 sm:gap-3">
+                          {numerosUltimo.map(function (n, i) {
+                            return (
+                              <div
+                                key={i}
+                                className="mx-auto flex h-9 w-9 items-center justify-center rounded-full font-mono text-sm font-bold text-white sm:h-10 sm:w-10"
+                                style={{ backgroundColor: COLOR_AZUL }}
+                              >
+                                {n}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap items-center gap-2">
+                          {numerosUltimo.map(function (n, i) {
+                            const colorPorPosicion = COLOR_POR_POSICION_SORTEOS[sorteo.id];
+                            return <Bolita key={i} tamano={tamanoBolita(numerosUltimo.length)} color={colorPorPosicion ? colorPorPosicion(i, numerosUltimo.length) ?? undefined : undefined}>{n}</Bolita>;
+                          })}
+                        </div>
+                      )}
+                      <p className="mt-3 text-sm font-semibold text-[#2E3B48]">
+                        {seJuegaHoy
+                          ? `🕗 El de hoy sale a las ${sorteo.hora_sorteo ? formatearHora12(horaSorteoEfectiva(sorteo.id, sorteo.hora_sorteo, hoy)) : "hora por confirmar"} y aparece aquí al momento.`
+                          : `Hoy no hay sorteo de ${sorteo.nombre}.`}
+                      </p>
+                    </div>
                   ) : (
                     <span className="inline-block rounded-full px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wide" style={{ backgroundColor: "#E4E8EB", color: "#7B858F" }}>
                       Pendiente
