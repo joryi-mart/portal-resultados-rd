@@ -113,15 +113,42 @@ function enlaceLoteria(slug: string) {
   return `https://labankerard.com/${slug}?utm_source=facebook&utm_medium=social&utm_campaign=fb-${slug}`;
 }
 
+// Pregunta de cierre para que la gente comente (sugerencia del asistente de
+// Meta, nov-2026: muchas vistas pero casi sin comentarios). Rotan igual que los
+// ganchos: cada loteria tiene un tramo propio de la lista y avanza uno por dia,
+// asi dos publicaciones del mismo dia nunca repiten pregunta (Real hasta 4
+// salidas, Nacional 3, Loteka y Leidsa 2) y la misma loteria no repite la de ayer.
+const PREGUNTAS_CIERRE = [
+  "¿Te salió algo? Cuéntame aquí abajo 👇",
+  "¿Cuál número jugaste hoy? Escríbelo en los comentarios 👇",
+  "¿Acertaste alguno? Dime cuál 👇",
+  "¿Con qué número soñaste anoche? Escríbelo aquí 👇",
+  "¿Te esperabas estos números? Comenta 👇",
+  "¿Cuál de estos números te gusta para mañana? 👇",
+  "Etiqueta a quien siempre te pregunta los números 👇",
+  "¿Desde qué parte del país nos lees? Comenta 👇",
+  "¿Repitió alguno de los tuyos? Cuéntanos 👇",
+  "¿Qué lotería sigues más? Escríbela aquí 👇",
+  "¿Te gustaron los números de hoy? Dinos sí o no 👇",
+  "¿Quién más estaba esperando estos números? 👇",
+];
+const TRAMO_PREGUNTA: Record<string, number> = { real: 0, nacional: 4, loteka: 7, leidsa: 9 };
+
+function preguntaCierre(slug: string, fecha: string, salida: number) {
+  const dia = Math.floor(Date.parse(fecha + "T00:00:00Z") / 86400000);
+  return PREGUNTAS_CIERRE[(dia + (TRAMO_PREGUNTA[slug] || 0) + salida - 1) % PREGUNTAS_CIERRE.length];
+}
+
 // Arriba el gancho del dia (lib/ganchos.ts; cada salida de una misma loteria
 // en el dia lleva una frase distinta) y debajo de que loteria se trata.
-function captionLoteria(loteria: LoteriaFila, fecha: string, horaActual: string, resultados: ResultadoDeHoy[], gancho: string) {
+function captionLoteria(loteria: LoteriaFila, fecha: string, horaActual: string, resultados: ResultadoDeHoy[], gancho: string, salida: number) {
   const cuando = horaActual >= "18:00" ? "esta noche" : "hoy";
   const lineas = resultados.map(function (r) { return `${r.sorteoNombre}: ${r.numeros}`; }).join("\n");
   return (
     `${gancho} 👇\n` +
     `🎱 Lo que salió ${cuando} en la ${loteria.nombre.replace(/^Lotería\s+/i, "")}, en grande y con el historial 👉 ${enlaceLoteria(loteria.slug)}\n\n` +
     `${fechaTitulo(fecha)}\n${lineas}\n\n` +
+    `💬 ${preguntaCierre(loteria.slug, fecha, salida)}\n\n` +
     INVITACION +
     `Página informativa. No vendemos jugadas ni aceptamos apuestas.\n\n` +
     `#LoteriaDominicana #ResultadosHoy ${HASHTAG_LOTERIA[loteria.slug] || ""}`.trim()
@@ -300,7 +327,7 @@ export async function GET(request: Request) {
           pendientes.slice(0, MAX_SORTEOS_POR_IMAGEN).map(function (r) { return { loteria: loteria.nombre, sorteo: r.sorteoNombre, numeros: r.numeros }; })
         );
         const salida = publicacionesLoteria.length + 1;
-        const caption = captionLoteria(loteria, hoy, horaActual, pendientes, ganchoDelDia(`fb-${loteria.slug}`, hoy, salida));
+        const caption = captionLoteria(loteria, hoy, horaActual, pendientes, ganchoDelDia(`fb-${loteria.slug}`, hoy, salida), salida);
         const idPublicacion = await crearPublicacionConFotos(caption, [imagen]);
         const slugPublicacion = `${prefijo}${salida}`;
         const { error: errorInsert } = await supabase
