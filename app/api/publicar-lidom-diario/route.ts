@@ -113,6 +113,16 @@ export async function GET(request: Request) {
     const fechaTexto = fechaLarga(fecha);
     const resultado: Record<string, any> = {};
 
+    // ?prueba=1&imagen=posiciones (o juegos) devuelve la imagen sin publicar,
+    // para revisar a mano como se ve (ej. el tamaño de las letras).
+    const verImagen = url.searchParams.get("imagen");
+    if (prueba && (verImagen === "posiciones" || verImagen === "juegos")) {
+      const png = verImagen === "posiciones"
+        ? await generarImagenPosicionesLidom(await obtenerPosiciones(), fechaTexto)
+        : await generarImagenJuegosLidom(await obtenerJuegosDeHoy(fecha), fechaTexto);
+      return new Response(new Uint8Array(png), { headers: { "Content-Type": "image/png", "Cache-Control": "no-store" } });
+    }
+
     // --- Tabla de posiciones ---
     const slugPosiciones = `lidom-posiciones-${fecha}`;
     const posicionesPrevias = !prueba ? await yaPublicado(slugPosiciones) : null;

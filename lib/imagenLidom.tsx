@@ -25,13 +25,16 @@ export const NOMBRE_CORTO_LIDOM: Record<number, string> = {
   672: "Licey",
 };
 
+// Tamaños pensados para leerse en el celular (el publico es de mas de 40
+// años): en Facebook la imagen de 1080 se ve a unos 360 px de ancho, asi que
+// todo se divide entre 3. Antes la tabla usaba 26-28 px y se veia chiquita.
 function Marco({
   titulo,
   fecha,
   children,
-  tamFecha = "26px",
-  tamPie = "32px",
-  tamPieChico = "20px",
+  tamFecha = "34px",
+  tamPie = "40px",
+  tamPieChico = "26px",
 }: {
   titulo: string;
   fecha: string;
@@ -50,11 +53,11 @@ function Marco({
         background: NAVY,
         border: "3px solid #E7A63C",
         fontFamily: "Manrope",
-        padding: "70px 70px 60px",
+        padding: "56px 50px 46px",
       }}
     >
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <div style={{ display: "flex", fontSize: "46px", fontWeight: 800, color: GOLD, letterSpacing: "3px" }}>{titulo}</div>
+        <div style={{ display: "flex", fontSize: "54px", fontWeight: 800, color: GOLD, letterSpacing: "2px" }}>{titulo}</div>
         <div style={{ display: "flex", fontSize: tamFecha, color: DIM, marginTop: "8px" }}>{fecha}</div>
         <div style={{ display: "flex", width: "480px", height: "3px", background: AZUL, marginTop: "22px" }} />
       </div>
@@ -70,7 +73,7 @@ function Marco({
 type FilaPosicion = { equipoId: number; nombre: string; juegosJugados: number; victorias: number; derrotas: number; porcentaje: string; diferencia: string };
 
 export async function generarImagenPosicionesLidom(posiciones: FilaPosicion[], fecha: string) {
-  const anchoCol = ["42%", "14.5%", "14.5%", "14.5%", "14.5%"];
+  const anchoCol = ["38%", "13%", "13%", "13%", "23%"];
   const encabezados = ["EQUIPO", "JJ", "G", "P", "PCT"];
   const imagen = new ImageResponse(
     (
@@ -79,7 +82,7 @@ export async function generarImagenPosicionesLidom(posiciones: FilaPosicion[], f
           <div style={{ display: "flex", borderBottom: `2px solid ${AZUL}`, paddingBottom: "12px", marginBottom: "6px" }}>
             {encabezados.map(function (h, i) {
               return (
-                <div key={h} style={{ display: "flex", width: anchoCol[i], fontSize: "20px", fontWeight: 800, color: DIM, justifyContent: i === 0 ? "flex-start" : "center" }}>
+                <div key={h} style={{ display: "flex", width: anchoCol[i], fontSize: "30px", fontWeight: 800, color: DIM, justifyContent: i === 0 ? "flex-start" : "center" }}>
                   {h}
                 </div>
               );
@@ -92,17 +95,17 @@ export async function generarImagenPosicionesLidom(posiciones: FilaPosicion[], f
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  padding: "16px 0",
-                  borderBottom: i < posiciones.length - 1 ? "1px solid rgba(255,255,255,0.08)" : "none",
+                  padding: "18px 0",
+                  borderBottom: i < posiciones.length - 1 ? "2px solid rgba(255,255,255,0.12)" : "none",
                 }}
               >
-                <div style={{ display: "flex", width: anchoCol[0], fontSize: "28px", fontWeight: 800, color: "#FFFFFF" }}>
+                <div style={{ display: "flex", width: anchoCol[0], fontSize: "52px", fontWeight: 800, color: "#FFFFFF" }}>
                   {NOMBRE_CORTO_LIDOM[p.equipoId] || p.nombre}
                 </div>
-                <div style={{ display: "flex", width: anchoCol[1], fontSize: "26px", color: "#FFFFFF", justifyContent: "center" }}>{p.juegosJugados}</div>
-                <div style={{ display: "flex", width: anchoCol[2], fontSize: "26px", fontWeight: 800, color: GOLD, justifyContent: "center" }}>{p.victorias}</div>
-                <div style={{ display: "flex", width: anchoCol[3], fontSize: "26px", color: "#FFFFFF", justifyContent: "center" }}>{p.derrotas}</div>
-                <div style={{ display: "flex", width: anchoCol[4], fontSize: "26px", color: "#FFFFFF", justifyContent: "center" }}>{p.porcentaje}</div>
+                <div style={{ display: "flex", width: anchoCol[1], fontSize: "50px", color: "#FFFFFF", justifyContent: "center" }}>{p.juegosJugados}</div>
+                <div style={{ display: "flex", width: anchoCol[2], fontSize: "50px", fontWeight: 800, color: GOLD, justifyContent: "center" }}>{p.victorias}</div>
+                <div style={{ display: "flex", width: anchoCol[3], fontSize: "50px", color: "#FFFFFF", justifyContent: "center" }}>{p.derrotas}</div>
+                <div style={{ display: "flex", width: anchoCol[4], fontSize: "50px", color: "#FFFFFF", justifyContent: "center" }}>{p.porcentaje}</div>
               </div>
             );
           })}
@@ -124,10 +127,11 @@ export async function generarImagenPosicionesLidom(posiciones: FilaPosicion[], f
 type Juego = { visitante: string; local: string; venue: string; hora: string };
 
 export async function generarImagenJuegosLidom(juegos: Juego[], fecha: string) {
-  const TAM = "34px";
+  // Con 3 juegos (lo normal en LIDOM) caben a 42 px; con 4 o mas, algo menos.
+  const TAM = juegos.length >= 4 ? "34px" : "42px";
   const imagen = new ImageResponse(
     (
-      <Marco titulo="LIDOM · JUEGOS DE HOY" fecha={fecha} tamFecha="28px" tamPie="30px" tamPieChico="22px">
+      <Marco titulo="LIDOM · JUEGOS DE HOY" fecha={fecha}>
         {juegos.length > 0 ? (
           <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
             {juegos.map(function (j, i) {
