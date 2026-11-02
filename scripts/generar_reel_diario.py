@@ -127,6 +127,54 @@ def apellido(nombre_completo):
     return partes[-1] if partes else nombre_completo
 
 
+# Solo para la voz: como se escribe cada equipo para que la voz (mexicana) lo
+# diga como se oye en RD. En pantalla el nombre sale igual que siempre.
+PRONUNCIACION = {
+    # MLB (los que se quedan en ingles)
+    "Diamondbacks": "Dáimonbacs", "Orioles": "Óriols", "Rockies": "Rókis", "Dodgers": "Dóyers",
+    "Yankees": "Yanquis", "Rays": "Réis", "Rangers": "Réinyers",
+    # NBA
+    "76ers": "Síxers", "Bucks": "Boks", "Bulls": "Buls", "Cavaliers": "Cavalírs", "Celtics": "Céltics",
+    "Clippers": "Clípers", "Grizzlies": "Grízlis", "Hawks": "Jocs", "Heat": "Jit", "Hornets": "Jórnets",
+    "Jazz": "Yas", "Knicks": "Niks", "Lakers": "Léikers", "Magic": "Máyic", "Mavericks": "Máveriks",
+    "Nuggets": "Nóguets", "Pacers": "Péisers", "Pistons": "Pístons", "Raptors": "Ráptors",
+    "Rockets": "Rókets", "Spurs": "Espórs", "Suns": "Sons", "Thunder": "Tánder",
+    "Timberwolves": "Tímberuolfs", "Trail Blazers": "Tréil Bléizers", "Warriors": "Uórriors",
+    "Wizards": "Uízards",
+}
+# En RD se dice "el Heat", "el Magic"... (singular); el resto va en plural.
+EQUIPOS_EN_SINGULAR = {"Heat", "Magic", "Jazz", "Thunder"}
+
+
+def hablado(equipo):
+    return PRONUNCIACION.get(equipo, equipo)
+
+
+def con_articulo(equipo):
+    """'las Águilas Cibaeñas', 'el Jit' (Heat), 'los Léikers' (Lakers)..."""
+    if equipo in EQUIPOS_EN_SINGULAR:
+        articulo = "el"
+    elif equipo.startswith(("Águilas", "Estrellas")):
+        articulo = "las"
+    else:
+        articulo = "los"
+    return f"{articulo} {hablado(equipo)}"
+
+
+def a_equipo(equipo):
+    """'a los Celtics', pero 'al Heat' (nunca 'a el')."""
+    texto = con_articulo(equipo)
+    return "al" + texto[2:] if texto.startswith("el ") else f"a {texto}"
+
+
+def verbo(equipo, singular, plural):
+    return singular if equipo in EQUIPOS_EN_SINGULAR else plural
+
+
+def mayuscula(texto):
+    return texto[0].upper() + texto[1:]
+
+
 def unir(lista):
     return lista[0] if len(lista) == 1 else ", ".join(lista[:-1]) + " y " + lista[-1]
 
@@ -137,7 +185,7 @@ def resumen_juego_mlb(g, visitante, local):
         ganador, perdedor, pg, pp = visitante, local, a["score"], h["score"]
     else:
         ganador, perdedor, pg, pp = local, visitante, h["score"], a["score"]
-    frases = [f"Los {ganador} le ganaron {pg} a {pp} a los {perdedor}."]
+    frases = [f"{mayuscula(con_articulo(ganador))} le ganaron {pg} a {pp} {a_equipo(perdedor)}."]
 
     dec = g.get("decisions") or {}
     if dec.get("winner"):
@@ -166,9 +214,9 @@ def resumen_juego_mlb(g, visitante, local):
         if serie.get("isTied"):
             frases.append(f"La serie está empatada a {w}.")
         elif serie.get("isOver") and lider:
-            frases.append(f"¡Los {lider} ganan la serie {w} a {l}!")
+            frases.append(f"¡{mayuscula(con_articulo(lider))} ganan la serie {w} a {l}!")
         elif lider:
-            frases.append(f"Los {lider} están arriba {w} a {l} en la serie.")
+            frases.append(f"{mayuscula(con_articulo(lider))} están arriba {w} a {l} en la serie.")
 
     foto = f"https://midfield.mlbstatic.com/v1/people/{foto_id}/headshot/67/current" if foto_id else None
     return " ".join(frases), foto
@@ -208,21 +256,22 @@ def lider_puntos_nba(competidor):
 def resumen_juego_nba(competidor_visitante, competidor_local, visitante, local, pv, pl):
     ganador, perdedor, pg, pp = (visitante, local, pv, pl) if pv > pl else (local, visitante, pl, pv)
     diferencia = pg - pp
+    sujeto = mayuscula(con_articulo(ganador))
     if diferencia <= 5:
-        frase_resultado = f"{ganador} se llevó un partido muy reñido, {pg}-{pp} sobre {perdedor}."
+        frase_resultado = f"{sujeto} {verbo(ganador, 'se llevó', 'se llevaron')} un partido muy reñido ante {con_articulo(perdedor)}, {pg} a {pp}."
     elif diferencia >= 20:
-        frase_resultado = f"{ganador} arrasó {pg}-{pp} a {perdedor}."
+        frase_resultado = f"{sujeto} {verbo(ganador, 'arrasó', 'arrasaron')} {a_equipo(perdedor)}, {pg} a {pp}."
     else:
-        frase_resultado = f"{ganador} venció {pg}-{pp} a {perdedor}."
+        frase_resultado = f"{sujeto} {verbo(ganador, 'venció', 'vencieron')} {pg} a {pp} {a_equipo(perdedor)}."
     frases = [frase_resultado]
 
     nombre_v, pts_v, valor_v, foto_v = lider_puntos_nba(competidor_visitante)
     nombre_l, pts_l, valor_l, foto_l = lider_puntos_nba(competidor_local)
     lideres = []
     if nombre_v:
-        lideres.append(f"{nombre_v} con {pts_v} puntos por {visitante}")
+        lideres.append(f"{nombre_v} con {pts_v} puntos por {con_articulo(visitante)}")
     if nombre_l:
-        lideres.append(f"{nombre_l} con {pts_l} puntos por {local}")
+        lideres.append(f"{nombre_l} con {pts_l} puntos por {con_articulo(local)}")
     if lideres:
         frases.append(f"Lideró {unir(lideres)}." if len(lideres) == 1 else f"Lideraron {unir(lideres)}.")
 
@@ -239,12 +288,12 @@ def resumen_juego_futbol(detalles, ids_equipos, visitante, local, pv, pl):
     goles.sort(key=lambda ev: (ev.get("clock") or {}).get("value") or 0)
 
     if pv == pl:
-        frase_resultado = f"{visitante} y {local} empataron {pv}-{pl}."
+        frase_resultado = f"{visitante} y {local} empataron a {pv}."
     else:
         ganador, perdedor, pg, pp = (visitante, local, pv, pl) if pv > pl else (local, visitante, pl, pv)
         frase_resultado = (
-            f"{ganador} goleó {pg}-{pp} a {perdedor}." if pg - pp >= 3
-            else f"{ganador} venció {pg}-{pp} a {perdedor}."
+            f"{ganador} goleó {pg} a {pp} a {perdedor}." if pg - pp >= 3
+            else f"{ganador} venció {pg} a {pp} a {perdedor}."
         )
     frases = [frase_resultado]
 
@@ -256,7 +305,9 @@ def resumen_juego_futbol(detalles, ids_equipos, visitante, local, pv, pl):
             nombre = apellido(jugadores[0]["displayName"]) if jugadores else "un jugador"
             minuto = (ev.get("clock") or {}).get("displayValue", "")
             equipo = visitante if (ev.get("team") or {}).get("id") == ids_equipos.get("away") else local
-            descripciones.append(f"{nombre} ({minuto}, {equipo})")
+            # ESPN da el minuto como "45'" o "90'+3'": se dice "al minuto 45" / "al minuto 90 más 3".
+            minuto = minuto.replace("'", "").replace("+", " más ").strip()
+            descripciones.append(f"{nombre} al minuto {minuto} por {equipo}" if minuto else f"{nombre} por {equipo}")
             # ESPN no siempre tiene foto de jugadores de futbol (sobre todo
             # ligas fuera de las top): si no existe, descargar_imagen() la
             # salta sola mas adelante, sin romper nada.
@@ -645,11 +696,11 @@ def partes_narracion(slug, juegos, gancho):
             texto, foto = resumen_deporte[juego]
             partes.append({"texto": texto, "foto": foto})
         elif pv == pl:
-            partes.append({"texto": f"{visitante} y {local} empataron a {pv}.", "foto": None})
+            partes.append({"texto": f"{hablado(visitante)} y {hablado(local)} empataron a {pv}.", "foto": None})
         elif pv > pl:
-            partes.append({"texto": f"{visitante} {pv}, {local} {pl}.", "foto": None})
+            partes.append({"texto": f"{hablado(visitante)} {pv}, {hablado(local)} {pl}.", "foto": None})
         else:
-            partes.append({"texto": f"{local} {pl}, {visitante} {pv}.", "foto": None})
+            partes.append({"texto": f"{hablado(local)} {pl}, {hablado(visitante)} {pv}.", "foto": None})
     partes.append({"texto": "¿Y tú, quién crees que gana hoy? Déjalo en los comentarios. Y busca La Bankera RD en Google para tener los resultados cada mañana.", "foto": None})
     return partes
 
