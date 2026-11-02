@@ -199,12 +199,25 @@ export async function obtenerQuePasoAyer(deporte: DeporteQuePaso, fechaISO: stri
   return juegosFutbol(fechaISO);
 }
 
+// En la imagen de LIDOM va el nombre corto ("Licey"); en el texto, el completo ("Tigres del Licey").
+const NOMBRE_COMPLETO_LIDOM: Record<string, string> = {
+  Licey: "Tigres del Licey", Águilas: "Águilas Cibaeñas", Escogido: "Leones del Escogido",
+  Estrellas: "Estrellas Orientales", Toros: "Toros del Este", Gigantes: "Gigantes del Cibao",
+};
+
 export function captionQuePaso(deporte: DeporteQuePaso, fechaTexto: string, juegos: JuegoDetallado[], gancho: string) {
   const d = DEPORTES_QUE_PASO[deporte];
+  const completo = function (nombre: string) {
+    return deporte === "lidom" ? NOMBRE_COMPLETO_LIDOM[nombre] || nombre : nombre;
+  };
   const cuerpo = juegos
     .map(function (j) {
-      const marcador = `${j.visitante} ${j.puntosVisitante} - ${j.puntosLocal} ${j.local}`;
-      return [marcador, ...j.detalles.map(function (x) { return `• ${x}`; })].join("\n");
+      const marcador = `${completo(j.visitante)} ${j.puntosVisitante} - ${j.puntosLocal} ${completo(j.local)}`;
+      const detalles = j.detalles.map(function (x) {
+        const jonrones = x.match(/^Jonrones (.+?): (.*)$/);
+        return `• ${jonrones ? `Jonrones ${completo(jonrones[1])}: ${jonrones[2]}` : x}`;
+      });
+      return [marcador, ...detalles].join("\n");
     })
     .join("\n\n");
   return (
