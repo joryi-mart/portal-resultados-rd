@@ -3,6 +3,10 @@ import { supabase } from "@/lib/supabase";
 import { slugSorteo } from "@/lib/slug";
 import { CIUDADES } from "./turismo/datos";
 import { mesesDisponibles, slugMes } from "@/lib/informeMensual";
+import fechasSinImpresiones from "@/lib/fechasSinImpresiones.json";
+
+// Fechas que en 3 meses no salieron nunca en Google: fuera del sitemap (5-nov-2026).
+const PAGINAS_PODADAS = new Set<string>(fechasSinImpresiones.paginas);
 
 const SITIO = "https://labankerard.com";
 
@@ -400,7 +404,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         if (r.fecha >= desdeISO) fechas.add(r.fecha);
       });
     });
-    return Array.from(fechas).sort().reverse().map(function (f) {
+    return Array.from(fechas).filter(function (f) { return !PAGINAS_PODADAS.has(`${l.slug}/${f}`); }).sort().reverse().map(function (f) {
       const esHoy = f === hoyISOSitemap;
       return {
         url: `${SITIO}/${l.slug}/${f}`,

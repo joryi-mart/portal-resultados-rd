@@ -5,6 +5,11 @@ import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import EnlaceCalculadoras from "@/app/EnlaceCalculadoras";
 import CompartirYAvisos from "@/app/CompartirYAvisos";
+import fechasSinImpresiones from "@/lib/fechasSinImpresiones.json";
+
+// Paginas por fecha que en 3 meses no salieron nunca en Google (ver el
+// comentario de lib/fechasSinImpresiones.json): noindex desde el 5-nov-2026.
+const PAGINAS_PODADAS = new Set<string>(fechasSinImpresiones.paginas);
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
 const body = Manrope({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
@@ -180,7 +185,7 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
   return {
     title: titulo,
     description: descripcion,
-    ...(!hayResultados ? { robots: { index: false, follow: true } } : {}),
+    ...(!hayResultados || PAGINAS_PODADAS.has(`${params.slug}/${params.fecha}`) ? { robots: { index: false, follow: true } } : {}),
     openGraph: { images: ["/opengraph-image.png"], title: `${titulo} | La Bankera RD`, description: descripcion, locale: "es_DO", type: "website" },
     alternates: { canonical: `https://labankerard.com/${params.slug}/${params.fecha}` },
   };
