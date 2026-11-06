@@ -101,7 +101,7 @@ export default function RootLayout({
             pagina; async hace que no frene la carga de los resultados. */}
         <script
           async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5924926013371020"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4284071944196543"
           crossOrigin="anonymous"
         ></script>
       </head>
