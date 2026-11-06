@@ -36,7 +36,16 @@ export default function PieLoterias() {
         <p className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2 text-base font-semibold">
           <a href="/en-directo" className="text-[#B23B26] hover:underline">🔴 Resultados en directo</a>
           <a href="/resultados-2026" className="text-[#1E4D8C] hover:underline">Resultados 2026</a>
+          <a href="/resumen" className="text-[#1E4D8C] hover:underline">Resumen de hoy</a>
           <a href="/loterias" className="text-[#1E4D8C] hover:underline">Todas las loterías</a>
+        </p>
+        {/* Herramientas: antes solo salian en el menu desplegable, que se abre
+            con un toque, y Google/Bing no las veian enlazadas desde ninguna pagina. */}
+        <p className="mt-3 text-base font-bold text-[#10203A]">Herramientas</p>
+        <p className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-2 text-base font-semibold">
+          <a href="/ultima-vez-que-gano-un-numero" className="text-[#1E4D8C] hover:underline">Última vez que ganó un número</a>
+          <a href="/precios-combustibles" className="text-[#1E4D8C] hover:underline">Precios de combustibles</a>
+          <a href="/codigos-postales" className="text-[#1E4D8C] hover:underline">Códigos postales</a>
         </p>
       </div>
     </nav>

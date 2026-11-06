@@ -17,10 +17,13 @@ function iniciales(nombre: string) {
 }
 
 export default function TarjetaJugadorDominicano({ jugador }: { jugador: JugadorDominicano }) {
-  const urlWikipedia = "https://es.wikipedia.org/wiki/" + encodeURIComponent(jugador.nombre.replace(/ /g, "_"));
+  // Ficha oficial en MLB.com con el numero de jugador de MLB (el mismo de la
+  // foto). Antes se armaba un enlace a Wikipedia con el nombre y 47 jugadores
+  // sin articulo daban 404.
+  const urlFicha = "https://www.mlb.com/player/" + jugador.id;
   return (
     <a
-      href={urlWikipedia}
+      href={urlFicha}
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center gap-3 rounded-xl border border-[#10203A]/15 bg-white p-3 shadow-sm hover:shadow-md"

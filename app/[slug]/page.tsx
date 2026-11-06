@@ -720,6 +720,29 @@ export default async function PaginaLoteria(props: { params: Promise<{ slug: str
         ]}
       />
 
+      {/* Sorteos que ya no se juegan (El Extra, Pega 4, Super Pale): sus
+          paginas explican que se descontinuaron y Google aun las muestra, pero
+          ninguna otra pagina las enlazaba. */}
+      {(function () {
+        const descontinuados = (loteriaData.sorteos || []).filter(function (s) { return SORTEOS_OCULTOS.includes(s.id); });
+        if (descontinuados.length === 0) return null;
+        return (
+          <p className="px-6 pb-6 text-center text-base text-[#2E3B48] sm:px-10">
+            Sorteos que ya no se juegan:{" "}
+            {descontinuados.map(function (s, i) {
+              return (
+                <span key={s.id}>
+                  {i > 0 ? ", " : ""}
+                  <a href={"/" + params.slug + "/sorteo/" + slugSorteo(s.nombre)} className="underline" style={{ color: COLOR_AZUL }}>
+                    {s.nombre}
+                  </a>
+                </span>
+              );
+            })}
+          </p>
+        );
+      })()}
+
       <footer className="border-t border-[#10203A]/8 px-6 py-8 text-center sm:px-10">
         <a href="/" className="font-mono text-sm text-[#1E4D8C] hover:underline">← Ver todas las loterías</a>
       </footer>

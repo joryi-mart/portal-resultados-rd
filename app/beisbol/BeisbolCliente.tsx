@@ -166,10 +166,6 @@ export default function BeisbolCliente() {
     setFechaSeleccionada(null);
   }
 
-  function irAPicheo() {
-    window.location.href = "/beisbol/picheo";
-  }
-
   function renderDesempeno(jugador: DesempenoJugador) {
     return (
       <div
@@ -437,12 +433,13 @@ export default function BeisbolCliente() {
               Volver a hoy
             </button>
           ) : null}
-          <button
-            onClick={irAPicheo}
+          {/* Enlace normal (antes era un boton): asi Google y Bing ven /beisbol/picheo. */}
+          <a
+            href="/beisbol/picheo"
             className="rounded-full border border-[#1E4D8C]/30 px-4 py-1.5 font-mono text-xs font-semibold text-[#1E4D8C] hover:bg-[#1E4D8C]/5"
           >
             📊 Ver picheo del día
-          </button>
+          </a>
           <a
             href="/glorias-dominicanas-del-beisbol"
             className="rounded-full border border-[#E7A63C]/50 bg-[#E7A63C]/15 px-4 py-1.5 font-mono text-xs font-semibold text-[#10203A] hover:bg-[#E7A63C]/25"

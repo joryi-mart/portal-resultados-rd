@@ -382,14 +382,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
-  // Paginas por fecha de los ultimos 60 dias, solo las fechas que tienen
-  // resultados reales (evita listar paginas vacias). Son las que hoy traen
-  // visitas desde Google, y hasta ahora solo se descubrian siguiendo enlaces.
-  // (Antes eran 14 dias; se amplio para que el mes completo este en el mapa.)
-  const DIAS_FECHAS_EN_SITEMAP = 60;
+  // Paginas por fecha: TODAS las fechas con resultados reales desde el primer
+  // dia de datos (31-ago-2026), menos las podadas (noindex, ver arriba).
+  // Antes solo iban los ultimos 60 dias y las fechas mas viejas, que siguen
+  // indexables, quedaban fuera del mapa (6-nov-2026). Con ~15 loterias al dia
+  // el mapa sigue muy por debajo del limite de 50.000 direcciones.
   const hoyRD = new Date(Date.now() - 4 * 60 * 60 * 1000);
   const hoyISOSitemap = hoyRD.toISOString().slice(0, 10);
-  const desdeISO = new Date(hoyRD.getTime() - DIAS_FECHAS_EN_SITEMAP * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const desdeISO = "2026-08-31";
   const { data: loteriasConFechas } = await supabase
     .from("loterias")
     .select("slug, sorteos ( resultados ( fecha ) )")
