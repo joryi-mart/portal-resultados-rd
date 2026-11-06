@@ -146,14 +146,21 @@ export async function generateMetadata(props: { params: Promise<{ slug: string; 
 
   const fechaLarga = formatearFechaLarga(params.fecha);
   const esHoy = params.fecha === hoyISO();
-  // Con el dia de la semana, porque asi lo busca la gente ("loteria nacional
-  // del sabado 19 de septiembre"), y la loteria primero: si Google corta el
-  // final, lo que se pierde es "Resultados", no la fecha.
-  const fechaCorta = new Date(params.fecha + "T00:00:00").toLocaleDateString("es-DO", { day: "numeric", month: "long", year: "numeric" });
-  const diaSemana = new Date(params.fecha + "T00:00:00").toLocaleDateString("es-DO", { weekday: "long" });
-  const titulo = esHoy
-    ? `${loteria.nombre} hoy ${diaSemana} ${fechaCorta}: Resultados`
-    : `${loteria.nombre} del ${diaSemana} ${fechaCorta}: Resultados`;
+  // Titulo corto (menos de 60 caracteres con " | La Bankera RD"): Bing marcaba
+  // "Title too long" en 187 paginas con el formato anterior ("Sint Maarten del
+  // sabado 19 de septiembre de 2026: Resultados", 76). Ahora es
+  // "Resultados Sint Maarten 19 sep 2026", sin dia de la semana. El dia de la
+  // semana y la fecha larga siguen en el h1 y en la descripcion.
+  const MESES_CORTOS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+  const [anio, mes, dia] = params.fecha.split("-");
+  const fechaTitulo = `${Number(dia)} ${MESES_CORTOS[Number(mes) - 1]} ${anio}`;
+  const SUFIJO = " | La Bankera RD";
+  const conHoy = `Resultados ${loteria.nombre} hoy ${fechaTitulo}`;
+  // "hoy" solo si cabe: con los nombres mas largos (La Suerte Dominicana,
+  // Loterias Americanas) se pasaria de 59 caracteres.
+  const titulo = esHoy && (conHoy + SUFIJO).length < 60
+    ? conHoy
+    : `Resultados ${loteria.nombre} ${fechaTitulo}`;
 
   // Los numeros van en la descripcion para que se vean directo en Google.
   // Se omiten los sorteos con muchos numeros (ej. Super Kino TV, 20) para
