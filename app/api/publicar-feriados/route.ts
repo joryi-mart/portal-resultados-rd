@@ -1,3 +1,4 @@
+import { FACEBOOK_PAUSADO, respuestaFacebookPausado } from "@/lib/facebookPausa";
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { supabase } from "@/lib/supabase";
@@ -118,6 +119,7 @@ function planDelDia(hoy: string): Plan[] {
 }
 
 export async function GET(request: Request) {
+  if (FACEBOOK_PAUSADO) return respuestaFacebookPausado();
   try {
     const url = new URL(request.url);
     if (!claveValida(url.searchParams.get("clave"))) {

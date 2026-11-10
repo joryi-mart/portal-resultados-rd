@@ -1,3 +1,4 @@
+import { FACEBOOK_PAUSADO } from "@/lib/facebookPausa";
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { generarImagenTanda, type ResultadoTanda } from "@/lib/imagenTanda";
@@ -290,7 +291,7 @@ export async function GET(request: Request) {
     // 2) Una publicacion por loteria con sus resultados nuevos (desde 1-nov).
     const fechaImagen = fechaTitulo(hoy).replace(",", "").replace(/^./, function (c) { return c.toUpperCase(); });
     for (const loteria of listaLoterias) {
-      if (hoy < INICIO_POR_LOTERIA) break;
+      if (FACEBOOK_PAUSADO || hoy < INICIO_POR_LOTERIA) break;
       try {
         const prefijo = `fb-${loteria.slug}-`;
         const publicacionesLoteria = (publicacionesHoy || []).filter(function (p) { return p.loteria_slug.indexOf(prefijo) === 0; });
@@ -342,7 +343,7 @@ export async function GET(request: Request) {
 
     // 3) Tandas de Facebook (24 al 31-oct-2026).
     for (const tanda of TANDAS) {
-      if (hoy < INICIO_TANDAS || hoy >= INICIO_POR_LOTERIA) break;
+      if (FACEBOOK_PAUSADO || hoy < INICIO_TANDAS || hoy >= INICIO_POR_LOTERIA) break;
       const slugTanda = `tanda-${tanda.id}`;
       if ((publicacionesHoy || []).some(function (p) { return p.loteria_slug === slugTanda; })) continue;
 

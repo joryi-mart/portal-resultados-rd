@@ -1,3 +1,4 @@
+import { FACEBOOK_PAUSADO, respuestaFacebookPausado } from "@/lib/facebookPausa";
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { supabase } from "@/lib/supabase";
@@ -82,6 +83,7 @@ async function marcar(slug: string, fecha: string, postId: string, mensaje: stri
 }
 
 export async function GET(request: Request) {
+  if (FACEBOOK_PAUSADO) return respuestaFacebookPausado();
   const url = new URL(request.url);
   const recibida = url.searchParams.get("clave") || (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
   if (!claveValida(recibida)) return NextResponse.json({ error: "No autorizado" }, { status: 401 });

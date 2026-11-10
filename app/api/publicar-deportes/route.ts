@@ -1,3 +1,4 @@
+import { FACEBOOK_PAUSADO, respuestaFacebookPausado } from "@/lib/facebookPausa";
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { generarImagenMarcadores } from "@/lib/imagenDeportes";
@@ -53,6 +54,7 @@ async function publicarUno(tipo: TipoDeporte) {
 }
 
 export async function GET(request: Request) {
+  if (FACEBOOK_PAUSADO) return respuestaFacebookPausado();
   try {
     const secretoEsperado = process.env.CRON_SECRET;
     // .trim(): algunos paneles (ej. cron-job.org) a veces guardan un espacio o

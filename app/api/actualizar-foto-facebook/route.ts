@@ -1,6 +1,8 @@
+import { FACEBOOK_PAUSADO, respuestaFacebookPausado } from "@/lib/facebookPausa";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
+  if (FACEBOOK_PAUSADO) return respuestaFacebookPausado();
   const secretoEsperado = process.env.CRON_SECRET;
   const autorizacion = request.headers.get("authorization");
   if (secretoEsperado && autorizacion !== `Bearer ${secretoEsperado}`) {

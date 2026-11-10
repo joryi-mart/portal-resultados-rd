@@ -1,3 +1,4 @@
+import { FACEBOOK_PAUSADO, respuestaFacebookPausado } from "@/lib/facebookPausa";
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { supabase } from "@/lib/supabase";
@@ -32,6 +33,7 @@ async function crearPublicacion(caption: string, imagen: Buffer) {
 }
 
 export async function GET(request: Request) {
+  if (FACEBOOK_PAUSADO) return respuestaFacebookPausado();
   try {
     const url = new URL(request.url);
     if (!claveValida(url.searchParams.get("clave"))) {
