@@ -4,10 +4,14 @@ name: Reel diario de deportes
 # futbol), los sube a la pagina y le pide a la pagina que los publique en
 # Facebook. Corre dos veces por si GitHub atrasa o salta la primera: la
 # segunda no repite nada, porque el publicador revisa si ya salio.
+#
+# EN PAUSA desde el 10-nov-2026 (pedido del dueño, junto con la pausa de
+# Facebook en lib/facebookPausa.ts): ya no corre sola. Para volver, poner de
+# nuevo estas dos lineas bajo "on:":
+#   schedule:
+#     - cron: "0 12 * * *"   # 8:00 AM hora de RD
+#     - cron: "0 15 * * *"   # 11:00 AM hora de RD (respaldo)
 on:
-  schedule:
-    - cron: "0 12 * * *"   # 8:00 AM hora de RD
-    - cron: "0 15 * * *"   # 11:00 AM hora de RD (respaldo)
   workflow_dispatch: # permite correrlo manualmente desde la pestaña "Actions" en GitHub
 
 permissions:
